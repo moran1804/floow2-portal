@@ -148,7 +148,10 @@ const TermsEditorPage = () => {
     onError: (e: any) => toast.error(e.message),
   });
 
-  const isReadOnly = existing?.state === "active" || existing?.state === "inactive";
+  const isReadOnly =
+    existing?.state === "active" ||
+    existing?.state === "inactive" ||
+    existing?.state === "archived";
 
   return (
     <AdminLayout
