@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -57,7 +56,6 @@ type Faq = {
   category_id: string;
   product_id: string;
   sort_order: number;
-  is_published: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -68,7 +66,6 @@ type FaqFormState = {
   answer: string;
   category_id: string;
   sort_order: number;
-  is_published: boolean;
 };
 
 const emptyFaq: FaqFormState = {
@@ -76,7 +73,6 @@ const emptyFaq: FaqFormState = {
   answer: "",
   category_id: "",
   sort_order: 0,
-  is_published: true,
 };
 
 const FaqsPage = () => {
@@ -151,7 +147,6 @@ const FaqsPage = () => {
         category_id: f.category_id,
         product_id: productFilter,
         sort_order: Number(f.sort_order) || 0,
-        is_published: f.is_published,
         updated_by: userId,
       };
       if (f.id) {
@@ -170,15 +165,6 @@ const FaqsPage = () => {
       setFaqOpen(false);
       setFaqForm(emptyFaq);
     },
-    onError: (e: any) => toast.error(e.message),
-  });
-
-  const togglePublish = useMutation({
-    mutationFn: async ({ id, is_published }: { id: string; is_published: boolean }) => {
-      const { error } = await supabase.from("faqs").update({ is_published }).eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["faqs", productFilter] }),
     onError: (e: any) => toast.error(e.message),
   });
 
@@ -257,7 +243,6 @@ const FaqsPage = () => {
       answer: f.answer,
       category_id: f.category_id,
       sort_order: f.sort_order,
-      is_published: f.is_published,
     });
     setFaqOpen(true);
   };
@@ -427,7 +412,6 @@ const FaqsPage = () => {
                             <tr className="text-left text-portal-muted text-xs uppercase">
                               <th className="px-4 py-2 w-16">Order</th>
                               <th className="px-4 py-2">Question</th>
-                              <th className="px-4 py-2 w-32">State</th>
                               <th className="px-4 py-2 w-16 text-right"></th>
                             </tr>
                           </thead>
@@ -451,15 +435,6 @@ const FaqsPage = () => {
                                     {f.answer}
                                   </p>
                                 </td>
-                                <td className="px-4 py-3">
-                                  {f.is_published ? (
-                                    <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">
-                                      Published
-                                    </Badge>
-                                  ) : (
-                                    <Badge variant="secondary">Hidden</Badge>
-                                  )}
-                                </td>
                                 <td className="px-4 py-3 text-right">
                                   <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
@@ -470,16 +445,6 @@ const FaqsPage = () => {
                                     <DropdownMenuContent align="end">
                                       <DropdownMenuItem onClick={() => openEditFaq(f)}>
                                         <Pencil className="w-4 h-4 mr-2" /> Edit
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem
-                                        onClick={() =>
-                                          togglePublish.mutate({
-                                            id: f.id,
-                                            is_published: !f.is_published,
-                                          })
-                                        }
-                                      >
-                                        {f.is_published ? "Unpublish" : "Publish"}
                                       </DropdownMenuItem>
                                       <DropdownMenuSeparator />
                                       <DropdownMenuItem
@@ -579,21 +544,6 @@ const FaqsPage = () => {
                 onChange={(e) =>
                   setFaqForm({ ...faqForm, sort_order: Number(e.target.value) })
                 }
-              />
-            </div>
-            <div className="flex items-center justify-between rounded-md border border-portal-border p-3">
-              <div>
-                <Label htmlFor="published" className="font-semibold">
-                  Published
-                </Label>
-                <p className="text-xs text-portal-muted">
-                  When off, this FAQ is hidden from the mobile app.
-                </p>
-              </div>
-              <Switch
-                id="published"
-                checked={faqForm.is_published}
-                onCheckedChange={(v) => setFaqForm({ ...faqForm, is_published: v })}
               />
             </div>
           </div>
