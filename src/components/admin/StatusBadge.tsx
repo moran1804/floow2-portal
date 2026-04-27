@@ -23,6 +23,11 @@ const styles: Record<State, { bg: string; fg: string; label: string }> = {
     fg: "text-[hsl(var(--status-draft-fg))]",
     label: "Draft",
   },
+  archived: {
+    bg: "bg-muted",
+    fg: "text-muted-foreground",
+    label: "Archived",
+  },
 };
 
 const StatusBadge = ({ state }: { state: State }) => {
