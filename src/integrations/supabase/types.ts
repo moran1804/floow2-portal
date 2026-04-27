@@ -19,7 +19,7 @@ export type Database = {
           content_html: string
           created_at: string
           created_by: string | null
-          effective_date: string
+          effective_date: string | null
           id: string
           published_at: string | null
           scheduled_at: string | null
@@ -33,7 +33,7 @@ export type Database = {
           content_html?: string
           created_at?: string
           created_by?: string | null
-          effective_date: string
+          effective_date?: string | null
           id?: string
           published_at?: string | null
           scheduled_at?: string | null
@@ -47,7 +47,7 @@ export type Database = {
           content_html?: string
           created_at?: string
           created_by?: string | null
-          effective_date?: string
+          effective_date?: string | null
           id?: string
           published_at?: string | null
           scheduled_at?: string | null

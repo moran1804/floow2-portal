@@ -150,7 +150,9 @@ const TermsListPage = () => {
                     </td>
                     <td className="px-4 py-3 text-portal-text">{r.title}</td>
                     <td className="px-4 py-3 text-portal-muted">
-                      {format(new Date(r.effective_date), "d MMM yyyy")}
+                      {r.effective_date
+                        ? format(new Date(r.effective_date), "d MMM yyyy")
+                        : "—"}
                     </td>
                     <td className="px-4 py-3 text-portal-muted">
                       {r.state === "scheduled" && r.scheduled_at
