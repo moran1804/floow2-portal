@@ -8,6 +8,13 @@ import PortalPanel from "@/components/admin/PortalPanel";
 import StatusBadge from "@/components/admin/StatusBadge";
 import { Button } from "@/components/ui/button";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -32,13 +39,26 @@ import AcceptanceStats from "@/components/admin/AcceptanceStats";
 const TermsListPage = () => {
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const [productFilter, setProductFilter] = useState<string>("all");
+
+  const { data: products = [] } = useQuery({
+    queryKey: ["products", "all"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, code, name")
+        .order("code", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["terms_versions"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("terms_versions")
-        .select("*")
+        .select("*, products(code, name)")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
@@ -86,7 +106,12 @@ const TermsListPage = () => {
 
   const [confirmPublishId, setConfirmPublishId] = useState<string | null>(null);
 
-  const activeVersion = rows.find((r) => r.state === "active");
+  const filteredRows =
+    productFilter === "all"
+      ? rows
+      : rows.filter((r) => r.product_id === productFilter);
+
+  const activeVersion = filteredRows.find((r) => r.state === "active");
 
   return (
     <AdminLayout
