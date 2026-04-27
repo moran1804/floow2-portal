@@ -111,7 +111,6 @@ const TermsEditorPage = () => {
     },
     onSuccess: (row) => {
       setSavedId(row.id);
-      toast.success("Saved as draft");
       qc.invalidateQueries({ queryKey: ["terms_versions"] });
     },
     onError: (e: any) => toast.error(e.message),
@@ -249,7 +248,15 @@ const TermsEditorPage = () => {
         <div className="fixed bottom-0 left-64 right-0 bg-portal-panel border-t border-portal-border px-8 py-4 flex items-center justify-end gap-3 shadow-[0_-4px_12px_rgba(0,0,0,0.04)]">
           <Button
             variant="outline"
-            onClick={() => saveDraft.mutate()}
+            onClick={async () => {
+              try {
+                await saveDraft.mutateAsync();
+                toast.success("Saved as draft");
+                navigate("/admin/terms");
+              } catch {
+                /* error toast handled in mutation */
+              }
+            }}
             disabled={saveDraft.isPending}
           >
             Save as draft
