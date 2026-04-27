@@ -11,6 +11,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -34,6 +41,8 @@ type Faq = {
   category: string | null;
   sort_order: number;
   is_published: boolean;
+  product_id: string;
+  products?: { code: string; name: string } | null;
   created_at: string;
   updated_at: string;
 };
@@ -45,6 +54,7 @@ type FormState = {
   category: string;
   sort_order: number;
   is_published: boolean;
+  product_id: string;
 };
 
 const emptyForm: FormState = {
@@ -53,19 +63,33 @@ const emptyForm: FormState = {
   category: "",
   sort_order: 0,
   is_published: true,
+  product_id: "",
 };
 
 const FaqsPage = () => {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormState>(emptyForm);
+  const [productFilter, setProductFilter] = useState<string>("all");
+
+  const { data: products = [] } = useQuery({
+    queryKey: ["products", "all"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, code, name, is_active")
+        .order("code", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const { data: faqs = [], isLoading } = useQuery({
     queryKey: ["faqs"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("faqs")
-        .select("*")
+        .select("*, products(code, name)")
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: true });
       if (error) throw error;
@@ -83,8 +107,10 @@ const FaqsPage = () => {
         category: f.category.trim() || null,
         sort_order: Number(f.sort_order) || 0,
         is_published: f.is_published,
+        product_id: f.product_id,
         updated_by: userId,
       };
+      if (!payload.product_id) throw new Error("Product is required");
       if (f.id) {
         const { error } = await supabase
           .from("faqs")
@@ -94,7 +120,7 @@ const FaqsPage = () => {
       } else {
         const { error } = await supabase
           .from("faqs")
-          .insert({ ...payload, created_by: userId });
+          .insert({ ...payload, created_by: userId } as any);
         if (error) throw error;
       }
     },
@@ -132,7 +158,10 @@ const FaqsPage = () => {
   });
 
   const openNew = () => {
-    setForm(emptyForm);
+    setForm({
+      ...emptyForm,
+      product_id: productFilter !== "all" ? productFilter : "",
+    });
     setOpen(true);
   };
 
@@ -144,6 +173,7 @@ const FaqsPage = () => {
       category: f.category ?? "",
       sort_order: f.sort_order,
       is_published: f.is_published,
+      product_id: f.product_id,
     });
     setOpen(true);
   };
@@ -153,8 +183,17 @@ const FaqsPage = () => {
       toast.error("Question and answer are required");
       return;
     }
+    if (!form.product_id) {
+      toast.error("Please select a product");
+      return;
+    }
     upsert.mutate(form);
   };
+
+  const filteredFaqs =
+    productFilter === "all"
+      ? faqs
+      : faqs.filter((f) => f.product_id === productFilter);
 
   return (
     <AdminLayout
@@ -172,14 +211,31 @@ const FaqsPage = () => {
       }
     >
       <PortalPanel icon={HelpCircle} title="Frequently asked questions">
-        <p className="text-sm text-portal-muted mb-6">
-          Published FAQs are served to the mobile app via the public API. Drag
-          ordering is via the sort number — lower numbers appear first.
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <p className="text-sm text-portal-muted">
+            Each product has its own FAQs. Lower sort numbers appear first.
+          </p>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-portal-muted">Product:</span>
+            <Select value={productFilter} onValueChange={setProductFilter}>
+              <SelectTrigger className="w-56">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All products</SelectItem>
+                {products.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.code} — {p.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
         {isLoading ? (
           <div className="text-portal-muted py-8 text-center">Loading…</div>
-        ) : faqs.length === 0 ? (
+        ) : filteredFaqs.length === 0 ? (
           <div className="text-center py-12 border border-dashed border-portal-border rounded-md">
             <HelpCircle className="w-10 h-10 mx-auto text-portal-muted mb-3" />
             <h3 className="font-semibold text-portal-navy">No FAQs yet</h3>
@@ -196,6 +252,7 @@ const FaqsPage = () => {
               <thead>
                 <tr className="text-left bg-portal-panel-header text-portal-navy">
                   <th className="px-4 py-3 font-semibold w-16">Order</th>
+                  <th className="px-4 py-3 font-semibold">Product</th>
                   <th className="px-4 py-3 font-semibold">Question</th>
                   <th className="px-4 py-3 font-semibold">Category</th>
                   <th className="px-4 py-3 font-semibold">State</th>
@@ -203,12 +260,17 @@ const FaqsPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {faqs.map((f) => (
+                {filteredFaqs.map((f) => (
                   <tr
                     key={f.id}
                     className="border-t border-portal-border hover:bg-portal-surface/50 align-top"
                   >
                     <td className="px-4 py-3 text-portal-muted">{f.sort_order}</td>
+                    <td className="px-4 py-3">
+                      <span className="font-mono text-xs font-bold text-portal-navy bg-portal-surface px-2 py-1 rounded">
+                        {f.products?.code ?? "—"}
+                      </span>
+                    </td>
                     <td className="px-4 py-3">
                       <button
                         onClick={() => openEdit(f)}
@@ -283,6 +345,26 @@ const FaqsPage = () => {
           </DialogHeader>
 
           <div className="space-y-4 py-2">
+            <div>
+              <Label htmlFor="product">Product *</Label>
+              <Select
+                value={form.product_id}
+                onValueChange={(v) => setForm({ ...form, product_id: v })}
+              >
+                <SelectTrigger id="product">
+                  <SelectValue placeholder="Select product" />
+                </SelectTrigger>
+                <SelectContent>
+                  {products
+                    .filter((p) => p.is_active || p.id === form.product_id)
+                    .map((p) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.code} — {p.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div>
               <Label htmlFor="question">Question</Label>
               <Input

@@ -22,6 +22,7 @@ export type Database = {
           created_by: string | null
           id: string
           is_published: boolean
+          product_id: string
           question: string
           sort_order: number
           updated_at: string
@@ -34,6 +35,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           is_published?: boolean
+          product_id: string
           question: string
           sort_order?: number
           updated_at?: string
@@ -46,12 +48,21 @@ export type Database = {
           created_by?: string | null
           id?: string
           is_published?: boolean
+          product_id?: string
           question?: string
           sort_order?: number
           updated_at?: string
           updated_by?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "faqs_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       products: {
         Row: {
