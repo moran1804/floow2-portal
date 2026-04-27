@@ -412,7 +412,6 @@ const FaqsPage = () => {
                             <tr className="text-left text-portal-muted text-xs uppercase">
                               <th className="px-4 py-2 w-16">Order</th>
                               <th className="px-4 py-2">Question</th>
-                              <th className="px-4 py-2 w-32">State</th>
                               <th className="px-4 py-2 w-16 text-right"></th>
                             </tr>
                           </thead>
@@ -436,15 +435,6 @@ const FaqsPage = () => {
                                     {f.answer}
                                   </p>
                                 </td>
-                                <td className="px-4 py-3">
-                                  {f.is_published ? (
-                                    <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">
-                                      Published
-                                    </Badge>
-                                  ) : (
-                                    <Badge variant="secondary">Hidden</Badge>
-                                  )}
-                                </td>
                                 <td className="px-4 py-3 text-right">
                                   <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
@@ -455,16 +445,6 @@ const FaqsPage = () => {
                                     <DropdownMenuContent align="end">
                                       <DropdownMenuItem onClick={() => openEditFaq(f)}>
                                         <Pencil className="w-4 h-4 mr-2" /> Edit
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem
-                                        onClick={() =>
-                                          togglePublish.mutate({
-                                            id: f.id,
-                                            is_published: !f.is_published,
-                                          })
-                                        }
-                                      >
-                                        {f.is_published ? "Unpublish" : "Publish"}
                                       </DropdownMenuItem>
                                       <DropdownMenuSeparator />
                                       <DropdownMenuItem
