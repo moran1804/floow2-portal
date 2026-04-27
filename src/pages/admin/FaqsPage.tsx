@@ -575,3 +575,159 @@ const FaqsPage = () => {
 };
 
 export default FaqsPage;
+
+// ----------------------------------------------------------------
+// SortableCategoryCard — draggable category panel
+// ----------------------------------------------------------------
+type SortableCategoryCardProps = {
+  category: Category;
+  items: Faq[];
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
+  onAddFaq: () => void;
+  onEditCategory: () => void;
+  onDeleteCategory: () => void;
+  onEditFaq: (f: Faq) => void;
+  onDeleteFaq: (id: string) => void;
+};
+
+const SortableCategoryCard = ({
+  category: c,
+  items,
+  isCollapsed,
+  onToggleCollapse,
+  onAddFaq,
+  onEditCategory,
+  onDeleteCategory,
+  onEditFaq,
+  onDeleteFaq,
+}: SortableCategoryCardProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: c.id });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.6 : 1,
+    zIndex: isDragging ? 10 : "auto",
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="border border-portal-border rounded-md bg-portal-panel overflow-hidden"
+    >
+      <div className="flex items-center justify-between px-2 py-3 bg-portal-panel-header">
+        <div className="flex items-center gap-1 min-w-0">
+          <button
+            {...attributes}
+            {...listeners}
+            className="p-2 text-portal-muted hover:text-portal-navy cursor-grab active:cursor-grabbing touch-none"
+            aria-label={`Drag ${c.name} to reorder`}
+            title="Drag to reorder"
+          >
+            <GripVertical className="w-4 h-4" />
+          </button>
+          <button
+            className="flex items-center gap-2 text-portal-navy font-semibold min-w-0"
+            onClick={onToggleCollapse}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="w-4 h-4 shrink-0" />
+            ) : (
+              <ChevronDown className="w-4 h-4 shrink-0" />
+            )}
+            <span className="truncate">{c.name}</span>
+            <Badge variant="secondary" className="ml-1">
+              {items.length}
+            </Badge>
+          </button>
+        </div>
+        <div className="flex items-center gap-1 pr-2">
+          <Button variant="ghost" size="sm" onClick={onAddFaq} className="gap-1">
+            <Plus className="w-4 h-4" /> Add FAQ
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={onEditCategory}>
+                <Pencil className="w-4 h-4 mr-2" /> Rename
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive focus:text-destructive"
+                onClick={onDeleteCategory}
+              >
+                <Trash2 className="w-4 h-4 mr-2" /> Delete category
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+      {!isCollapsed && (
+        <div>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-portal-muted text-xs uppercase">
+                <th className="px-4 py-2 w-16">Order</th>
+                <th className="px-4 py-2">Question</th>
+                <th className="px-4 py-2 w-16 text-right"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((f) => (
+                <tr
+                  key={f.id}
+                  className="border-t border-portal-border hover:bg-portal-surface/50 align-top"
+                >
+                  <td className="px-4 py-3 text-portal-muted">{f.sort_order}</td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => onEditFaq(f)}
+                      className="font-semibold text-portal-navy hover:text-portal-accent text-left"
+                    >
+                      {f.question}
+                    </button>
+                    <p className="text-portal-muted mt-1 line-clamp-2">{f.answer}</p>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => onEditFaq(f)}>
+                          <Pencil className="w-4 h-4 mr-2" /> Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive"
+                          onClick={() => onDeleteFaq(f.id)}
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" /> Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};
