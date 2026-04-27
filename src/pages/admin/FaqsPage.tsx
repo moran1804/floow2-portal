@@ -249,6 +249,56 @@ const FaqsPage = () => {
       ),
   });
 
+  const reorderCategories = useMutation({
+    mutationFn: async (ordered: Category[]) => {
+      // Re-number with gaps of 10 so future single-row updates stay simple
+      const updates = ordered.map((c, i) => ({ id: c.id, sort_order: (i + 1) * 10 }));
+      // Run sequentially; small list so this is fine
+      for (const u of updates) {
+        const { error } = await supabase
+          .from("faq_categories")
+          .update({ sort_order: u.sort_order })
+          .eq("id", u.id);
+        if (error) throw error;
+      }
+    },
+    onMutate: async (ordered) => {
+      await qc.cancelQueries({ queryKey: ["faq_categories", productFilter] });
+      const previous = qc.getQueryData<Category[]>([
+        "faq_categories",
+        productFilter,
+      ]);
+      qc.setQueryData(
+        ["faq_categories", productFilter],
+        ordered.map((c, i) => ({ ...c, sort_order: (i + 1) * 10 }))
+      );
+      return { previous };
+    },
+    onError: (e: any, _vars, ctx) => {
+      if (ctx?.previous) {
+        qc.setQueryData(["faq_categories", productFilter], ctx.previous);
+      }
+      toast.error(e.message);
+    },
+    onSettled: () =>
+      qc.invalidateQueries({ queryKey: ["faq_categories", productFilter] }),
+  });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = categories.findIndex((c) => c.id === active.id);
+    const newIndex = categories.findIndex((c) => c.id === over.id);
+    if (oldIndex < 0 || newIndex < 0) return;
+    const reordered = arrayMove(categories, oldIndex, newIndex);
+    reorderCategories.mutate(reordered);
+  };
+
   const openNewFaq = (categoryId?: string) => {
     setFaqForm({ ...emptyFaq, category_id: categoryId ?? categories[0]?.id ?? "" });
     setFaqOpen(true);
