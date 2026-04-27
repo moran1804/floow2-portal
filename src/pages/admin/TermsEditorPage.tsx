@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import AcceptanceStats from "@/components/admin/AcceptanceStats";
 
 const TermsEditorPage = () => {
   const { id } = useParams();
@@ -169,6 +170,9 @@ const TermsEditorPage = () => {
       }
     >
       <div className="space-y-6 pb-28">
+        {existing?.state === "active" && (
+          <AcceptanceStats termsId={existing.id} version={existing.version} />
+        )}
         <PortalPanel icon={FileText} title="Details">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
