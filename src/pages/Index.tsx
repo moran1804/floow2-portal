@@ -1,16 +1,40 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FileText, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+const Index = () => {
+  const navigate = useNavigate();
+  const { session, isAdmin, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && session && isAdmin) navigate("/admin/terms", { replace: true });
+  }, [loading, session, isAdmin, navigate]);
+
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
+    <div className="min-h-screen bg-portal-surface flex items-center justify-center p-6">
+      <div className="max-w-xl text-center">
+        <div className="w-14 h-14 mx-auto rounded-full bg-portal-navy text-portal-navy-foreground flex items-center justify-center mb-6">
+          <FileText className="w-6 h-6" />
+        </div>
+        <h1 className="text-4xl font-bold text-portal-navy mb-3">
+          Mobile App Admin Portal
+        </h1>
+        <p className="text-portal-muted mb-8">
+          Manage Terms &amp; Conditions for your mobile app — keep one version
+          live, schedule future updates, and reference older versions.
+        </p>
+        <div className="flex gap-3 justify-center">
+          <Button asChild>
+            <Link to={session ? "/admin/terms" : "/auth"}>
+              {session ? "Open admin" : "Sign in"} <ArrowRight className="w-4 h-4 ml-2" />
+            </Link>
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;

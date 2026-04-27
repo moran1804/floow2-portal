@@ -53,6 +53,28 @@ All colors MUST be HSL.
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Portal palette (The Floow style) */
+    --portal-navy: 215 60% 16%;
+    --portal-navy-foreground: 0 0% 100%;
+    --portal-surface: 210 40% 97%;
+    --portal-panel: 0 0% 100%;
+    --portal-panel-header: 210 45% 96%;
+    --portal-sidebar: 210 30% 98%;
+    --portal-sidebar-active: 210 60% 92%;
+    --portal-text: 215 50% 18%;
+    --portal-muted: 215 16% 47%;
+    --portal-border: 214 25% 89%;
+    --portal-accent: 217 91% 50%;
+
+    --status-active-bg: 145 60% 90%;
+    --status-active-fg: 145 70% 24%;
+    --status-inactive-bg: 215 15% 90%;
+    --status-inactive-fg: 215 20% 35%;
+    --status-scheduled-bg: 38 95% 90%;
+    --status-scheduled-fg: 28 80% 30%;
+    --status-draft-bg: 217 90% 92%;
+    --status-draft-fg: 217 80% 32%;
   }
 
   .dark {
