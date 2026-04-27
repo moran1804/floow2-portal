@@ -33,13 +33,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AcceptanceStats from "@/components/admin/AcceptanceStats";
 
 const TermsListPage = () => {
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const [productFilter, setProductFilter] = useState<string>("all");
+  const [productFilter, setProductFilter] = useState<string>("");
 
   const { data: products = [] } = useQuery({
     queryKey: ["products", "all"],
@@ -52,6 +52,13 @@ const TermsListPage = () => {
       return data;
     },
   });
+
+  // Default to the first product once products load
+  useEffect(() => {
+    if (!productFilter && products.length > 0) {
+      setProductFilter(products[0].id);
+    }
+  }, [products, productFilter]);
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["terms_versions"],
@@ -106,10 +113,9 @@ const TermsListPage = () => {
 
   const [confirmPublishId, setConfirmPublishId] = useState<string | null>(null);
 
-  const filteredRows =
-    productFilter === "all"
-      ? rows
-      : rows.filter((r) => r.product_id === productFilter);
+  const filteredRows = productFilter
+    ? rows.filter((r) => r.product_id === productFilter)
+    : [];
 
   const activeVersion = filteredRows.find((r) => r.state === "active");
 
@@ -146,10 +152,9 @@ const TermsListPage = () => {
             <span className="text-sm text-portal-muted">Product:</span>
             <Select value={productFilter} onValueChange={setProductFilter}>
               <SelectTrigger className="w-56">
-                <SelectValue />
+                <SelectValue placeholder="Select product" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All products</SelectItem>
                 {products.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
                     {p.code} — {p.name}
