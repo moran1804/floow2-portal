@@ -152,10 +152,9 @@ const TermsListPage = () => {
             <span className="text-sm text-portal-muted">Product:</span>
             <Select value={productFilter} onValueChange={setProductFilter}>
               <SelectTrigger className="w-56">
-                <SelectValue />
+                <SelectValue placeholder="Select product" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All products</SelectItem>
                 {products.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
                     {p.code} — {p.name}
