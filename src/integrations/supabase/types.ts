@@ -14,6 +14,35 @@ export type Database = {
   }
   public: {
     Tables: {
+      terms_acceptances: {
+        Row: {
+          accepted_at: string
+          id: string
+          terms_version_id: string
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string
+          id?: string
+          terms_version_id: string
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string
+          id?: string
+          terms_version_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "terms_acceptances_terms_version_id_fkey"
+            columns: ["terms_version_id"]
+            isOneToOne: false
+            referencedRelation: "terms_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       terms_versions: {
         Row: {
           content_html: string
@@ -97,6 +126,16 @@ export type Database = {
       schedule_terms: {
         Args: { _id: string; _scheduled_at: string }
         Returns: undefined
+      }
+      terms_acceptance_stats: {
+        Args: { _id: string }
+        Returns: {
+          acceptances_last_24h: number
+          acceptances_last_7d: number
+          first_accepted_at: string
+          last_accepted_at: string
+          total_acceptances: number
+        }[]
       }
     }
     Enums: {
