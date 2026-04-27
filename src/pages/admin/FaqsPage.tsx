@@ -556,17 +556,6 @@ const FaqsPage = () => {
                 placeholder="e.g. Trips & driving data"
               />
             </div>
-            <div>
-              <Label htmlFor="cat-sort">Sort order</Label>
-              <Input
-                id="cat-sort"
-                type="number"
-                value={catForm.sort_order}
-                onChange={(e) =>
-                  setCatForm({ ...catForm, sort_order: Number(e.target.value) })
-                }
-              />
-            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCatOpen(false)}>
