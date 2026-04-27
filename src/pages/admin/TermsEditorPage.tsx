@@ -47,6 +47,11 @@ const TermsEditorPage = () => {
     () => searchParams.get("product") ?? ""
   );
 
+  // Remember product selection so the list page restores it on return
+  useEffect(() => {
+    if (productId) sessionStorage.setItem("terms.productFilter", productId);
+  }, [productId]);
+
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [scheduleAt, setScheduleAt] = useState("");
   const [confirmPublish, setConfirmPublish] = useState(false);
