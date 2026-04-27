@@ -128,7 +128,17 @@ const TermsListPage = () => {
         { label: "Terms & Conditions" },
       ]}
       actions={
-        <Button onClick={() => navigate("/admin/terms/new")} className="gap-2">
+        <Button
+          onClick={() =>
+            navigate(
+              productFilter
+                ? `/admin/terms/new?product=${productFilter}`
+                : "/admin/terms/new"
+            )
+          }
+          className="gap-2"
+          disabled={!productFilter}
+        >
           <Plus className="w-4 h-4" />
           New version
         </Button>
@@ -175,7 +185,14 @@ const TermsListPage = () => {
             </p>
             <Button
               className="mt-4 gap-2"
-              onClick={() => navigate("/admin/terms/new")}
+              onClick={() =>
+                navigate(
+                  productFilter
+                    ? `/admin/terms/new?product=${productFilter}`
+                    : "/admin/terms/new"
+                )
+              }
+              disabled={!productFilter}
             >
               <Plus className="w-4 h-4" /> New version
             </Button>
