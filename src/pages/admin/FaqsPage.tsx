@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -57,7 +56,6 @@ type Faq = {
   category_id: string;
   product_id: string;
   sort_order: number;
-  is_published: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -68,7 +66,6 @@ type FaqFormState = {
   answer: string;
   category_id: string;
   sort_order: number;
-  is_published: boolean;
 };
 
 const emptyFaq: FaqFormState = {
@@ -76,7 +73,6 @@ const emptyFaq: FaqFormState = {
   answer: "",
   category_id: "",
   sort_order: 0,
-  is_published: true,
 };
 
 const FaqsPage = () => {
@@ -151,7 +147,6 @@ const FaqsPage = () => {
         category_id: f.category_id,
         product_id: productFilter,
         sort_order: Number(f.sort_order) || 0,
-        is_published: f.is_published,
         updated_by: userId,
       };
       if (f.id) {
@@ -170,15 +165,6 @@ const FaqsPage = () => {
       setFaqOpen(false);
       setFaqForm(emptyFaq);
     },
-    onError: (e: any) => toast.error(e.message),
-  });
-
-  const togglePublish = useMutation({
-    mutationFn: async ({ id, is_published }: { id: string; is_published: boolean }) => {
-      const { error } = await supabase.from("faqs").update({ is_published }).eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["faqs", productFilter] }),
     onError: (e: any) => toast.error(e.message),
   });
 
@@ -257,7 +243,6 @@ const FaqsPage = () => {
       answer: f.answer,
       category_id: f.category_id,
       sort_order: f.sort_order,
-      is_published: f.is_published,
     });
     setFaqOpen(true);
   };
