@@ -1,0 +1,2 @@
+ALTER TABLE public.terms_versions DROP CONSTRAINT IF EXISTS terms_versions_version_key;
+ALTER TABLE public.terms_versions ADD CONSTRAINT terms_versions_product_version_key UNIQUE (product_id, version);
