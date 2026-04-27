@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { HelpCircle, Plus, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -70,7 +70,7 @@ const FaqsPage = () => {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormState>(emptyForm);
-  const [productFilter, setProductFilter] = useState<string>("all");
+  const [productFilter, setProductFilter] = useState<string>("");
 
   const { data: products = [] } = useQuery({
     queryKey: ["products", "all"],
@@ -83,6 +83,12 @@ const FaqsPage = () => {
       return data;
     },
   });
+
+  useEffect(() => {
+    if (!productFilter && products.length > 0) {
+      setProductFilter(products[0].id);
+    }
+  }, [products, productFilter]);
 
   const { data: faqs = [], isLoading } = useQuery({
     queryKey: ["faqs"],
@@ -158,10 +164,7 @@ const FaqsPage = () => {
   });
 
   const openNew = () => {
-    setForm({
-      ...emptyForm,
-      product_id: productFilter !== "all" ? productFilter : "",
-    });
+    setForm({ ...emptyForm, product_id: productFilter || "" });
     setOpen(true);
   };
 
@@ -190,10 +193,9 @@ const FaqsPage = () => {
     upsert.mutate(form);
   };
 
-  const filteredFaqs =
-    productFilter === "all"
-      ? faqs
-      : faqs.filter((f) => f.product_id === productFilter);
+  const filteredFaqs = productFilter
+    ? faqs.filter((f) => f.product_id === productFilter)
+    : [];
 
   return (
     <AdminLayout
@@ -219,10 +221,9 @@ const FaqsPage = () => {
             <span className="text-sm text-portal-muted">Product:</span>
             <Select value={productFilter} onValueChange={setProductFilter}>
               <SelectTrigger className="w-56">
-                <SelectValue />
+                <SelectValue placeholder="Select product" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All products</SelectItem>
                 {products.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
                     {p.code} — {p.name}
