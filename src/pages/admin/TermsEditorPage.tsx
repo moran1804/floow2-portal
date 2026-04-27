@@ -41,7 +41,6 @@ const TermsEditorPage = () => {
 
   const [version, setVersion] = useState("");
   const [title, setTitle] = useState("");
-  const [effectiveDate, setEffectiveDate] = useState("");
   const [contentHtml, setContentHtml] = useState("");
 
   const [scheduleOpen, setScheduleOpen] = useState(false);
@@ -67,7 +66,6 @@ const TermsEditorPage = () => {
     if (existing) {
       setVersion(existing.version);
       setTitle(existing.title);
-      setEffectiveDate(existing.effective_date ?? "");
       setContentHtml(existing.content_html);
       setSavedId(existing.id);
     }
@@ -86,7 +84,6 @@ const TermsEditorPage = () => {
       const payload = {
         version: version.trim(),
         title: title.trim(),
-        effective_date: effectiveDate || null,
         content_html: contentHtml,
         updated_by: user?.id,
       };
@@ -173,7 +170,7 @@ const TermsEditorPage = () => {
           <AcceptanceStats termsId={existing.id} version={existing.version} />
         )}
         <PortalPanel icon={FileText} title="Details">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="version">Version *</Label>
               <Input
@@ -191,16 +188,6 @@ const TermsEditorPage = () => {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Spring 2026 update"
-                disabled={isReadOnly}
-              />
-            </div>
-            <div>
-              <Label htmlFor="eff">Effective date</Label>
-              <Input
-                id="eff"
-                type="date"
-                value={effectiveDate}
-                onChange={(e) => setEffectiveDate(e.target.value)}
                 disabled={isReadOnly}
               />
             </div>
