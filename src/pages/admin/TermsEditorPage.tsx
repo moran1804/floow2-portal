@@ -66,7 +66,7 @@ const TermsEditorPage = () => {
     if (existing) {
       setVersion(existing.version);
       setTitle(existing.title);
-      setEffectiveDate(existing.effective_date);
+      setEffectiveDate(existing.effective_date ?? "");
       setContentHtml(existing.content_html);
       setSavedId(existing.id);
     }
