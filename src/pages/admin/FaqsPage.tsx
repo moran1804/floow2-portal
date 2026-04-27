@@ -546,21 +546,6 @@ const FaqsPage = () => {
                 }
               />
             </div>
-            <div className="flex items-center justify-between rounded-md border border-portal-border p-3">
-              <div>
-                <Label htmlFor="published" className="font-semibold">
-                  Published
-                </Label>
-                <p className="text-xs text-portal-muted">
-                  When off, this FAQ is hidden from the mobile app.
-                </p>
-              </div>
-              <Switch
-                id="published"
-                checked={faqForm.is_published}
-                onCheckedChange={(v) => setFaqForm({ ...faqForm, is_published: v })}
-              />
-            </div>
           </div>
 
           <DialogFooter>
