@@ -180,7 +180,7 @@ const TermsListPage = () => {
                           <DropdownMenuItem onClick={() => navigate(`/admin/terms/${r.id}`)}>
                             {r.state === "draft" || r.state === "scheduled" ? "Edit" : "View"}
                           </DropdownMenuItem>
-                          {r.state !== "active" && (
+                          {(r.state === "draft" || r.state === "scheduled") && (
                             <DropdownMenuItem
                               onClick={() => setConfirmPublishId(r.id)}
                             >
