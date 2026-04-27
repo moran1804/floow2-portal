@@ -10,6 +10,7 @@ import {
   SlidersHorizontal,
   CircleUser,
   LogOut,
+  HelpCircle,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ const navItems = [
   { to: "/admin/overview", icon: LayoutGrid, label: "Overview" },
   { to: "/admin/audit", icon: Fingerprint, label: "Audit" },
   { to: "/admin/terms", icon: FileText, label: "Terms & Conditions" },
+  { to: "/admin/faqs", icon: HelpCircle, label: "FAQs" },
   { to: "/admin/products", icon: Tag, label: "Products" },
   { to: "/admin/staff", icon: Users, label: "Staff" },
   { to: "/admin/configuration", icon: SlidersHorizontal, label: "Configuration" },
