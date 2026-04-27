@@ -53,6 +53,39 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       terms_acceptances: {
         Row: {
           accepted_at: string
@@ -89,6 +122,7 @@ export type Database = {
           created_by: string | null
           effective_date: string | null
           id: string
+          product_id: string
           published_at: string | null
           scheduled_at: string | null
           state: Database["public"]["Enums"]["terms_state"]
@@ -103,6 +137,7 @@ export type Database = {
           created_by?: string | null
           effective_date?: string | null
           id?: string
+          product_id: string
           published_at?: string | null
           scheduled_at?: string | null
           state?: Database["public"]["Enums"]["terms_state"]
@@ -117,6 +152,7 @@ export type Database = {
           created_by?: string | null
           effective_date?: string | null
           id?: string
+          product_id?: string
           published_at?: string | null
           scheduled_at?: string | null
           state?: Database["public"]["Enums"]["terms_state"]
@@ -125,7 +161,15 @@ export type Database = {
           updated_by?: string | null
           version?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "terms_versions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
