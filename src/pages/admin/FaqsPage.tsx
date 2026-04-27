@@ -9,6 +9,7 @@ import {
   ChevronDown,
   ChevronRight,
   FolderPlus,
+  GripVertical,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -41,6 +42,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 type Category = {
   id: string;
@@ -231,6 +249,56 @@ const FaqsPage = () => {
       ),
   });
 
+  const reorderCategories = useMutation({
+    mutationFn: async (ordered: Category[]) => {
+      // Re-number with gaps of 10 so future single-row updates stay simple
+      const updates = ordered.map((c, i) => ({ id: c.id, sort_order: (i + 1) * 10 }));
+      // Run sequentially; small list so this is fine
+      for (const u of updates) {
+        const { error } = await supabase
+          .from("faq_categories")
+          .update({ sort_order: u.sort_order })
+          .eq("id", u.id);
+        if (error) throw error;
+      }
+    },
+    onMutate: async (ordered) => {
+      await qc.cancelQueries({ queryKey: ["faq_categories", productFilter] });
+      const previous = qc.getQueryData<Category[]>([
+        "faq_categories",
+        productFilter,
+      ]);
+      qc.setQueryData(
+        ["faq_categories", productFilter],
+        ordered.map((c, i) => ({ ...c, sort_order: (i + 1) * 10 }))
+      );
+      return { previous };
+    },
+    onError: (e: any, _vars, ctx) => {
+      if (ctx?.previous) {
+        qc.setQueryData(["faq_categories", productFilter], ctx.previous);
+      }
+      toast.error(e.message);
+    },
+    onSettled: () =>
+      qc.invalidateQueries({ queryKey: ["faq_categories", productFilter] }),
+  });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = categories.findIndex((c) => c.id === active.id);
+    const newIndex = categories.findIndex((c) => c.id === over.id);
+    if (oldIndex < 0 || newIndex < 0) return;
+    const reordered = arrayMove(categories, oldIndex, newIndex);
+    reorderCategories.mutate(reordered);
+  };
+
   const openNewFaq = (categoryId?: string) => {
     setFaqForm({ ...emptyFaq, category_id: categoryId ?? categories[0]?.id ?? "" });
     setFaqOpen(true);
@@ -334,141 +402,47 @@ const FaqsPage = () => {
             </Button>
           </div>
         ) : (
-          <div className="space-y-4">
-            {categories
-              .map((c) => ({
-                category: c,
-                items: faqs.filter((f) => f.category_id === c.id),
-              }))
-              .filter(({ items }) => items.length > 0)
-              .map(({ category: c, items }) => {
-                const isCollapsed = !!collapsed[c.id];
-                return (
-                <div
-                  key={c.id}
-                  className="border border-portal-border rounded-md bg-portal-panel overflow-hidden"
-                >
-                  <div className="flex items-center justify-between px-4 py-3 bg-portal-panel-header">
-                    <button
-                      className="flex items-center gap-2 text-portal-navy font-semibold"
-                      onClick={() => toggleCollapse(c.id)}
-                    >
-                      {isCollapsed ? (
-                        <ChevronRight className="w-4 h-4" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4" />
-                      )}
-                      {c.name}
-                      <Badge variant="secondary" className="ml-1">
-                        {items.length}
-                      </Badge>
-                    </button>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => openNewFaq(c.id)}
-                        className="gap-1"
-                      >
-                        <Plus className="w-4 h-4" /> Add FAQ
-                      </Button>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="w-4 h-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => openEditCategory(c)}>
-                            <Pencil className="w-4 h-4 mr-2" /> Rename / reorder
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-destructive focus:text-destructive"
-                            onClick={() => {
-                              if (
-                                confirm(
-                                  `Delete category "${c.name}"? It must be empty first.`
-                                )
-                              )
-                                removeCategory.mutate(c.id);
-                            }}
-                          >
-                            <Trash2 className="w-4 h-4 mr-2" /> Delete category
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                  {!isCollapsed && (
-                    <div>
-                      {items.length === 0 ? (
-                        <div className="text-center py-8 text-sm text-portal-muted">
-                          No FAQs in this category yet.
-                        </div>
-                      ) : (
-                        <table className="w-full text-sm">
-                          <thead>
-                            <tr className="text-left text-portal-muted text-xs uppercase">
-                              <th className="px-4 py-2 w-16">Order</th>
-                              <th className="px-4 py-2">Question</th>
-                              <th className="px-4 py-2 w-16 text-right"></th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {items.map((f) => (
-                              <tr
-                                key={f.id}
-                                className="border-t border-portal-border hover:bg-portal-surface/50 align-top"
-                              >
-                                <td className="px-4 py-3 text-portal-muted">
-                                  {f.sort_order}
-                                </td>
-                                <td className="px-4 py-3">
-                                  <button
-                                    onClick={() => openEditFaq(f)}
-                                    className="font-semibold text-portal-navy hover:text-portal-accent text-left"
-                                  >
-                                    {f.question}
-                                  </button>
-                                  <p className="text-portal-muted mt-1 line-clamp-2">
-                                    {f.answer}
-                                  </p>
-                                </td>
-                                <td className="px-4 py-3 text-right">
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                      <Button variant="ghost" size="icon">
-                                        <MoreHorizontal className="w-4 h-4" />
-                                      </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                      <DropdownMenuItem onClick={() => openEditFaq(f)}>
-                                        <Pencil className="w-4 h-4 mr-2" /> Edit
-                                      </DropdownMenuItem>
-                                      <DropdownMenuSeparator />
-                                      <DropdownMenuItem
-                                        className="text-destructive focus:text-destructive"
-                                        onClick={() => {
-                                          if (confirm(`Delete this FAQ?`))
-                                            removeFaq.mutate(f.id);
-                                        }}
-                                      >
-                                        <Trash2 className="w-4 h-4 mr-2" /> Delete
-                                      </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      )}
-                    </div>
-                  )}
-                </div>
-                );
-              })}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={categories
+                .filter((c) => faqs.some((f) => f.category_id === c.id))
+                .map((c) => c.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-4">
+                {categories
+                  .map((c) => ({
+                    category: c,
+                    items: faqs.filter((f) => f.category_id === c.id),
+                  }))
+                  .filter(({ items }) => items.length > 0)
+                  .map(({ category: c, items }) => (
+                    <SortableCategoryCard
+                      key={c.id}
+                      category={c}
+                      items={items}
+                      isCollapsed={!!collapsed[c.id]}
+                      onToggleCollapse={() => toggleCollapse(c.id)}
+                      onAddFaq={() => openNewFaq(c.id)}
+                      onEditCategory={() => openEditCategory(c)}
+                      onDeleteCategory={() => {
+                        if (
+                          confirm(
+                            `Delete category "${c.name}"? It must be empty first.`
+                          )
+                        )
+                          removeCategory.mutate(c.id);
+                      }}
+                      onEditFaq={openEditFaq}
+                      onDeleteFaq={(id) => {
+                        if (confirm("Delete this FAQ?")) removeFaq.mutate(id);
+                      }}
+                    />
+                  ))}
             {categories.length > 0 &&
               faqs.length === 0 && (
                 <div className="text-center py-12 border border-dashed border-portal-border rounded-md">
@@ -483,7 +457,9 @@ const FaqsPage = () => {
                   </Button>
                 </div>
               )}
-          </div>
+              </div>
+            </SortableContext>
+          </DndContext>
         )}
       </PortalPanel>
 
@@ -580,17 +556,6 @@ const FaqsPage = () => {
                 placeholder="e.g. Trips & driving data"
               />
             </div>
-            <div>
-              <Label htmlFor="cat-sort">Sort order</Label>
-              <Input
-                id="cat-sort"
-                type="number"
-                value={catForm.sort_order}
-                onChange={(e) =>
-                  setCatForm({ ...catForm, sort_order: Number(e.target.value) })
-                }
-              />
-            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCatOpen(false)}>
@@ -610,3 +575,159 @@ const FaqsPage = () => {
 };
 
 export default FaqsPage;
+
+// ----------------------------------------------------------------
+// SortableCategoryCard — draggable category panel
+// ----------------------------------------------------------------
+type SortableCategoryCardProps = {
+  category: Category;
+  items: Faq[];
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
+  onAddFaq: () => void;
+  onEditCategory: () => void;
+  onDeleteCategory: () => void;
+  onEditFaq: (f: Faq) => void;
+  onDeleteFaq: (id: string) => void;
+};
+
+const SortableCategoryCard = ({
+  category: c,
+  items,
+  isCollapsed,
+  onToggleCollapse,
+  onAddFaq,
+  onEditCategory,
+  onDeleteCategory,
+  onEditFaq,
+  onDeleteFaq,
+}: SortableCategoryCardProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: c.id });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.6 : 1,
+    zIndex: isDragging ? 10 : "auto",
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="border border-portal-border rounded-md bg-portal-panel overflow-hidden"
+    >
+      <div className="flex items-center justify-between px-2 py-3 bg-portal-panel-header">
+        <div className="flex items-center gap-1 min-w-0">
+          <button
+            {...attributes}
+            {...listeners}
+            className="p-2 text-portal-muted hover:text-portal-navy cursor-grab active:cursor-grabbing touch-none"
+            aria-label={`Drag ${c.name} to reorder`}
+            title="Drag to reorder"
+          >
+            <GripVertical className="w-4 h-4" />
+          </button>
+          <button
+            className="flex items-center gap-2 text-portal-navy font-semibold min-w-0"
+            onClick={onToggleCollapse}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="w-4 h-4 shrink-0" />
+            ) : (
+              <ChevronDown className="w-4 h-4 shrink-0" />
+            )}
+            <span className="truncate">{c.name}</span>
+            <Badge variant="secondary" className="ml-1">
+              {items.length}
+            </Badge>
+          </button>
+        </div>
+        <div className="flex items-center gap-1 pr-2">
+          <Button variant="ghost" size="sm" onClick={onAddFaq} className="gap-1">
+            <Plus className="w-4 h-4" /> Add FAQ
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={onEditCategory}>
+                <Pencil className="w-4 h-4 mr-2" /> Rename
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive focus:text-destructive"
+                onClick={onDeleteCategory}
+              >
+                <Trash2 className="w-4 h-4 mr-2" /> Delete category
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+      {!isCollapsed && (
+        <div>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-portal-muted text-xs uppercase">
+                <th className="px-4 py-2 w-16">Order</th>
+                <th className="px-4 py-2">Question</th>
+                <th className="px-4 py-2 w-16 text-right"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((f) => (
+                <tr
+                  key={f.id}
+                  className="border-t border-portal-border hover:bg-portal-surface/50 align-top"
+                >
+                  <td className="px-4 py-3 text-portal-muted">{f.sort_order}</td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => onEditFaq(f)}
+                      className="font-semibold text-portal-navy hover:text-portal-accent text-left"
+                    >
+                      {f.question}
+                    </button>
+                    <p className="text-portal-muted mt-1 line-clamp-2">{f.answer}</p>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => onEditFaq(f)}>
+                          <Pencil className="w-4 h-4 mr-2" /> Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive"
+                          onClick={() => onDeleteFaq(f.id)}
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" /> Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};
