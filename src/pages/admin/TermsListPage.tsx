@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { useState } from "react";
+import AcceptanceStats from "@/components/admin/AcceptanceStats";
 
 const TermsListPage = () => {
   const navigate = useNavigate();
@@ -85,6 +86,8 @@ const TermsListPage = () => {
 
   const [confirmPublishId, setConfirmPublishId] = useState<string | null>(null);
 
+  const activeVersion = rows.find((r) => r.state === "active");
+
   return (
     <AdminLayout
       title="Terms & Conditions"
@@ -100,6 +103,14 @@ const TermsListPage = () => {
         </Button>
       }
     >
+      {activeVersion && (
+        <div className="mb-6">
+          <AcceptanceStats
+            termsId={activeVersion.id}
+            version={activeVersion.version}
+          />
+        </div>
+      )}
       <PortalPanel icon={FileText} title="T&Cs versions">
         <p className="text-sm text-portal-muted mb-6">
           Only one version can be active at any time. Older versions remain
