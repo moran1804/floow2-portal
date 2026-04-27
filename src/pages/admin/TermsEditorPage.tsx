@@ -97,16 +97,37 @@ const TermsEditorPage = () => {
     }
   }, [existing]);
 
-  const validate = () => {
+  const validate = async () => {
     if (!version.trim()) return "Version is required";
     if (!title.trim()) return "Title is required";
     if (!productId) return "Product is required";
+
+    const { data: duplicateVersion, error: duplicateVersionError } = await supabase
+      .from("terms_versions")
+      .select("id")
+      .eq("product_id", productId)
+      .eq("version", version.trim())
+      .neq("id", savedId ?? "00000000-0000-0000-0000-000000000000")
+      .maybeSingle();
+    if (duplicateVersionError) throw duplicateVersionError;
+    if (duplicateVersion) return "This product already has a T&C with that version number";
+
+    const { data: duplicateTitle, error: duplicateTitleError } = await supabase
+      .from("terms_versions")
+      .select("id")
+      .eq("product_id", productId)
+      .eq("title", title.trim())
+      .neq("id", savedId ?? "00000000-0000-0000-0000-000000000000")
+      .maybeSingle();
+    if (duplicateTitleError) throw duplicateTitleError;
+    if (duplicateTitle) return "This product already has a T&C with that internal title";
+
     return null;
   };
 
   const saveDraft = useMutation({
     mutationFn: async () => {
-      const err = validate();
+      const err = await validate();
       if (err) throw new Error(err);
       const payload = {
         version: version.trim(),
@@ -296,8 +317,8 @@ const TermsEditorPage = () => {
           </Button>
           <Button
             variant="outline"
-            onClick={() => {
-              const err = validate();
+            onClick={async () => {
+              const err = await validate();
               if (err) return toast.error(err);
               setScheduleOpen(true);
             }}
@@ -305,8 +326,8 @@ const TermsEditorPage = () => {
             Schedule publish…
           </Button>
           <Button
-            onClick={() => {
-              const err = validate();
+            onClick={async () => {
+              const err = await validate();
               if (err) return toast.error(err);
               setConfirmPublish(true);
             }}
