@@ -72,13 +72,13 @@ const TermsListPage = () => {
     onError: (e: any) => toast.error(e.message),
   });
 
-  const remove = useMutation({
+  const archive = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("terms_versions").delete().eq("id", id);
+      const { error } = await supabase.rpc("archive_terms" as any, { _id: id });
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Deleted");
+      toast.success("Archived");
       qc.invalidateQueries({ queryKey: ["terms_versions"] });
     },
     onError: (e: any) => toast.error(e.message),
@@ -148,7 +148,9 @@ const TermsListPage = () => {
                 {rows.map((r) => (
                   <tr
                     key={r.id}
-                    className="border-t border-portal-border hover:bg-portal-surface/50"
+                    className={`border-t border-portal-border hover:bg-portal-surface/50 ${
+                      r.state === "archived" ? "opacity-50" : ""
+                    }`}
                   >
                     <td className="px-4 py-3">
                       <button
@@ -192,16 +194,23 @@ const TermsListPage = () => {
                               Cancel schedule
                             </DropdownMenuItem>
                           )}
-                          <DropdownMenuSeparator />
-                          {r.state !== "active" && (
-                            <DropdownMenuItem
-                              className="text-destructive focus:text-destructive"
-                              onClick={() => {
-                                if (confirm(`Delete ${r.version}?`)) remove.mutate(r.id);
-                              }}
-                            >
-                              Delete
-                            </DropdownMenuItem>
+                          {r.state !== "active" && r.state !== "archived" && (
+                            <>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                className="text-destructive focus:text-destructive"
+                                onClick={() => {
+                                  if (
+                                    confirm(
+                                      `Archive ${r.version}? Archived versions are kept for the record but cannot be edited or republished.`
+                                    )
+                                  )
+                                    archive.mutate(r.id);
+                                }}
+                              >
+                                Archive
+                              </DropdownMenuItem>
+                            </>
                           )}
                         </DropdownMenuContent>
                       </DropdownMenu>
