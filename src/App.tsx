@@ -47,14 +47,6 @@ const App = () => (
                 </RequireAdmin>
               }
             />
-            <Route
-              path="/admin/terms/:id/edit"
-              element={
-                <RequireAdmin>
-                  <TermsEditorPage />
-                </RequireAdmin>
-              }
-            />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
