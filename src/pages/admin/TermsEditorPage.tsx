@@ -317,8 +317,8 @@ const TermsEditorPage = () => {
           </Button>
           <Button
             variant="outline"
-            onClick={() => {
-              const err = validate();
+            onClick={async () => {
+              const err = await validate();
               if (err) return toast.error(err);
               setScheduleOpen(true);
             }}
@@ -326,8 +326,8 @@ const TermsEditorPage = () => {
             Schedule publish…
           </Button>
           <Button
-            onClick={() => {
-              const err = validate();
+            onClick={async () => {
+              const err = await validate();
               if (err) return toast.error(err);
               setConfirmPublish(true);
             }}
