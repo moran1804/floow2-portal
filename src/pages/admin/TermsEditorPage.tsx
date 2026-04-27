@@ -113,6 +113,7 @@ const TermsEditorPage = () => {
       setSavedId(row.id);
       toast.success("Saved as draft");
       qc.invalidateQueries({ queryKey: ["terms_versions"] });
+      navigate("/admin/terms");
     },
     onError: (e: any) => toast.error(e.message),
   });
