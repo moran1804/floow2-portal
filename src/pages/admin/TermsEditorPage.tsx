@@ -75,7 +75,6 @@ const TermsEditorPage = () => {
   const validate = () => {
     if (!version.trim()) return "Version is required";
     if (!title.trim()) return "Title is required";
-    if (!effectiveDate) return "Effective date is required";
     return null;
   };
 
@@ -86,7 +85,7 @@ const TermsEditorPage = () => {
       const payload = {
         version: version.trim(),
         title: title.trim(),
-        effective_date: effectiveDate,
+        effective_date: effectiveDate || null,
         content_html: contentHtml,
         updated_by: user?.id,
       };
@@ -193,7 +192,7 @@ const TermsEditorPage = () => {
               />
             </div>
             <div>
-              <Label htmlFor="eff">Effective date *</Label>
+              <Label htmlFor="eff">Effective date</Label>
               <Input
                 id="eff"
                 type="date"
