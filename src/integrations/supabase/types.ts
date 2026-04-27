@@ -154,6 +154,7 @@ export type Database = {
     }
     Functions: {
       activate_due_terms: { Args: never; Returns: undefined }
+      archive_terms: { Args: { _id: string }; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -179,7 +180,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
-      terms_state: "draft" | "scheduled" | "active" | "inactive"
+      terms_state: "draft" | "scheduled" | "active" | "inactive" | "archived"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -308,7 +309,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
-      terms_state: ["draft", "scheduled", "active", "inactive"],
+      terms_state: ["draft", "scheduled", "active", "inactive", "archived"],
     },
   },
 } as const
