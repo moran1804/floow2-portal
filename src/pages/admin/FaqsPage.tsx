@@ -402,141 +402,47 @@ const FaqsPage = () => {
             </Button>
           </div>
         ) : (
-          <div className="space-y-4">
-            {categories
-              .map((c) => ({
-                category: c,
-                items: faqs.filter((f) => f.category_id === c.id),
-              }))
-              .filter(({ items }) => items.length > 0)
-              .map(({ category: c, items }) => {
-                const isCollapsed = !!collapsed[c.id];
-                return (
-                <div
-                  key={c.id}
-                  className="border border-portal-border rounded-md bg-portal-panel overflow-hidden"
-                >
-                  <div className="flex items-center justify-between px-4 py-3 bg-portal-panel-header">
-                    <button
-                      className="flex items-center gap-2 text-portal-navy font-semibold"
-                      onClick={() => toggleCollapse(c.id)}
-                    >
-                      {isCollapsed ? (
-                        <ChevronRight className="w-4 h-4" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4" />
-                      )}
-                      {c.name}
-                      <Badge variant="secondary" className="ml-1">
-                        {items.length}
-                      </Badge>
-                    </button>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => openNewFaq(c.id)}
-                        className="gap-1"
-                      >
-                        <Plus className="w-4 h-4" /> Add FAQ
-                      </Button>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="w-4 h-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => openEditCategory(c)}>
-                            <Pencil className="w-4 h-4 mr-2" /> Rename / reorder
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-destructive focus:text-destructive"
-                            onClick={() => {
-                              if (
-                                confirm(
-                                  `Delete category "${c.name}"? It must be empty first.`
-                                )
-                              )
-                                removeCategory.mutate(c.id);
-                            }}
-                          >
-                            <Trash2 className="w-4 h-4 mr-2" /> Delete category
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                  {!isCollapsed && (
-                    <div>
-                      {items.length === 0 ? (
-                        <div className="text-center py-8 text-sm text-portal-muted">
-                          No FAQs in this category yet.
-                        </div>
-                      ) : (
-                        <table className="w-full text-sm">
-                          <thead>
-                            <tr className="text-left text-portal-muted text-xs uppercase">
-                              <th className="px-4 py-2 w-16">Order</th>
-                              <th className="px-4 py-2">Question</th>
-                              <th className="px-4 py-2 w-16 text-right"></th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {items.map((f) => (
-                              <tr
-                                key={f.id}
-                                className="border-t border-portal-border hover:bg-portal-surface/50 align-top"
-                              >
-                                <td className="px-4 py-3 text-portal-muted">
-                                  {f.sort_order}
-                                </td>
-                                <td className="px-4 py-3">
-                                  <button
-                                    onClick={() => openEditFaq(f)}
-                                    className="font-semibold text-portal-navy hover:text-portal-accent text-left"
-                                  >
-                                    {f.question}
-                                  </button>
-                                  <p className="text-portal-muted mt-1 line-clamp-2">
-                                    {f.answer}
-                                  </p>
-                                </td>
-                                <td className="px-4 py-3 text-right">
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                      <Button variant="ghost" size="icon">
-                                        <MoreHorizontal className="w-4 h-4" />
-                                      </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                      <DropdownMenuItem onClick={() => openEditFaq(f)}>
-                                        <Pencil className="w-4 h-4 mr-2" /> Edit
-                                      </DropdownMenuItem>
-                                      <DropdownMenuSeparator />
-                                      <DropdownMenuItem
-                                        className="text-destructive focus:text-destructive"
-                                        onClick={() => {
-                                          if (confirm(`Delete this FAQ?`))
-                                            removeFaq.mutate(f.id);
-                                        }}
-                                      >
-                                        <Trash2 className="w-4 h-4 mr-2" /> Delete
-                                      </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      )}
-                    </div>
-                  )}
-                </div>
-                );
-              })}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={categories
+                .filter((c) => faqs.some((f) => f.category_id === c.id))
+                .map((c) => c.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-4">
+                {categories
+                  .map((c) => ({
+                    category: c,
+                    items: faqs.filter((f) => f.category_id === c.id),
+                  }))
+                  .filter(({ items }) => items.length > 0)
+                  .map(({ category: c, items }) => (
+                    <SortableCategoryCard
+                      key={c.id}
+                      category={c}
+                      items={items}
+                      isCollapsed={!!collapsed[c.id]}
+                      onToggleCollapse={() => toggleCollapse(c.id)}
+                      onAddFaq={() => openNewFaq(c.id)}
+                      onEditCategory={() => openEditCategory(c)}
+                      onDeleteCategory={() => {
+                        if (
+                          confirm(
+                            `Delete category "${c.name}"? It must be empty first.`
+                          )
+                        )
+                          removeCategory.mutate(c.id);
+                      }}
+                      onEditFaq={openEditFaq}
+                      onDeleteFaq={(id) => {
+                        if (confirm("Delete this FAQ?")) removeFaq.mutate(id);
+                      }}
+                    />
+                  ))}
             {categories.length > 0 &&
               faqs.length === 0 && (
                 <div className="text-center py-12 border border-dashed border-portal-border rounded-md">
@@ -551,7 +457,9 @@ const FaqsPage = () => {
                   </Button>
                 </div>
               )}
-          </div>
+              </div>
+            </SortableContext>
+          </DndContext>
         )}
       </PortalPanel>
 
