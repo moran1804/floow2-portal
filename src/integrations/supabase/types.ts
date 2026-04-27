@@ -62,7 +62,6 @@ export type Database = {
           created_at: string
           created_by: string | null
           id: string
-          is_published: boolean
           product_id: string
           question: string
           sort_order: number
@@ -75,7 +74,6 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
-          is_published?: boolean
           product_id: string
           question: string
           sort_order?: number
@@ -88,7 +86,6 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
-          is_published?: boolean
           product_id?: string
           question?: string
           sort_order?: number
