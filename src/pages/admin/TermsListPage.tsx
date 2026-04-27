@@ -39,7 +39,13 @@ import AcceptanceStats from "@/components/admin/AcceptanceStats";
 const TermsListPage = () => {
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const [productFilter, setProductFilter] = useState<string>("");
+  const [productFilter, setProductFilterState] = useState<string>(
+    () => sessionStorage.getItem("terms.productFilter") ?? ""
+  );
+  const setProductFilter = (value: string) => {
+    setProductFilterState(value);
+    if (value) sessionStorage.setItem("terms.productFilter", value);
+  };
 
   const { data: products = [] } = useQuery({
     queryKey: ["products", "all"],
@@ -56,7 +62,9 @@ const TermsListPage = () => {
   // Default to the first product once products load
   useEffect(() => {
     if (!productFilter && products.length > 0) {
-      setProductFilter(products[0].id);
+      const stored = sessionStorage.getItem("terms.productFilter");
+      const match = stored && products.find((p) => p.id === stored);
+      setProductFilter(match ? stored! : products[0].id);
     }
   }, [products, productFilter]);
 
