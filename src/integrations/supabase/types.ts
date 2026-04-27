@@ -154,6 +154,7 @@ export type Database = {
     }
     Functions: {
       activate_due_terms: { Args: never; Returns: undefined }
+      archive_terms: { Args: { _id: string }; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
