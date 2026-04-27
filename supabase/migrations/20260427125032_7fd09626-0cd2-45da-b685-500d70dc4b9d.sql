@@ -1,0 +1,1 @@
+ALTER TABLE public.terms_versions ALTER COLUMN effective_date DROP NOT NULL;
