@@ -11,6 +11,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -34,6 +41,8 @@ type Faq = {
   category: string | null;
   sort_order: number;
   is_published: boolean;
+  product_id: string;
+  products?: { code: string; name: string } | null;
   created_at: string;
   updated_at: string;
 };
@@ -45,6 +54,7 @@ type FormState = {
   category: string;
   sort_order: number;
   is_published: boolean;
+  product_id: string;
 };
 
 const emptyForm: FormState = {
@@ -53,19 +63,33 @@ const emptyForm: FormState = {
   category: "",
   sort_order: 0,
   is_published: true,
+  product_id: "",
 };
 
 const FaqsPage = () => {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormState>(emptyForm);
+  const [productFilter, setProductFilter] = useState<string>("all");
+
+  const { data: products = [] } = useQuery({
+    queryKey: ["products", "all"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, code, name, is_active")
+        .order("code", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const { data: faqs = [], isLoading } = useQuery({
     queryKey: ["faqs"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("faqs")
-        .select("*")
+        .select("*, products(code, name)")
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: true });
       if (error) throw error;
@@ -83,8 +107,10 @@ const FaqsPage = () => {
         category: f.category.trim() || null,
         sort_order: Number(f.sort_order) || 0,
         is_published: f.is_published,
+        product_id: f.product_id,
         updated_by: userId,
       };
+      if (!payload.product_id) throw new Error("Product is required");
       if (f.id) {
         const { error } = await supabase
           .from("faqs")
@@ -94,7 +120,7 @@ const FaqsPage = () => {
       } else {
         const { error } = await supabase
           .from("faqs")
-          .insert({ ...payload, created_by: userId });
+          .insert({ ...payload, created_by: userId } as any);
         if (error) throw error;
       }
     },
@@ -132,7 +158,10 @@ const FaqsPage = () => {
   });
 
   const openNew = () => {
-    setForm(emptyForm);
+    setForm({
+      ...emptyForm,
+      product_id: productFilter !== "all" ? productFilter : "",
+    });
     setOpen(true);
   };
 
@@ -144,6 +173,7 @@ const FaqsPage = () => {
       category: f.category ?? "",
       sort_order: f.sort_order,
       is_published: f.is_published,
+      product_id: f.product_id,
     });
     setOpen(true);
   };
@@ -153,8 +183,17 @@ const FaqsPage = () => {
       toast.error("Question and answer are required");
       return;
     }
+    if (!form.product_id) {
+      toast.error("Please select a product");
+      return;
+    }
     upsert.mutate(form);
   };
+
+  const filteredFaqs =
+    productFilter === "all"
+      ? faqs
+      : faqs.filter((f) => f.product_id === productFilter);
 
   return (
     <AdminLayout
