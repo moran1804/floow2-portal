@@ -14,10 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      faq_categories: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          product_id: string
+          sort_order: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          product_id: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          product_id?: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "faq_categories_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       faqs: {
         Row: {
           answer: string
-          category: string | null
+          category_id: string
           created_at: string
           created_by: string | null
           id: string
@@ -30,7 +71,7 @@ export type Database = {
         }
         Insert: {
           answer: string
-          category?: string | null
+          category_id: string
           created_at?: string
           created_by?: string | null
           id?: string
@@ -43,7 +84,7 @@ export type Database = {
         }
         Update: {
           answer?: string
-          category?: string | null
+          category_id?: string
           created_at?: string
           created_by?: string | null
           id?: string
@@ -55,6 +96,13 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "faqs_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "faq_categories"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "faqs_product_id_fkey"
             columns: ["product_id"]
