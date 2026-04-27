@@ -196,7 +196,28 @@ const TermsEditorPage = () => {
           <AcceptanceStats termsId={existing.id} version={existing.version} />
         )}
         <PortalPanel icon={FileText} title="Details">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <Label htmlFor="product">Product *</Label>
+              <Select
+                value={productId}
+                onValueChange={setProductId}
+                disabled={isReadOnly || !isNew}
+              >
+                <SelectTrigger id="product">
+                  <SelectValue placeholder="Select product" />
+                </SelectTrigger>
+                <SelectContent>
+                  {products
+                    .filter((p) => p.is_active || p.id === productId)
+                    .map((p) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.code} — {p.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div>
               <Label htmlFor="version">Version *</Label>
               <Input
