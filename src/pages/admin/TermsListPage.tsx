@@ -8,6 +8,13 @@ import PortalPanel from "@/components/admin/PortalPanel";
 import StatusBadge from "@/components/admin/StatusBadge";
 import { Button } from "@/components/ui/button";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -32,13 +39,26 @@ import AcceptanceStats from "@/components/admin/AcceptanceStats";
 const TermsListPage = () => {
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const [productFilter, setProductFilter] = useState<string>("all");
+
+  const { data: products = [] } = useQuery({
+    queryKey: ["products", "all"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, code, name")
+        .order("code", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["terms_versions"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("terms_versions")
-        .select("*")
+        .select("*, products(code, name)")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
@@ -86,7 +106,12 @@ const TermsListPage = () => {
 
   const [confirmPublishId, setConfirmPublishId] = useState<string | null>(null);
 
-  const activeVersion = rows.find((r) => r.state === "active");
+  const filteredRows =
+    productFilter === "all"
+      ? rows
+      : rows.filter((r) => r.product_id === productFilter);
+
+  const activeVersion = filteredRows.find((r) => r.state === "active");
 
   return (
     <AdminLayout
@@ -112,13 +137,31 @@ const TermsListPage = () => {
         </div>
       )}
       <PortalPanel icon={FileText} title="T&Cs versions">
-        <p className="text-sm text-portal-muted mb-6">
-          Only one version can be active at any time. Older versions remain
-          available for reference.
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <p className="text-sm text-portal-muted">
+            Each product can have its own active T&Cs. Older versions remain
+            available for reference.
+          </p>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-portal-muted">Product:</span>
+            <Select value={productFilter} onValueChange={setProductFilter}>
+              <SelectTrigger className="w-56">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All products</SelectItem>
+                {products.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.code} — {p.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
         {isLoading ? (
           <div className="text-portal-muted py-8 text-center">Loading…</div>
-        ) : rows.length === 0 ? (
+        ) : filteredRows.length === 0 ? (
           <div className="text-center py-12 border border-dashed border-portal-border rounded-md">
             <FileText className="w-10 h-10 mx-auto text-portal-muted mb-3" />
             <h3 className="font-semibold text-portal-navy">No T&Cs yet</h3>
@@ -137,6 +180,7 @@ const TermsListPage = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left bg-portal-panel-header text-portal-navy">
+                  <th className="px-4 py-3 font-semibold">Product</th>
                   <th className="px-4 py-3 font-semibold">Version</th>
                   <th className="px-4 py-3 font-semibold">Title</th>
                   <th className="px-4 py-3 font-semibold">Scheduled / Live since</th>
@@ -145,13 +189,18 @@ const TermsListPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {rows.map((r) => (
+                {filteredRows.map((r: any) => (
                   <tr
                     key={r.id}
                     className={`border-t border-portal-border hover:bg-portal-surface/50 ${
                       r.state === "archived" ? "opacity-50" : ""
                     }`}
                   >
+                    <td className="px-4 py-3">
+                      <span className="font-mono text-xs font-bold text-portal-navy bg-portal-surface px-2 py-1 rounded">
+                        {r.products?.code ?? "—"}
+                      </span>
+                    </td>
                     <td className="px-4 py-3">
                       <button
                         onClick={() => navigate(`/admin/terms/${r.id}`)}

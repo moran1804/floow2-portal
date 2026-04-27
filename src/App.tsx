@@ -9,6 +9,7 @@ import Auth from "./pages/Auth.tsx";
 import TermsListPage from "./pages/admin/TermsListPage.tsx";
 import TermsEditorPage from "./pages/admin/TermsEditorPage.tsx";
 import FaqsPage from "./pages/admin/FaqsPage.tsx";
+import ProductsPage from "./pages/admin/ProductsPage.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import RequireAdmin from "@/components/admin/RequireAdmin";
 
@@ -53,6 +54,14 @@ const App = () => (
               element={
                 <RequireAdmin>
                   <FaqsPage />
+                </RequireAdmin>
+              }
+            />
+            <Route
+              path="/admin/products"
+              element={
+                <RequireAdmin>
+                  <ProductsPage />
                 </RequireAdmin>
               }
             />
