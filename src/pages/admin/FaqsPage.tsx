@@ -346,6 +346,26 @@ const FaqsPage = () => {
 
           <div className="space-y-4 py-2">
             <div>
+              <Label htmlFor="product">Product *</Label>
+              <Select
+                value={form.product_id}
+                onValueChange={(v) => setForm({ ...form, product_id: v })}
+              >
+                <SelectTrigger id="product">
+                  <SelectValue placeholder="Select product" />
+                </SelectTrigger>
+                <SelectContent>
+                  {products
+                    .filter((p) => p.is_active || p.id === form.product_id)
+                    .map((p) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.code} — {p.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
               <Label htmlFor="question">Question</Label>
               <Input
                 id="question"
