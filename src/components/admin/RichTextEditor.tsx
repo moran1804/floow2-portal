@@ -70,8 +70,7 @@ const RichTextEditor = ({ value, onChange }: Props) => {
     if (editor && value !== editor.getHTML()) {
       editor.commands.setContent(value || "", { emitUpdate: false });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editor]);
+  }, [editor, value]);
 
   if (!editor) return null;
 
