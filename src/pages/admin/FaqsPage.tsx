@@ -211,14 +211,31 @@ const FaqsPage = () => {
       }
     >
       <PortalPanel icon={HelpCircle} title="Frequently asked questions">
-        <p className="text-sm text-portal-muted mb-6">
-          Published FAQs are served to the mobile app via the public API. Drag
-          ordering is via the sort number — lower numbers appear first.
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <p className="text-sm text-portal-muted">
+            Each product has its own FAQs. Lower sort numbers appear first.
+          </p>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-portal-muted">Product:</span>
+            <Select value={productFilter} onValueChange={setProductFilter}>
+              <SelectTrigger className="w-56">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All products</SelectItem>
+                {products.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.code} — {p.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
         {isLoading ? (
           <div className="text-portal-muted py-8 text-center">Loading…</div>
-        ) : faqs.length === 0 ? (
+        ) : filteredFaqs.length === 0 ? (
           <div className="text-center py-12 border border-dashed border-portal-border rounded-md">
             <HelpCircle className="w-10 h-10 mx-auto text-portal-muted mb-3" />
             <h3 className="font-semibold text-portal-navy">No FAQs yet</h3>
@@ -235,6 +252,7 @@ const FaqsPage = () => {
               <thead>
                 <tr className="text-left bg-portal-panel-header text-portal-navy">
                   <th className="px-4 py-3 font-semibold w-16">Order</th>
+                  <th className="px-4 py-3 font-semibold">Product</th>
                   <th className="px-4 py-3 font-semibold">Question</th>
                   <th className="px-4 py-3 font-semibold">Category</th>
                   <th className="px-4 py-3 font-semibold">State</th>
@@ -242,12 +260,17 @@ const FaqsPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {faqs.map((f) => (
+                {filteredFaqs.map((f) => (
                   <tr
                     key={f.id}
                     className="border-t border-portal-border hover:bg-portal-surface/50 align-top"
                   >
                     <td className="px-4 py-3 text-portal-muted">{f.sort_order}</td>
+                    <td className="px-4 py-3">
+                      <span className="font-mono text-xs font-bold text-portal-navy bg-portal-surface px-2 py-1 rounded">
+                        {f.products?.code ?? "—"}
+                      </span>
+                    </td>
                     <td className="px-4 py-3">
                       <button
                         onClick={() => openEdit(f)}
