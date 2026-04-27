@@ -139,8 +139,7 @@ const TermsListPage = () => {
                 <tr className="text-left bg-portal-panel-header text-portal-navy">
                   <th className="px-4 py-3 font-semibold">Version</th>
                   <th className="px-4 py-3 font-semibold">Title</th>
-                  <th className="px-4 py-3 font-semibold">Effective date</th>
-                  <th className="px-4 py-3 font-semibold">Scheduled / Published</th>
+                  <th className="px-4 py-3 font-semibold">Scheduled / Live since</th>
                   <th className="px-4 py-3 font-semibold">State</th>
                   <th className="px-4 py-3 font-semibold text-right">Action</th>
                 </tr>
@@ -160,11 +159,6 @@ const TermsListPage = () => {
                       </button>
                     </td>
                     <td className="px-4 py-3 text-portal-text">{r.title}</td>
-                    <td className="px-4 py-3 text-portal-muted">
-                      {r.effective_date
-                        ? format(new Date(r.effective_date), "d MMM yyyy")
-                        : "—"}
-                    </td>
                     <td className="px-4 py-3 text-portal-muted">
                       {r.state === "scheduled" && r.scheduled_at
                         ? format(new Date(r.scheduled_at), "d MMM yyyy, HH:mm")
