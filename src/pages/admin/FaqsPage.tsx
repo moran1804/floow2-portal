@@ -350,10 +350,15 @@ const FaqsPage = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {categories.map((c) => {
-              const items = faqs.filter((f) => f.category_id === c.id);
-              const isCollapsed = !!collapsed[c.id];
-              return (
+            {categories
+              .map((c) => ({
+                category: c,
+                items: faqs.filter((f) => f.category_id === c.id),
+              }))
+              .filter(({ items }) => items.length > 0)
+              .map(({ category: c, items }) => {
+                const isCollapsed = !!collapsed[c.id];
+                return (
                 <div
                   key={c.id}
                   className="border border-portal-border rounded-md bg-portal-panel overflow-hidden"
@@ -497,8 +502,22 @@ const FaqsPage = () => {
                     </div>
                   )}
                 </div>
-              );
-            })}
+                );
+              })}
+            {categories.length > 0 &&
+              faqs.length === 0 && (
+                <div className="text-center py-12 border border-dashed border-portal-border rounded-md">
+                  <HelpCircle className="w-10 h-10 mx-auto text-portal-muted mb-3" />
+                  <h3 className="font-semibold text-portal-navy">No FAQs yet</h3>
+                  <p className="text-sm text-portal-muted mt-1">
+                    Add your first question to get started. Categories appear
+                    here once they contain a question.
+                  </p>
+                  <Button className="mt-4 gap-2" onClick={() => openNewFaq()}>
+                    <Plus className="w-4 h-4" /> New FAQ
+                  </Button>
+                </div>
+              )}
           </div>
         )}
       </PortalPanel>
