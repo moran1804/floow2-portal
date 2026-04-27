@@ -9,6 +9,13 @@ import RichTextEditor from "@/components/admin/RichTextEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Dialog,
@@ -42,6 +49,7 @@ const TermsEditorPage = () => {
   const [version, setVersion] = useState("");
   const [title, setTitle] = useState("");
   const [contentHtml, setContentHtml] = useState("");
+  const [productId, setProductId] = useState<string>("");
 
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [scheduleAt, setScheduleAt] = useState("");
@@ -62,18 +70,32 @@ const TermsEditorPage = () => {
     enabled: !!id,
   });
 
+  const { data: products = [] } = useQuery({
+    queryKey: ["products", "active"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, code, name, is_active")
+        .order("code", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
   useEffect(() => {
     if (existing) {
       setVersion(existing.version);
       setTitle(existing.title);
       setContentHtml(existing.content_html);
       setSavedId(existing.id);
+      setProductId(existing.product_id);
     }
   }, [existing]);
 
   const validate = () => {
     if (!version.trim()) return "Version is required";
     if (!title.trim()) return "Title is required";
+    if (!productId) return "Product is required";
     return null;
   };
 
@@ -85,6 +107,7 @@ const TermsEditorPage = () => {
         version: version.trim(),
         title: title.trim(),
         content_html: contentHtml,
+        product_id: productId,
         updated_by: user?.id,
       };
       if (savedId) {
@@ -99,7 +122,7 @@ const TermsEditorPage = () => {
       } else {
         const { data, error } = await supabase
           .from("terms_versions")
-          .insert({ ...payload, state: "draft", created_by: user?.id })
+          .insert({ ...payload, state: "draft" as const, created_by: user?.id })
           .select()
           .single();
         if (error) throw error;
