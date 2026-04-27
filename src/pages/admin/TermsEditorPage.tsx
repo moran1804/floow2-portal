@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { FileText, Eye, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,13 +9,6 @@ import RichTextEditor from "@/components/admin/RichTextEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Dialog,
@@ -43,13 +36,16 @@ const TermsEditorPage = () => {
   const { id } = useParams();
   const isNew = !id;
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const qc = useQueryClient();
   const { user } = useAuth();
 
   const [version, setVersion] = useState("");
   const [title, setTitle] = useState("");
   const [contentHtml, setContentHtml] = useState("");
-  const [productId, setProductId] = useState<string>("");
+  const [productId, setProductId] = useState<string>(
+    () => searchParams.get("product") ?? ""
+  );
 
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [scheduleAt, setScheduleAt] = useState("");
@@ -71,7 +67,7 @@ const TermsEditorPage = () => {
   });
 
   const { data: products = [] } = useQuery({
-    queryKey: ["products", "active"],
+    queryKey: ["products", "all"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
@@ -81,6 +77,15 @@ const TermsEditorPage = () => {
       return data;
     },
   });
+
+  // Redirect back to the list if a new version is opened without a product context
+  useEffect(() => {
+    if (isNew && !productId) {
+      navigate("/admin/terms", { replace: true });
+    }
+  }, [isNew, productId, navigate]);
+
+  const selectedProduct = products.find((p) => p.id === productId);
 
   useEffect(() => {
     if (existing) {
@@ -198,25 +203,19 @@ const TermsEditorPage = () => {
         <PortalPanel icon={FileText} title="Details">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="product">Product *</Label>
-              <Select
-                value={productId}
-                onValueChange={setProductId}
-                disabled={isReadOnly || !isNew}
-              >
-                <SelectTrigger id="product">
-                  <SelectValue placeholder="Select product" />
-                </SelectTrigger>
-                <SelectContent>
-                  {products
-                    .filter((p) => p.is_active || p.id === productId)
-                    .map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.code} — {p.name}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
+              <Label>Product</Label>
+              <div className="h-10 px-3 flex items-center rounded-md border border-portal-border bg-portal-surface text-sm text-portal-navy">
+                {selectedProduct ? (
+                  <>
+                    <span className="font-mono text-xs font-bold bg-portal-panel px-2 py-1 rounded mr-2">
+                      {selectedProduct.code}
+                    </span>
+                    {selectedProduct.name}
+                  </>
+                ) : (
+                  <span className="text-portal-muted">—</span>
+                )}
+              </div>
             </div>
             <div>
               <Label htmlFor="version">Version *</Label>
