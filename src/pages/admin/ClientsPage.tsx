@@ -92,12 +92,7 @@ const ClientsPage = () => {
           <div className="font-semibold">
             {isLoading ? "Loading…" : `${rows.length} results found`}
           </div>
-          <div className="flex items-center gap-3">
-            <Button size="sm" onClick={() => setAddOpen(true)}>
-              <Plus className="w-4 h-4 mr-1" />
-              Add client
-            </Button>
-            <div className="inline-flex rounded-md border border-portal-border overflow-hidden">
+          <div className="inline-flex rounded-md border border-portal-border overflow-hidden">
             <button
               onClick={() => setTab("active")}
               className={`px-4 py-2 text-sm ${
@@ -118,7 +113,6 @@ const ClientsPage = () => {
             >
               Archived ({archived.length})
             </button>
-            </div>
           </div>
         </div>
 
@@ -126,7 +120,13 @@ const ClientsPage = () => {
           <div className="grid grid-cols-[1fr_1fr_auto] gap-4 px-4 py-3 text-sm font-semibold border-b border-portal-border">
             <div>Client ID</div>
             <div>Name</div>
-            <div className="w-32 text-right">Actions</div>
+            <div className="w-32 text-right flex items-center justify-end gap-2">
+              Actions
+              <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => setAddOpen(true)}>
+                <Plus className="w-3 h-3 mr-1" />
+                Add client
+              </Button>
+            </div>
           </div>
           {rows.length === 0 ? (
             <div className="px-4 py-8 text-sm text-portal-muted text-center">
