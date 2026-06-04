@@ -139,6 +139,8 @@ const ProductEditorPage = () => {
           ? true
           : !!loadedConfig[c.key];
       });
+      const savedApiKey = ((product as any).campaigns_api_key as string) ?? "";
+      setHasSavedApiKey(!!savedApiKey);
       setForm({
         name: product.name ?? "",
         code: product.code ?? CODE_PREFIX,
@@ -151,7 +153,7 @@ const ProductEditorPage = () => {
         campaigns_enabled: (product as any).campaigns_enabled ?? false,
         campaigns_config: config,
         campaigns_endpoint: (product as any).campaigns_endpoint ?? "",
-        campaigns_api_key: (product as any).campaigns_api_key ?? "",
+        campaigns_api_key: "",
       });
     }
   }, [product]);
