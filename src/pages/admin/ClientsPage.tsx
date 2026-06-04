@@ -87,7 +87,16 @@ const ClientsPage = () => {
 
   return (
     <AdminLayout title="Clients" crumbs={[{ label: "Clients" }]}>
-      <PortalPanel icon={Users} title="All clients">
+      <PortalPanel
+        icon={Users}
+        title="All clients"
+        rightContent={
+          <Button size="sm" variant="outline" className="h-7 px-3 text-xs" onClick={() => setAddOpen(true)}>
+            <Plus className="w-3 h-3 mr-1" />
+            Add client
+          </Button>
+        }
+      >
         <div className="flex items-center justify-between pb-4">
           <div className="font-semibold">
             {isLoading ? "Loading…" : `${rows.length} results found`}
