@@ -28,7 +28,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
+
 import { useAuth } from "@/hooks/useAuth";
 import AcceptanceStats from "@/components/admin/AcceptanceStats";
 
@@ -164,7 +164,7 @@ const TermsEditorPage = () => {
       setSavedId(row.id);
       qc.invalidateQueries({ queryKey: ["terms_versions"] });
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: () => {},
   });
 
   const publishNow = useMutation({
@@ -174,11 +174,10 @@ const TermsEditorPage = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Published");
       qc.invalidateQueries({ queryKey: ["terms_versions"] });
       navigate("/admin/terms");
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: () => {},
   });
 
   const schedule = useMutation({
@@ -195,11 +194,10 @@ const TermsEditorPage = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Scheduled");
       qc.invalidateQueries({ queryKey: ["terms_versions"] });
       navigate("/admin/terms");
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: () => {},
   });
 
   const isReadOnly =
