@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DEFAULT_SCORE_CONFIG } from "@/lib/defaultScoreConfig";
-import { CAMPAIGNS } from "@/lib/campaigns";
+import { CAMPAIGNS, ALWAYS_ENABLED_CAMPAIGNS } from "@/lib/campaigns";
 
 const CODE_PREFIX = "aldostm-";
 
