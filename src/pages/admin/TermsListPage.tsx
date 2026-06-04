@@ -35,10 +35,12 @@ import {
 
 import { useState, useEffect } from "react";
 import AcceptanceStats from "@/components/admin/AcceptanceStats";
+import { useCustomer } from "@/contexts/CustomerContext";
 
 const TermsListPage = () => {
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const { selectedCustomerId } = useCustomer();
   const [productFilter, setProductFilterState] = useState<string>(
     () => sessionStorage.getItem("terms.productFilter") ?? ""
   );
@@ -48,32 +50,41 @@ const TermsListPage = () => {
   };
 
   const { data: products = [] } = useQuery({
-    queryKey: ["products", "all"],
+    queryKey: ["products", "all", selectedCustomerId],
+    enabled: !!selectedCustomerId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
         .select("id, code, name")
+        .eq("customer_id", selectedCustomerId!)
         .order("code", { ascending: true });
       if (error) throw error;
       return data;
     },
   });
 
-  // Default to the first product once products load
+  // Reset product filter when customer changes if not in current list
   useEffect(() => {
-    if (!productFilter && products.length > 0) {
+    if (products.length === 0) {
+      if (productFilter) setProductFilterState("");
+      return;
+    }
+    const stillValid = products.some((p) => p.id === productFilter);
+    if (!stillValid) {
       const stored = sessionStorage.getItem("terms.productFilter");
       const match = stored && products.find((p) => p.id === stored);
       setProductFilter(match ? stored! : products[0].id);
     }
-  }, [products, productFilter]);
+  }, [products]);
 
   const { data: rows = [], isLoading } = useQuery({
-    queryKey: ["terms_versions"],
+    queryKey: ["terms_versions", selectedCustomerId],
+    enabled: !!selectedCustomerId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("terms_versions")
         .select("*, products(code, name)")
+        .eq("customer_id", selectedCustomerId!)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
