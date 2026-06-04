@@ -80,14 +80,49 @@ const ClientsPage = () => {
 
   const addClient = useMutation({
     mutationFn: async ({ name, code }: { name: string; code: string }) => {
-      const { error } = await supabase
+      const { data: inserted, error } = await supabase
         .from("customers")
-        .insert({ name, code });
+        .insert({ name, code })
+        .select("id")
+        .single();
       if (error) throw error;
+
+      // Seed the new client with every feature in the catalogue, defaulted to inactive.
+      const { data: defaultCustomer } = await supabase
+        .from("customers")
+        .select("id")
+        .eq("is_default", true)
+        .maybeSingle();
+
+      const templateCustomerId = defaultCustomer?.id;
+      if (templateCustomerId && inserted?.id) {
+        const { data: templateFeatures, error: tplError } = await supabase
+          .from("features")
+          .select("key, name, category, description, sort_order")
+          .eq("customer_id", templateCustomerId);
+        if (tplError) throw tplError;
+
+        if (templateFeatures && templateFeatures.length > 0) {
+          const rows = templateFeatures.map((f) => ({
+            customer_id: inserted.id,
+            key: f.key,
+            name: f.name,
+            category: f.category,
+            description: f.description,
+            sort_order: f.sort_order,
+            state: "inactive",
+            start_at: null,
+            end_at: null,
+          }));
+          const { error: seedError } = await supabase.from("features").insert(rows);
+          if (seedError) throw seedError;
+        }
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["clients-all"] });
       qc.invalidateQueries({ queryKey: ["customers"] });
+      qc.invalidateQueries({ queryKey: ["features"] });
       toast.success("Client added");
       setAddOpen(false);
       setNewName("");
