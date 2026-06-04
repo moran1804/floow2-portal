@@ -26,6 +26,11 @@ type Client = {
   archived_at: string | null;
 };
 
+type ClientMutationError = {
+  code?: string;
+  message?: string;
+};
+
 const slugify = (text: string) =>
   text
     .toLowerCase()
@@ -54,7 +59,7 @@ const duplicateClientMessage = (clients: Client[], name: string, code: string) =
   return null;
 };
 
-const addClientErrorMessage = (error: any) => {
+const addClientErrorMessage = (error: ClientMutationError) => {
   if (error?.code === "23505") {
     const message = String(error.message ?? "");
     if (message.includes("customers_name_key")) return "That client name is already in use. Please use a different name.";
@@ -104,7 +109,7 @@ const ClientsPage = () => {
       qc.invalidateQueries({ queryKey: ["customers"] });
       toast.success(vars.archived ? "Client archived" : "Client restored");
     },
-    onError: (e: any) => toast.error(e.message ?? "Failed to update client"),
+    onError: (e: ClientMutationError) => toast.error(e.message ?? "Failed to update client"),
   });
 
   const addClient = useMutation({
@@ -157,7 +162,7 @@ const ClientsPage = () => {
       setNewName("");
       setNewSlug("");
     },
-    onError: (e: any) => toast.error(addClientErrorMessage(e)),
+    onError: (e: ClientMutationError) => toast.error(addClientErrorMessage(e)),
   });
 
   const active = clients.filter((c) => !c.archived_at);
