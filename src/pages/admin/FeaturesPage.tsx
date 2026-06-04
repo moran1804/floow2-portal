@@ -3,7 +3,7 @@ import { MoreHorizontal, CalendarCheck2, Info } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { toast } from "@/hooks/use-toast";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,7 +62,7 @@ const FeaturesPage = () => {
       .order("category", { ascending: true })
       .order("sort_order", { ascending: true });
     if (error) {
-      toast({ title: "Failed to load features", description: error.message, variant: "destructive" });
+      console.error(error.message);
     } else {
       setFeatures((data ?? []) as Feature[]);
     }
@@ -87,23 +87,14 @@ const FeaturesPage = () => {
 
   const toggle = async (f: Feature, next: "active" | "inactive") => {
     if (!isFloowStaff) {
-      toast({
-        title: "Floow staff only",
-        description: "Only Floow staff can change feature state.",
-        variant: "destructive",
-      });
       return;
     }
     const rpc = next === "active" ? "activate_feature" : "deactivate_feature";
     const { error } = await supabase.rpc(rpc, { _id: f.id });
     if (error) {
-      toast({ title: "Update failed", description: error.message, variant: "destructive" });
+      console.error(error.message);
       return;
     }
-    toast({
-      title: next === "active" ? "Feature activated" : "Feature deactivated",
-      description: f.name,
-    });
     load();
   };
 

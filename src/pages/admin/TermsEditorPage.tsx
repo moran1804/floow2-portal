@@ -28,7 +28,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
+
 import { useAuth } from "@/hooks/useAuth";
 import AcceptanceStats from "@/components/admin/AcceptanceStats";
 
@@ -164,7 +164,7 @@ const TermsEditorPage = () => {
       setSavedId(row.id);
       qc.invalidateQueries({ queryKey: ["terms_versions"] });
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: () => {},
   });
 
   const publishNow = useMutation({
@@ -174,11 +174,10 @@ const TermsEditorPage = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Published");
       qc.invalidateQueries({ queryKey: ["terms_versions"] });
       navigate("/admin/terms");
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: () => {},
   });
 
   const schedule = useMutation({
@@ -195,11 +194,10 @@ const TermsEditorPage = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Scheduled");
       qc.invalidateQueries({ queryKey: ["terms_versions"] });
       navigate("/admin/terms");
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: () => {},
   });
 
   const isReadOnly =
@@ -310,10 +308,9 @@ const TermsEditorPage = () => {
             onClick={async () => {
               try {
                 await saveDraft.mutateAsync();
-                toast.success("Saved as draft");
                 navigate("/admin/terms");
               } catch {
-                /* error toast handled in mutation */
+                /* errors handled in mutation */
               }
             }}
             disabled={saveDraft.isPending}
@@ -324,7 +321,7 @@ const TermsEditorPage = () => {
             variant="outline"
             onClick={async () => {
               const err = await validate();
-              if (err) return toast.error(err);
+              if (err) return;
               setScheduleOpen(true);
             }}
           >
@@ -333,7 +330,7 @@ const TermsEditorPage = () => {
           <Button
             onClick={async () => {
               const err = await validate();
-              if (err) return toast.error(err);
+              if (err) return;
               setConfirmPublish(true);
             }}
           >

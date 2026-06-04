@@ -41,7 +41,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { toast } from "sonner";
+
 import {
   DndContext,
   closestCenter,
@@ -178,12 +178,11 @@ const FaqsPage = () => {
       }
     },
     onSuccess: () => {
-      toast.success(faqForm.id ? "FAQ updated" : "FAQ added");
       qc.invalidateQueries({ queryKey: ["faqs", productFilter] });
       setFaqOpen(false);
       setFaqForm(emptyFaq);
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: () => {},
   });
 
   const removeFaq = useMutation({
@@ -192,10 +191,9 @@ const FaqsPage = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("FAQ deleted");
       qc.invalidateQueries({ queryKey: ["faqs", productFilter] });
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: () => {},
   });
 
   // -------- Category mutations --------
@@ -224,12 +222,11 @@ const FaqsPage = () => {
       }
     },
     onSuccess: () => {
-      toast.success(catForm.id ? "Category updated" : "Category added");
       qc.invalidateQueries({ queryKey: ["faq_categories", productFilter] });
       setCatOpen(false);
       setCatForm({ name: "", sort_order: 0 });
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: () => {},
   });
 
   const removeCategory = useMutation({
@@ -238,15 +235,9 @@ const FaqsPage = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Category deleted");
       qc.invalidateQueries({ queryKey: ["faq_categories", productFilter] });
     },
-    onError: (e: any) =>
-      toast.error(
-        e.message?.includes("foreign key")
-          ? "Move or delete the FAQs in this category first."
-          : e.message
-      ),
+    onError: () => {},
   });
 
   const reorderCategories = useMutation({
@@ -274,11 +265,10 @@ const FaqsPage = () => {
       );
       return { previous };
     },
-    onError: (e: any, _vars, ctx) => {
+    onError: (_e: any, _vars, ctx) => {
       if (ctx?.previous) {
         qc.setQueryData(["faq_categories", productFilter], ctx.previous);
       }
-      toast.error(e.message);
     },
     onSettled: () =>
       qc.invalidateQueries({ queryKey: ["faq_categories", productFilter] }),
@@ -327,11 +317,9 @@ const FaqsPage = () => {
 
   const handleFaqSubmit = () => {
     if (!faqForm.question.trim() || !faqForm.answer.trim()) {
-      toast.error("Question and answer are required");
       return;
     }
     if (!faqForm.category_id) {
-      toast.error("Please select a category");
       return;
     }
     upsertFaq.mutate(faqForm);
