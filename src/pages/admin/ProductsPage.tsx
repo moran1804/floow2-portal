@@ -23,7 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { toast } from "sonner";
+
 
 type Product = {
   id: string;
@@ -85,12 +85,11 @@ const ProductsPage = () => {
       }
     },
     onSuccess: () => {
-      toast.success("Saved");
       setOpen(false);
       setForm(emptyForm);
       qc.invalidateQueries({ queryKey: ["products"] });
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: () => {},
   });
 
   const togglePublish = useMutation({
@@ -102,7 +101,7 @@ const ProductsPage = () => {
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["products"] }),
-    onError: (e: any) => toast.error(e.message),
+    onError: () => {},
   });
 
   const openCreate = () => {
