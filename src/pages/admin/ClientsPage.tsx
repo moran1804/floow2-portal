@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCustomer } from "@/contexts/CustomerContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -26,14 +26,29 @@ type Client = {
   archived_at: string | null;
 };
 
+const slugify = (text: string) =>
+  text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]+/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+
 const ClientsPage = () => {
   const [tab, setTab] = useState<"active" | "archived">("active");
   const [addOpen, setAddOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const [newSlug, setNewSlug] = useState("");
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const qc = useQueryClient();
   const navigate = useNavigate();
   const { setSelectedCustomerId } = useCustomer();
+
+  useEffect(() => {
+    if (addOpen) {
+      setSlugManuallyEdited(false);
+    }
+  }, [addOpen]);
 
   const { data: clients = [], isLoading } = useQuery({
     queryKey: ["clients-all"],
@@ -210,7 +225,13 @@ const ClientsPage = () => {
                 id="client-name"
                 placeholder="Add Client Name"
                 value={newName}
-                onChange={(e) => setNewName(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setNewName(value);
+                  if (!slugManuallyEdited) {
+                    setNewSlug(slugify(value));
+                  }
+                }}
                 autoFocus
               />
             </div>
@@ -219,14 +240,15 @@ const ClientsPage = () => {
               <Input
                 id="client-slug"
                 value={newSlug}
-                onChange={(e) =>
+                onChange={(e) => {
+                  setSlugManuallyEdited(true);
                   setNewSlug(
                     e.target.value
                       .toLowerCase()
                       .replace(/[^a-z0-9-]+/g, "-")
                       .replace(/-+/g, "-")
-                  )
-                }
+                  );
+                }}
               />
             </div>
             <DialogFooter>
