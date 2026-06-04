@@ -126,6 +126,14 @@ const ProductEditorPage = () => {
 
   useEffect(() => {
     if (product) {
+      const loadedConfig =
+        ((product as any).campaigns_config as Record<string, boolean>) ?? {};
+      const config: Record<string, boolean> = {};
+      CAMPAIGNS.forEach((c) => {
+        config[c.key] = ALWAYS_ENABLED_CAMPAIGNS.includes(c.key)
+          ? true
+          : !!loadedConfig[c.key];
+      });
       setForm({
         name: product.name ?? "",
         code: product.code ?? CODE_PREFIX,
@@ -136,8 +144,7 @@ const ProductEditorPage = () => {
         impact_detection_enabled:
           (product as any).impact_detection_enabled ?? false,
         campaigns_enabled: (product as any).campaigns_enabled ?? false,
-        campaigns_config:
-          ((product as any).campaigns_config as Record<string, boolean>) ?? {},
+        campaigns_config: config,
       });
     }
   }, [product]);
