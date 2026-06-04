@@ -41,7 +41,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { toast } from "sonner";
+
 import {
   DndContext,
   closestCenter,
@@ -178,12 +178,11 @@ const FaqsPage = () => {
       }
     },
     onSuccess: () => {
-      toast.success(faqForm.id ? "FAQ updated" : "FAQ added");
       qc.invalidateQueries({ queryKey: ["faqs", productFilter] });
       setFaqOpen(false);
       setFaqForm(emptyFaq);
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: () => {},
   });
 
   const removeFaq = useMutation({
@@ -192,10 +191,9 @@ const FaqsPage = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("FAQ deleted");
       qc.invalidateQueries({ queryKey: ["faqs", productFilter] });
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: () => {},
   });
 
   // -------- Category mutations --------
@@ -224,12 +222,11 @@ const FaqsPage = () => {
       }
     },
     onSuccess: () => {
-      toast.success(catForm.id ? "Category updated" : "Category added");
       qc.invalidateQueries({ queryKey: ["faq_categories", productFilter] });
       setCatOpen(false);
       setCatForm({ name: "", sort_order: 0 });
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: () => {},
   });
 
   const removeCategory = useMutation({
