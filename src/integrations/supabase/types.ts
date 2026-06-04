@@ -156,6 +156,8 @@ export type Database = {
       }
       products: {
         Row: {
+          campaigns_config: Json
+          campaigns_enabled: boolean
           code: string
           created_at: string
           created_by: string | null
@@ -171,6 +173,8 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          campaigns_config?: Json
+          campaigns_enabled?: boolean
           code: string
           created_at?: string
           created_by?: string | null
@@ -186,6 +190,8 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          campaigns_config?: Json
+          campaigns_enabled?: boolean
           code?: string
           created_at?: string
           created_by?: string | null
