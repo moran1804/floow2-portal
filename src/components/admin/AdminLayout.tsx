@@ -40,8 +40,8 @@ const fullNavItems = [
 
 const clientsNavItems = [
   { to: "/admin/clients", icon: Building2, label: "Clients" },
-  { to: "/admin/monitoring", icon: Activity, label: "Monitoring" },
-  { to: "/admin/api-docs", icon: BookOpen, label: "API Docs" },
+  { to: "#", icon: Activity, label: "Monitoring", disabled: true },
+  { to: "#", icon: BookOpen, label: "API Docs", disabled: true },
 ];
 
 type Crumb = { label: string; to?: string };
