@@ -62,7 +62,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children }: AdminLayoutProps
           <img
             src={floowLogo.url}
             alt="The Floow"
-            className="h-7 w-auto"
+            className="h-6 w-auto"
           />
           <Select
             value={selectedCustomerId ?? undefined}
