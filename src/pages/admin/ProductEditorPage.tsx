@@ -482,7 +482,9 @@ const ProductEditorPage = () => {
                         size="sm"
                         onClick={() => {
                           const all: Record<string, boolean> = {};
-                          CAMPAIGNS.forEach((c) => (all[c.key] = false));
+                          CAMPAIGNS.forEach((c) => {
+                            all[c.key] = ALWAYS_ENABLED_CAMPAIGNS.includes(c.key);
+                          });
                           setForm({ ...form, campaigns_config: all });
                         }}
                       >
