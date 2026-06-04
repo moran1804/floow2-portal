@@ -149,6 +149,8 @@ const ProductEditorPage = () => {
           (product as any).impact_detection_enabled ?? false,
         campaigns_enabled: (product as any).campaigns_enabled ?? false,
         campaigns_config: config,
+        campaigns_endpoint: (product as any).campaigns_endpoint ?? "",
+        campaigns_api_key: (product as any).campaigns_api_key ?? "",
       });
     }
   }, [product]);
@@ -158,6 +160,12 @@ const ProductEditorPage = () => {
       if (!f.name.trim()) throw new Error("Product name is required");
       if (!f.code.trim() || f.code.trim() === CODE_PREFIX)
         throw new Error("Product code is required");
+      if (f.campaigns_enabled) {
+        if (!f.campaigns_endpoint.trim())
+          throw new Error("Campaigns endpoint is required");
+        if (!f.campaigns_api_key.trim())
+          throw new Error("Campaigns API key is required");
+      }
 
       const { data: userData } = await supabase.auth.getUser();
       const userId = userData.user?.id;
@@ -178,6 +186,8 @@ const ProductEditorPage = () => {
         impact_detection_enabled: f.impact_detection_enabled,
         campaigns_enabled: f.campaigns_enabled,
         campaigns_config: campaignsConfig,
+        campaigns_endpoint: f.campaigns_endpoint.trim(),
+        campaigns_api_key: f.campaigns_api_key.trim(),
         updated_by: userId,
       } as any;
 
