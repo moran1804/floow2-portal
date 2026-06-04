@@ -225,7 +225,13 @@ const ClientsPage = () => {
                 id="client-name"
                 placeholder="Add Client Name"
                 value={newName}
-                onChange={(e) => setNewName(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setNewName(value);
+                  if (!slugManuallyEdited) {
+                    setNewSlug(slugify(value));
+                  }
+                }}
                 autoFocus
               />
             </div>
