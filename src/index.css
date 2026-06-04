@@ -17,55 +17,56 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 216.4 70.1% 24.9%;
-    --primary-foreground: 210 40% 98%;
+    /* Brand palette
+       1 #F5F9FB  204 38% 97%
+       2 #E7EFF4  204 30% 93%
+       3 #BCD3E1  204 39% 81%
+       4 #397DA7  203 49% 44%
+       5 #13366C  216 70% 25%
+       6 #0B2141  216 71% 15%
+    */
+    --primary: 216 70% 25%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 204 30% 93%;
+    --secondary-foreground: 216 70% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 204 38% 97%;
+    --muted-foreground: 216 30% 35%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 204 39% 81%;
+    --accent-foreground: 216 70% 25%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 204 39% 81%;
+    --input: 204 39% 81%;
+    --ring: 216 70% 25%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 204 38% 97%;
+    --sidebar-foreground: 216 71% 15%;
+    --sidebar-primary: 216 70% 25%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 204 30% 93%;
+    --sidebar-accent-foreground: 216 70% 25%;
+    --sidebar-border: 204 39% 81%;
+    --sidebar-ring: 216 70% 25%;
 
     /* Portal palette (The Floow style) */
-    --portal-navy: 215 60% 16%;
+    --portal-navy: 216 70% 25%;
     --portal-navy-foreground: 0 0% 100%;
-    --portal-surface: 210 40% 97%;
+    --portal-surface: 204 38% 97%;
     --portal-panel: 0 0% 100%;
-    --portal-panel-header: 210 45% 96%;
-    --portal-sidebar: 210 30% 98%;
-    --portal-sidebar-active: 210 60% 92%;
-    --portal-text: 215 50% 18%;
-    --portal-muted: 215 16% 47%;
-    --portal-border: 214 25% 89%;
-    --portal-accent: 217 91% 50%;
+    --portal-panel-header: 204 30% 93%;
+    --portal-sidebar: 204 38% 97%;
+    --portal-sidebar-active: 204 39% 81%;
+    --portal-text: 216 71% 15%;
+    --portal-muted: 216 30% 35%;
+    --portal-border: 204 39% 81%;
+    --portal-accent: 203 49% 44%;
 
     --status-active-bg: 145 60% 90%;
     --status-active-fg: 145 70% 24%;
@@ -73,8 +74,8 @@ All colors MUST be HSL.
     --status-inactive-fg: 215 20% 35%;
     --status-scheduled-bg: 38 95% 90%;
     --status-scheduled-fg: 28 80% 30%;
-    --status-draft-bg: 217 90% 92%;
-    --status-draft-fg: 217 80% 32%;
+    --status-draft-bg: 204 39% 81%;
+    --status-draft-fg: 216 70% 25%;
   }
 
   .dark {
@@ -87,8 +88,8 @@ All colors MUST be HSL.
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 216.4 70.1% 24.9%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 216 70% 25%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
