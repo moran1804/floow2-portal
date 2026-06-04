@@ -158,6 +158,12 @@ const ProductEditorPage = () => {
       const { data: userData } = await supabase.auth.getUser();
       const userId = userData.user?.id;
 
+      const campaignsConfig: Record<string, boolean> = {};
+      CAMPAIGNS.forEach((c) => {
+        campaignsConfig[c.key] = ALWAYS_ENABLED_CAMPAIGNS.includes(c.key)
+          ? true
+          : !!f.campaigns_config[c.key];
+      });
       const payload = {
         name: f.name.trim(),
         code: f.code.trim().toLowerCase(),
@@ -167,7 +173,7 @@ const ProductEditorPage = () => {
         score_config: f.score_config,
         impact_detection_enabled: f.impact_detection_enabled,
         campaigns_enabled: f.campaigns_enabled,
-        campaigns_config: f.campaigns_config,
+        campaigns_config: campaignsConfig,
         updated_by: userId,
       } as any;
 
