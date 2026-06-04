@@ -109,6 +109,22 @@ const App = () => (
                 </RequireAdmin>
               }
             />
+            <Route
+              path="/admin/monitoring"
+              element={
+                <RequireAdmin>
+                  <MonitoringPage />
+                </RequireAdmin>
+              }
+            />
+            <Route
+              path="/admin/api-docs"
+              element={
+                <RequireAdmin>
+                  <ApiDocsPage />
+                </RequireAdmin>
+              }
+            />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
