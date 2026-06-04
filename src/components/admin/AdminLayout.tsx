@@ -27,7 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const navItems = [
+const fullNavItems = [
   { to: "/admin/overview", icon: LayoutGrid, label: "Overview" },
   { to: "/admin/audit", icon: Fingerprint, label: "Audit" },
   { to: "/admin/features", icon: KeyRound, label: "Features" },
@@ -36,6 +36,12 @@ const navItems = [
   { to: "/admin/products", icon: Tag, label: "Products" },
   { to: "/admin/staff", icon: Users, label: "Staff" },
   { to: "/admin/configuration", icon: SlidersHorizontal, label: "Configuration" },
+];
+
+const clientsNavItems = [
+  { to: "/admin/clients", icon: Building2, label: "Clients" },
+  { to: "/admin/monitoring", icon: Activity, label: "Monitoring" },
+  { to: "/admin/api-docs", icon: BookOpen, label: "API Docs" },
 ];
 
 type Crumb = { label: string; to?: string };
