@@ -2,12 +2,21 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCustomer } from "@/contexts/CustomerContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Archive, ArchiveRestore } from "lucide-react";
+import { Archive, ArchiveRestore, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Users } from "lucide-react";
 import PortalPanel from "@/components/admin/PortalPanel";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 type Client = {
@@ -19,6 +28,9 @@ type Client = {
 
 const ClientsPage = () => {
   const [tab, setTab] = useState<"active" | "archived">("active");
+  const [addOpen, setAddOpen] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newSlug, setNewSlug] = useState("");
   const qc = useQueryClient();
   const navigate = useNavigate();
   const { setSelectedCustomerId } = useCustomer();
@@ -51,6 +63,24 @@ const ClientsPage = () => {
     onError: (e: any) => toast.error(e.message ?? "Failed to update client"),
   });
 
+  const addClient = useMutation({
+    mutationFn: async ({ name, code }: { name: string; code: string }) => {
+      const { error } = await supabase
+        .from("customers")
+        .insert({ name, code });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["clients-all"] });
+      qc.invalidateQueries({ queryKey: ["customers"] });
+      toast.success("Client added");
+      setAddOpen(false);
+      setNewName("");
+      setNewSlug("");
+    },
+    onError: (e: any) => toast.error(e.message ?? "Failed to add client"),
+  });
+
   const active = clients.filter((c) => !c.archived_at);
   const archived = clients.filter((c) => c.archived_at);
   const rows = tab === "active" ? active : archived;
@@ -62,7 +92,12 @@ const ClientsPage = () => {
           <div className="font-semibold">
             {isLoading ? "Loading…" : `${rows.length} results found`}
           </div>
-          <div className="inline-flex rounded-md border border-portal-border overflow-hidden">
+          <div className="flex items-center gap-3">
+            <Button size="sm" onClick={() => setAddOpen(true)}>
+              <Plus className="w-4 h-4 mr-1" />
+              Add client
+            </Button>
+            <div className="inline-flex rounded-md border border-portal-border overflow-hidden">
             <button
               onClick={() => setTab("active")}
               className={`px-4 py-2 text-sm ${
@@ -83,6 +118,7 @@ const ClientsPage = () => {
             >
               Archived ({archived.length})
             </button>
+            </div>
           </div>
         </div>
 
@@ -146,6 +182,65 @@ const ClientsPage = () => {
           )}
         </div>
       </PortalPanel>
+
+      <Dialog open={addOpen} onOpenChange={setAddOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add a client</DialogTitle>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const name = newName.trim();
+              const code = newSlug.trim();
+              if (!name || !code) {
+                toast.error("Client name and URL slug are required");
+                return;
+              }
+              addClient.mutate({ name, code });
+            }}
+            className="space-y-4"
+          >
+            <div className="space-y-2">
+              <Label htmlFor="client-name">Client Name</Label>
+              <Input
+                id="client-name"
+                placeholder="Add Client Name"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="client-slug">URL slug</Label>
+              <Input
+                id="client-slug"
+                value={newSlug}
+                onChange={(e) =>
+                  setNewSlug(
+                    e.target.value
+                      .toLowerCase()
+                      .replace(/[^a-z0-9-]+/g, "-")
+                      .replace(/-+/g, "-")
+                  )
+                }
+              />
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setAddOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={addClient.isPending}>
+                {addClient.isPending ? "Submitting…" : "Submit"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 };
