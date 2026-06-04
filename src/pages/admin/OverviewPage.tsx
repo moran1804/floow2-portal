@@ -14,7 +14,7 @@ type Tile = {
 
 const tiles: Tile[] = [
   {
-    to: "/admin/audit",
+    to: "/admin/home",
     icon: UserCog,
     title: "Admin",
     description: "Manage your company information, users and permissions.",

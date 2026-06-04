@@ -84,7 +84,10 @@ const AdminLayout = ({ title, crumbs = [], actions, children }: AdminLayoutProps
   const isClientsPage = pathname === "/admin/clients";
 
   const isAdminChildActive = adminChildren.some((c) => pathname.startsWith(c.to));
-  const [adminOpen, setAdminOpen] = useState<boolean>(isAdminChildActive);
+  const isAdminHome = pathname === "/admin/home";
+  const [adminOpen, setAdminOpen] = useState<boolean>(
+    isAdminChildActive || isAdminHome
+  );
 
   const initials = (user?.email ?? "??")
     .split("@")[0]
@@ -174,20 +177,32 @@ const AdminLayout = ({ title, crumbs = [], actions, children }: AdminLayoutProps
 
                 <button
                   type="button"
-                  onClick={() => setAdminOpen((o) => !o)}
+                  onClick={() => {
+                    setAdminOpen(true);
+                    navigate("/admin/home");
+                  }}
                   className={`w-full flex items-center gap-3 px-6 py-3 text-sm font-medium border-l-2 border-transparent ${
-                    isAdminChildActive
+                    isAdminChildActive || isAdminHome
                       ? "text-portal-accent"
                       : "text-portal-text hover:bg-portal-sidebar-active/50"
                   }`}
                 >
                   <UserCog className="w-5 h-5" />
                   <span className="flex-1 text-left">Admin</span>
-                  {adminOpen ? (
-                    <ChevronDown className="w-4 h-4" />
-                  ) : (
-                    <ChevronRight className="w-4 h-4" />
-                  )}
+                  <span
+                    role="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setAdminOpen((o) => !o);
+                    }}
+                    className="p-1 -m-1 rounded hover:bg-portal-sidebar-active/50"
+                  >
+                    {adminOpen ? (
+                      <ChevronDown className="w-4 h-4" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4" />
+                    )}
+                  </span>
                 </button>
                 {adminOpen && (
                   <div className="bg-portal-sidebar-active/30">
