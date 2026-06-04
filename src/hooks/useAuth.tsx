@@ -6,6 +6,7 @@ type AuthContextValue = {
   session: Session | null;
   user: User | null;
   isAdmin: boolean;
+  isFloowStaff: boolean;
   loading: boolean;
   signOut: () => Promise<void>;
 };
@@ -15,6 +16,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isFloowStaff, setIsFloowStaff] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,12 +28,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             .from("user_roles")
             .select("role")
             .eq("user_id", s.user.id)
-            .eq("role", "admin")
-            .maybeSingle()
-            .then(({ data }) => setIsAdmin(!!data));
+            .then(({ data }) => {
+              const roles = (data ?? []).map((r) => r.role);
+              setIsAdmin(roles.includes("admin"));
+              setIsFloowStaff(roles.includes("floow_staff"));
+            });
         }, 0);
       } else {
         setIsAdmin(false);
+        setIsFloowStaff(false);
       }
     });
 
@@ -42,10 +47,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           .from("user_roles")
           .select("role")
           .eq("user_id", s.user.id)
-          .eq("role", "admin")
-          .maybeSingle()
           .then(({ data }) => {
-            setIsAdmin(!!data);
+            const roles = (data ?? []).map((r) => r.role);
+            setIsAdmin(roles.includes("admin"));
+            setIsFloowStaff(roles.includes("floow_staff"));
             setLoading(false);
           });
       } else {
@@ -62,7 +67,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ session, user: session?.user ?? null, isAdmin, loading, signOut }}
+      value={{ session, user: session?.user ?? null, isAdmin, isFloowStaff, loading, signOut }}
     >
       {children}
     </AuthContext.Provider>
