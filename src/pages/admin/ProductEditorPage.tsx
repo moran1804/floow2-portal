@@ -29,6 +29,8 @@ type FormState = {
   impact_detection_enabled: boolean;
   campaigns_enabled: boolean;
   campaigns_config: Record<string, boolean>;
+  campaigns_endpoint: string;
+  campaigns_api_key: string;
 };
 
 const emptyForm: FormState = {
@@ -40,6 +42,8 @@ const emptyForm: FormState = {
   impact_detection_enabled: false,
   campaigns_enabled: false,
   campaigns_config: {},
+  campaigns_endpoint: "",
+  campaigns_api_key: "",
 };
 
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
