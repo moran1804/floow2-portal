@@ -14,10 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      customers: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_default: boolean
+          name: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_default?: boolean
+          name: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_default?: boolean
+          name?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       faq_categories: {
         Row: {
           created_at: string
           created_by: string | null
+          customer_id: string
           id: string
           name: string
           product_id: string
@@ -28,6 +62,7 @@ export type Database = {
         Insert: {
           created_at?: string
           created_by?: string | null
+          customer_id: string
           id?: string
           name: string
           product_id: string
@@ -38,6 +73,7 @@ export type Database = {
         Update: {
           created_at?: string
           created_by?: string | null
+          customer_id?: string
           id?: string
           name?: string
           product_id?: string
@@ -46,6 +82,13 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "faq_categories_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "faq_categories_product_id_fkey"
             columns: ["product_id"]
@@ -61,6 +104,7 @@ export type Database = {
           category_id: string
           created_at: string
           created_by: string | null
+          customer_id: string
           id: string
           product_id: string
           question: string
@@ -73,6 +117,7 @@ export type Database = {
           category_id: string
           created_at?: string
           created_by?: string | null
+          customer_id: string
           id?: string
           product_id: string
           question: string
@@ -85,6 +130,7 @@ export type Database = {
           category_id?: string
           created_at?: string
           created_by?: string | null
+          customer_id?: string
           id?: string
           product_id?: string
           question?: string
@@ -101,6 +147,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "faqs_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "faqs_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
@@ -113,6 +166,7 @@ export type Database = {
         Row: {
           category: string
           created_at: string
+          customer_id: string
           description: string | null
           end_at: string | null
           id: string
@@ -127,6 +181,7 @@ export type Database = {
         Insert: {
           category: string
           created_at?: string
+          customer_id: string
           description?: string | null
           end_at?: string | null
           id?: string
@@ -141,6 +196,7 @@ export type Database = {
         Update: {
           category?: string
           created_at?: string
+          customer_id?: string
           description?: string | null
           end_at?: string | null
           id?: string
@@ -152,7 +208,15 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "features_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       products: {
         Row: {
@@ -163,6 +227,7 @@ export type Database = {
           code: string
           created_at: string
           created_by: string | null
+          customer_id: string
           id: string
           impact_detection_enabled: boolean
           is_active: boolean
@@ -182,6 +247,7 @@ export type Database = {
           code: string
           created_at?: string
           created_by?: string | null
+          customer_id: string
           id?: string
           impact_detection_enabled?: boolean
           is_active?: boolean
@@ -201,6 +267,7 @@ export type Database = {
           code?: string
           created_at?: string
           created_by?: string | null
+          customer_id?: string
           id?: string
           impact_detection_enabled?: boolean
           is_active?: boolean
@@ -212,7 +279,15 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       terms_acceptances: {
         Row: {
@@ -248,6 +323,7 @@ export type Database = {
           content_html: string
           created_at: string
           created_by: string | null
+          customer_id: string
           effective_date: string | null
           id: string
           product_id: string
@@ -263,6 +339,7 @@ export type Database = {
           content_html?: string
           created_at?: string
           created_by?: string | null
+          customer_id: string
           effective_date?: string | null
           id?: string
           product_id: string
@@ -278,6 +355,7 @@ export type Database = {
           content_html?: string
           created_at?: string
           created_by?: string | null
+          customer_id?: string
           effective_date?: string | null
           id?: string
           product_id?: string
@@ -290,6 +368,13 @@ export type Database = {
           version?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "terms_versions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "terms_versions_product_id_fkey"
             columns: ["product_id"]
@@ -342,6 +427,7 @@ export type Database = {
         Args: { _id: string; _scheduled_at: string }
         Returns: undefined
       }
+      set_default_customer: { Args: { _id: string }; Returns: undefined }
       set_default_product: { Args: { _id: string }; Returns: undefined }
       terms_acceptance_stats: {
         Args: { _id: string }

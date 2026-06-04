@@ -3,6 +3,7 @@ import { MoreHorizontal, CalendarCheck2, Info } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useCustomer } from "@/contexts/CustomerContext";
 
 import {
   DropdownMenu,
@@ -51,14 +52,17 @@ const initialsFromEmail = (email?: string | null) =>
 
 const FeaturesPage = () => {
   const { user, isFloowStaff } = useAuth();
+  const { selectedCustomerId } = useCustomer();
   const [features, setFeatures] = useState<Feature[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
+    if (!selectedCustomerId) return;
     setLoading(true);
     const { data, error } = await supabase
       .from("features")
       .select("*")
+      .eq("customer_id", selectedCustomerId)
       .order("category", { ascending: true })
       .order("sort_order", { ascending: true });
     if (error) {
@@ -71,7 +75,7 @@ const FeaturesPage = () => {
 
   useEffect(() => {
     load();
-  }, []);
+  }, [selectedCustomerId]);
 
   const grouped = useMemo(() => {
     const map = new Map<string, Feature[]>();

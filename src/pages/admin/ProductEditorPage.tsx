@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { DEFAULT_SCORE_CONFIG } from "@/lib/defaultScoreConfig";
 import { CAMPAIGNS, ALWAYS_ENABLED_CAMPAIGNS } from "@/lib/campaigns";
+import { useCustomer } from "@/contexts/CustomerContext";
 
 const CODE_PREFIX = "aldostm-";
 
@@ -79,6 +80,7 @@ const ProductEditorPage = () => {
   const isNew = !id || id === "add";
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const { selectedCustomerId } = useCustomer();
   const [form, setForm] = useState<FormState>(emptyForm);
   const [error, setError] = useState<string | null>(null);
   const [hasSavedApiKey, setHasSavedApiKey] = useState(false);
@@ -98,11 +100,13 @@ const ProductEditorPage = () => {
   });
 
   const { data: otherProducts = [] } = useQuery({
-    queryKey: ["products", "configs"],
+    queryKey: ["products", "configs", selectedCustomerId],
+    enabled: !!selectedCustomerId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
         .select("id, code, name, score_config")
+        .eq("customer_id", selectedCustomerId!)
         .order("code");
       if (error) throw error;
       return data;
@@ -110,11 +114,13 @@ const ProductEditorPage = () => {
   });
 
   const { data: featureStates } = useQuery({
-    queryKey: ["features", "client-states"],
+    queryKey: ["features", "client-states", selectedCustomerId],
+    enabled: !!selectedCustomerId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("features")
         .select("key, state")
+        .eq("customer_id", selectedCustomerId!)
         .in("key", ["scoring", "impact_detection", "campaigns"]);
       if (error) throw error;
       const map: Record<string, string> = {};
@@ -199,9 +205,10 @@ const ProductEditorPage = () => {
       }
 
       if (isNew) {
+        if (!selectedCustomerId) throw new Error("No customer selected");
         const { error } = await supabase
           .from("products")
-          .insert({ ...payload, created_by: userId, is_active: true });
+          .insert({ ...payload, created_by: userId, is_active: true, customer_id: selectedCustomerId });
         if (error) throw error;
       } else {
         const { error } = await supabase

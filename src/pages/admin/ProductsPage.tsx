@@ -5,6 +5,7 @@ import { Tag, MoreHorizontal, Eye, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import PortalPanel from "@/components/admin/PortalPanel";
+import { useCustomer } from "@/contexts/CustomerContext";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -23,13 +24,16 @@ type Product = {
 const ProductsPage = () => {
   const [perPage, setPerPage] = useState(10);
   const [page, setPage] = useState(1);
+  const { selectedCustomerId } = useCustomer();
 
   const { data: products = [], isLoading, refetch } = useQuery({
-    queryKey: ["products"],
+    queryKey: ["products", selectedCustomerId],
+    enabled: !!selectedCustomerId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
         .select("id, code, name, is_default")
+        .eq("customer_id", selectedCustomerId!)
         .order("code", { ascending: true });
       if (error) throw error;
       return data as Product[];

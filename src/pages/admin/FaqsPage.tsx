@@ -14,6 +14,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import PortalPanel from "@/components/admin/PortalPanel";
+import { useCustomer } from "@/contexts/CustomerContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -95,6 +96,7 @@ const emptyFaq: FaqFormState = {
 
 const FaqsPage = () => {
   const qc = useQueryClient();
+  const { selectedCustomerId } = useCustomer();
   const [productFilter, setProductFilter] = useState<string>("");
   const [faqOpen, setFaqOpen] = useState(false);
   const [faqForm, setFaqForm] = useState<FaqFormState>(emptyFaq);
@@ -106,11 +108,13 @@ const FaqsPage = () => {
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
   const { data: products = [] } = useQuery({
-    queryKey: ["products", "all"],
+    queryKey: ["products", "all", selectedCustomerId],
+    enabled: !!selectedCustomerId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
         .select("id, code, name, is_active")
+        .eq("customer_id", selectedCustomerId!)
         .order("code", { ascending: true });
       if (error) throw error;
       return data;
@@ -118,18 +122,24 @@ const FaqsPage = () => {
   });
 
   useEffect(() => {
-    if (!productFilter && products.length > 0) {
+    if (products.length === 0) {
+      if (productFilter) setProductFilter("");
+      return;
+    }
+    const stillValid = products.some((p) => p.id === productFilter);
+    if (!stillValid) {
       setProductFilter(products[0].id);
     }
-  }, [products, productFilter]);
+  }, [products]);
 
   const { data: categories = [] } = useQuery({
-    queryKey: ["faq_categories", productFilter],
-    enabled: !!productFilter,
+    queryKey: ["faq_categories", selectedCustomerId, productFilter],
+    enabled: !!productFilter && !!selectedCustomerId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("faq_categories")
         .select("id, name, sort_order, product_id")
+        .eq("customer_id", selectedCustomerId!)
         .eq("product_id", productFilter)
         .order("sort_order", { ascending: true })
         .order("name", { ascending: true });
@@ -139,12 +149,13 @@ const FaqsPage = () => {
   });
 
   const { data: faqs = [], isLoading } = useQuery({
-    queryKey: ["faqs", productFilter],
-    enabled: !!productFilter,
+    queryKey: ["faqs", selectedCustomerId, productFilter],
+    enabled: !!productFilter && !!selectedCustomerId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("faqs")
         .select("*")
+        .eq("customer_id", selectedCustomerId!)
         .eq("product_id", productFilter)
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: true });
@@ -159,11 +170,13 @@ const FaqsPage = () => {
       const { data: userData } = await supabase.auth.getUser();
       const userId = userData.user?.id;
       if (!f.category_id) throw new Error("Category is required");
+      if (!selectedCustomerId) throw new Error("No customer selected");
       const payload = {
         question: f.question.trim(),
         answer: f.answer.trim(),
         category_id: f.category_id,
         product_id: productFilter,
+        customer_id: selectedCustomerId,
         sort_order: Number(f.sort_order) || 0,
         updated_by: userId,
       };
@@ -178,7 +191,7 @@ const FaqsPage = () => {
       }
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["faqs", productFilter] });
+      qc.invalidateQueries({ queryKey: ["faqs", selectedCustomerId, productFilter] });
       setFaqOpen(false);
       setFaqForm(emptyFaq);
     },
@@ -191,7 +204,7 @@ const FaqsPage = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["faqs", productFilter] });
+      qc.invalidateQueries({ queryKey: ["faqs", selectedCustomerId, productFilter] });
     },
     onError: () => {},
   });
@@ -201,10 +214,12 @@ const FaqsPage = () => {
     mutationFn: async (c: { id?: string; name: string; sort_order: number }) => {
       const { data: userData } = await supabase.auth.getUser();
       const userId = userData.user?.id;
+      if (!selectedCustomerId) throw new Error("No customer selected");
       const payload = {
         name: c.name.trim(),
         sort_order: Number(c.sort_order) || 0,
         product_id: productFilter,
+        customer_id: selectedCustomerId,
         updated_by: userId,
       };
       if (!payload.name) throw new Error("Name is required");
@@ -222,7 +237,7 @@ const FaqsPage = () => {
       }
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["faq_categories", productFilter] });
+      qc.invalidateQueries({ queryKey: ["faq_categories", selectedCustomerId, productFilter] });
       setCatOpen(false);
       setCatForm({ name: "", sort_order: 0 });
     },
@@ -235,7 +250,7 @@ const FaqsPage = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["faq_categories", productFilter] });
+      qc.invalidateQueries({ queryKey: ["faq_categories", selectedCustomerId, productFilter] });
     },
     onError: () => {},
   });
@@ -254,24 +269,25 @@ const FaqsPage = () => {
       }
     },
     onMutate: async (ordered) => {
-      await qc.cancelQueries({ queryKey: ["faq_categories", productFilter] });
+      await qc.cancelQueries({ queryKey: ["faq_categories", selectedCustomerId, productFilter] });
       const previous = qc.getQueryData<Category[]>([
         "faq_categories",
+        selectedCustomerId,
         productFilter,
       ]);
       qc.setQueryData(
-        ["faq_categories", productFilter],
+        ["faq_categories", selectedCustomerId, productFilter],
         ordered.map((c, i) => ({ ...c, sort_order: (i + 1) * 10 }))
       );
       return { previous };
     },
     onError: (_e: any, _vars, ctx) => {
       if (ctx?.previous) {
-        qc.setQueryData(["faq_categories", productFilter], ctx.previous);
+        qc.setQueryData(["faq_categories", selectedCustomerId, productFilter], ctx.previous);
       }
     },
     onSettled: () =>
-      qc.invalidateQueries({ queryKey: ["faq_categories", productFilter] }),
+      qc.invalidateQueries({ queryKey: ["faq_categories", selectedCustomerId, productFilter] }),
   });
 
   const sensors = useSensors(
