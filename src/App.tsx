@@ -17,6 +17,7 @@ import ApiDocsPage from "./pages/admin/ApiDocsPage.tsx";
 import AuditPage from "./pages/admin/AuditPage.tsx";
 import StaffPage from "./pages/admin/StaffPage.tsx";
 import ConfigurationPage from "./pages/admin/ConfigurationPage.tsx";
+import AdminHomePage from "./pages/admin/AdminHomePage.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import RequireAdmin from "@/components/admin/RequireAdmin";
 import { CustomerProvider } from "@/contexts/CustomerContext";
@@ -125,6 +126,14 @@ const App = () => (
               element={
                 <RequireAdmin>
                   <ConfigurationPage />
+                </RequireAdmin>
+              }
+            />
+            <Route
+              path="/admin/home"
+              element={
+                <RequireAdmin>
+                  <AdminHomePage />
                 </RequireAdmin>
               }
             />
