@@ -20,9 +20,6 @@ import { Button } from "@/components/ui/button";
 import { useCustomer } from "@/contexts/CustomerContext";
 import floowLogo from "@/assets/the-floow-logo.svg.asset.json";
 import {
-  Activity,
-  Building2,
-  BookOpen,
   Select,
   SelectContent,
   SelectItem,
