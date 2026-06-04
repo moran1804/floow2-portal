@@ -413,6 +413,131 @@ const ProductEditorPage = () => {
           </Card>
         </section>
 
+        {/* Campaigns */}
+        <section>
+          <SectionTitle>Campaigns</SectionTitle>
+          <Card>
+            <div
+              className={
+                !campaignsFeatureEnabled ? "opacity-50 pointer-events-none select-none" : ""
+              }
+              aria-disabled={!campaignsFeatureEnabled}
+            >
+              <Row label="Enable campaigns on this product">
+                <div className="flex items-center gap-6">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      checked={form.campaigns_enabled}
+                      onChange={() => setForm({ ...form, campaigns_enabled: true })}
+                      disabled={!campaignsFeatureEnabled}
+                    />
+                    Campaigns enabled
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      checked={!form.campaigns_enabled}
+                      onChange={() => setForm({ ...form, campaigns_enabled: false })}
+                      disabled={!campaignsFeatureEnabled}
+                    />
+                    Campaigns disabled
+                  </label>
+                </div>
+              </Row>
+
+              {form.campaigns_enabled && (
+                <div className="pt-2 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-portal-muted">
+                      Choose which campaigns are active for this product.
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const all: Record<string, boolean> = {};
+                          CAMPAIGNS.forEach((c) => (all[c.key] = true));
+                          setForm({ ...form, campaigns_config: all });
+                        }}
+                      >
+                        Enable all
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const all: Record<string, boolean> = {};
+                          CAMPAIGNS.forEach((c) => (all[c.key] = false));
+                          setForm({ ...form, campaigns_config: all });
+                        }}
+                      >
+                        Disable all
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="border border-portal-border rounded-md divide-y divide-portal-border">
+                    {CAMPAIGNS.map((c) => {
+                      const enabled = !!form.campaigns_config[c.key];
+                      return (
+                        <div
+                          key={c.key}
+                          className="grid grid-cols-1 md:grid-cols-[260px_1fr_220px] gap-4 p-4 items-start"
+                        >
+                          <div className="font-semibold text-portal-navy">{c.name}</div>
+                          <div className="text-sm text-portal-text">{c.useCase}</div>
+                          <div className="flex items-center gap-4 justify-self-end">
+                            <label className="flex items-center gap-2 cursor-pointer text-sm">
+                              <input
+                                type="radio"
+                                checked={enabled}
+                                onChange={() =>
+                                  setForm({
+                                    ...form,
+                                    campaigns_config: {
+                                      ...form.campaigns_config,
+                                      [c.key]: true,
+                                    },
+                                  })
+                                }
+                              />
+                              Enabled
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer text-sm">
+                              <input
+                                type="radio"
+                                checked={!enabled}
+                                onChange={() =>
+                                  setForm({
+                                    ...form,
+                                    campaigns_config: {
+                                      ...form.campaigns_config,
+                                      [c.key]: false,
+                                    },
+                                  })
+                                }
+                              />
+                              Disabled
+                            </label>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+            {!campaignsFeatureEnabled && (
+              <div className="mt-4 flex items-start gap-2 text-sm text-portal-text bg-portal-surface border border-portal-border rounded-md p-3">
+                <AlertTriangle className="w-4 h-4 mt-0.5 text-portal-muted" />
+                <span>Campaigns {disabledMessage}</span>
+              </div>
+            )}
+          </Card>
+        </section>
+
         {error && (
           <div className="text-sm text-destructive">{error}</div>
         )}
