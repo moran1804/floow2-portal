@@ -6,6 +6,7 @@ import {
   Tag,
   Users,
   SlidersHorizontal,
+  KeyRound,
 } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,13 @@ const tiles = [
     icon: Fingerprint,
     title: "Audit",
     description: "Review acceptance history and user activity logs.",
+    cta: "View",
+  },
+  {
+    to: "/admin/features",
+    icon: KeyRound,
+    title: "Features",
+    description: "Activate or deactivate product features (Floow staff only).",
     cta: "View",
   },
   {
