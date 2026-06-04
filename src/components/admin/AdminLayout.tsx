@@ -45,7 +45,7 @@ const fullNavItems: NavItem[] = [
   { to: "/admin/configuration", icon: SlidersHorizontal, label: "Configuration" },
 ];
 
-const clientsNavItems = [
+const clientsNavItems: NavItem[] = [
   { to: "/admin/clients", icon: Building2, label: "Clients" },
   { to: "#", icon: Activity, label: "Monitoring", disabled: true },
   { to: "#", icon: BookOpen, label: "API Docs", disabled: true },
