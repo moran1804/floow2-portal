@@ -199,10 +199,16 @@ const ProductEditorPage = () => {
               </Row>
               <Row
                 label="Product code"
-                hint="A unique code for this product, prefixed with your client identifier."
+                hint={
+                  isNew
+                    ? "A unique code for this product, prefixed with your client identifier. This cannot be changed once the product is created."
+                    : "Product code cannot be changed once the product is created."
+                }
               >
                 <Input
                   value={form.code}
+                  readOnly={!isNew}
+                  disabled={!isNew}
                   onChange={(e) =>
                     setForm({ ...form, code: e.target.value.toLowerCase() })
                   }
