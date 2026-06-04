@@ -106,11 +106,28 @@ const FeaturesPage = () => {
       <h2 className="text-2xl font-bold text-portal-navy mb-6">Features overview</h2>
 
       <div className="bg-portal-panel border border-portal-border rounded-lg overflow-hidden">
-        <div className="flex items-center gap-3 px-6 py-4 border-b border-portal-border bg-portal-surface">
-          <div className="w-9 h-9 rounded-md bg-portal-panel border border-portal-border flex items-center justify-center text-portal-navy">
-            <CalendarCheck2 className="w-5 h-5" />
+        <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-portal-border bg-portal-surface">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-md bg-portal-panel border border-portal-border flex items-center justify-center text-portal-navy">
+              <CalendarCheck2 className="w-5 h-5" />
+            </div>
+            <h3 className="text-lg font-bold text-portal-navy">Feature subscriptions</h3>
           </div>
-          <h3 className="text-lg font-bold text-portal-navy">Feature subscriptions</h3>
+          {isFloowStaff && (
+            <button
+              onClick={async () => {
+                const { error } = await supabase.rpc("activate_all_features");
+                if (error) console.error(error.message);
+                else load();
+              }}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+              disabled={!features.some((f) => f.state === "inactive")}
+              title="Activate all inactive features"
+            >
+              <Power className="w-3.5 h-3.5" />
+              Activate all
+            </button>
+          )}
         </div>
 
         {loading ? (
