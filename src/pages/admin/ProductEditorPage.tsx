@@ -81,6 +81,7 @@ const ProductEditorPage = () => {
   const qc = useQueryClient();
   const [form, setForm] = useState<FormState>(emptyForm);
   const [error, setError] = useState<string | null>(null);
+  const [hasSavedApiKey, setHasSavedApiKey] = useState(false);
 
   const { data: product } = useQuery({
     queryKey: ["product", id],
