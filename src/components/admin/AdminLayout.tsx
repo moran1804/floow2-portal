@@ -15,6 +15,14 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { useCustomer } from "@/contexts/CustomerContext";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const navItems = [
   { to: "/admin/overview", icon: LayoutGrid, label: "Overview" },
@@ -39,6 +47,7 @@ interface AdminLayoutProps {
 const AdminLayout = ({ title, crumbs = [], actions, children }: AdminLayoutProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { customers, selectedCustomerId, setSelectedCustomerId } = useCustomer();
 
   const initials = (user?.email ?? "??")
     .split("@")[0]
@@ -56,13 +65,21 @@ const AdminLayout = ({ title, crumbs = [], actions, children }: AdminLayoutProps
             </div>
             <span>The Portal</span>
           </div>
-          <select
-            className="text-sm border border-portal-border rounded px-3 py-1.5 bg-portal-panel"
-            defaultValue="mobileAndroid"
+          <Select
+            value={selectedCustomerId ?? undefined}
+            onValueChange={setSelectedCustomerId}
           >
-            <option>mobileAndroid</option>
-            <option>mobileiOS</option>
-          </select>
+            <SelectTrigger className="h-9 w-[200px] text-sm bg-portal-panel border-portal-border">
+              <SelectValue placeholder="Select customer" />
+            </SelectTrigger>
+            <SelectContent>
+              {customers.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="flex items-center gap-3">
           <span className="text-sm text-portal-muted hidden sm:inline">
