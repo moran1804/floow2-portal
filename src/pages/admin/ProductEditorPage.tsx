@@ -503,6 +503,7 @@ const ProductEditorPage = () => {
                       <Input
                         type="password"
                         autoComplete="off"
+                        placeholder={hasSavedApiKey ? "••••••••" : ""}
                         value={form.campaigns_api_key}
                         onChange={(e) =>
                           setForm({ ...form, campaigns_api_key: e.target.value })
