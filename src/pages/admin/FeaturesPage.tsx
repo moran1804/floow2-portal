@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { MoreHorizontal, CalendarCheck2, Info, Power } from "lucide-react";
+import { MoreHorizontal, CalendarCheck2, Info } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -124,7 +124,6 @@ const FeaturesPage = () => {
               disabled={!features.some((f) => f.state === "inactive")}
               title="Activate all inactive features"
             >
-              <Power className="w-3.5 h-3.5" />
               Activate all
             </button>
           )}
