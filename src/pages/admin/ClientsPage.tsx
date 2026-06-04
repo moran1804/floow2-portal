@@ -26,13 +26,47 @@ type Client = {
   archived_at: string | null;
 };
 
+type ClientMutationError = {
+  code?: string;
+  message?: string;
+};
+
 const slugify = (text: string) =>
   text
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9\s-]+/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+const duplicateClientMessage = (clients: Client[], name: string, code: string) => {
+  const normalisedName = name.toLowerCase();
+  const normalisedCode = code.toLowerCase();
+  const duplicateName = clients.find((client) => client.name.toLowerCase() === normalisedName);
+  if (duplicateName) {
+    return duplicateName.archived_at
+      ? "That client name belongs to an archived client. Restore it or use a different name."
+      : "That client name is already in use. Please use a different name.";
+  }
+
+  const duplicateSlug = clients.find((client) => client.code.toLowerCase() === normalisedCode);
+  if (duplicateSlug) {
+    return duplicateSlug.archived_at
+      ? "That URL slug belongs to an archived client. Restore it or use a different slug."
+      : "That URL slug is already in use. Please use a different slug.";
+  }
+
+  return null;
+};
+
+const addClientErrorMessage = (error: ClientMutationError) => {
+  if (error?.code === "23505") {
+    const message = String(error.message ?? "");
+    if (message.includes("customers_name_key")) return "That client name is already in use. Please use a different name.";
+    if (message.includes("customers_code_key")) return "That URL slug is already in use. Please use a different slug.";
+  }
+  return error?.message ?? "Failed to add client";
+};
 
 const ClientsPage = () => {
   const [tab, setTab] = useState<"active" | "archived">("active");
@@ -75,7 +109,7 @@ const ClientsPage = () => {
       qc.invalidateQueries({ queryKey: ["customers"] });
       toast.success(vars.archived ? "Client archived" : "Client restored");
     },
-    onError: (e: any) => toast.error(e.message ?? "Failed to update client"),
+    onError: (e: ClientMutationError) => toast.error(e.message ?? "Failed to update client"),
   });
 
   const addClient = useMutation({
@@ -128,7 +162,7 @@ const ClientsPage = () => {
       setNewName("");
       setNewSlug("");
     },
-    onError: (e: any) => toast.error(e.message ?? "Failed to add client"),
+    onError: (e: ClientMutationError) => toast.error(addClientErrorMessage(e)),
   });
 
   const active = clients.filter((c) => !c.archived_at);
@@ -250,6 +284,11 @@ const ClientsPage = () => {
                 toast.error("Client name and URL slug are required");
                 return;
               }
+              const duplicateMessage = duplicateClientMessage(clients, name, code);
+              if (duplicateMessage) {
+                toast.error(duplicateMessage);
+                return;
+              }
               addClient.mutate({ name, code });
             }}
             className="space-y-4"
@@ -277,12 +316,7 @@ const ClientsPage = () => {
                 value={newSlug}
                 onChange={(e) => {
                   setSlugManuallyEdited(true);
-                  setNewSlug(
-                    e.target.value
-                      .toLowerCase()
-                      .replace(/[^a-z0-9-]+/g, "-")
-                      .replace(/-+/g, "-")
-                  );
+                  setNewSlug(slugify(e.target.value));
                 }}
               />
             </div>
