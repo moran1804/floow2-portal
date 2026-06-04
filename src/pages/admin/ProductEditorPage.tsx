@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DEFAULT_SCORE_CONFIG } from "@/lib/defaultScoreConfig";
+import { CAMPAIGNS } from "@/lib/campaigns";
 
 const CODE_PREFIX = "aldostm-";
 
@@ -26,6 +27,8 @@ type FormState = {
   scoring_enabled: boolean;
   score_config: string;
   impact_detection_enabled: boolean;
+  campaigns_enabled: boolean;
+  campaigns_config: Record<string, boolean>;
 };
 
 const emptyForm: FormState = {
@@ -35,6 +38,8 @@ const emptyForm: FormState = {
   scoring_enabled: false,
   score_config: "",
   impact_detection_enabled: false,
+  campaigns_enabled: false,
+  campaigns_config: {},
 };
 
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
@@ -105,7 +110,7 @@ const ProductEditorPage = () => {
       const { data, error } = await supabase
         .from("features")
         .select("key, state")
-        .in("key", ["scoring", "impact_detection"]);
+        .in("key", ["scoring", "impact_detection", "campaigns"]);
       if (error) throw error;
       const map: Record<string, string> = {};
       (data ?? []).forEach((f: any) => (map[f.key] = f.state));
@@ -115,6 +120,7 @@ const ProductEditorPage = () => {
 
   const scoringFeatureEnabled = featureStates?.scoring === "active";
   const impactFeatureEnabled = featureStates?.impact_detection === "active";
+  const campaignsFeatureEnabled = featureStates?.campaigns === "active";
   const disabledMessage =
     "is not enabled at client level, contact your account manager to enable.";
 
@@ -129,6 +135,9 @@ const ProductEditorPage = () => {
         score_config: (product as any).score_config ?? "",
         impact_detection_enabled:
           (product as any).impact_detection_enabled ?? false,
+        campaigns_enabled: (product as any).campaigns_enabled ?? false,
+        campaigns_config:
+          ((product as any).campaigns_config as Record<string, boolean>) ?? {},
       });
     }
   }, [product]);
@@ -150,8 +159,10 @@ const ProductEditorPage = () => {
         scoring_enabled: f.scoring_enabled,
         score_config: f.score_config,
         impact_detection_enabled: f.impact_detection_enabled,
+        campaigns_enabled: f.campaigns_enabled,
+        campaigns_config: f.campaigns_config,
         updated_by: userId,
-      };
+      } as any;
 
       if (isNew) {
         const { error } = await supabase
