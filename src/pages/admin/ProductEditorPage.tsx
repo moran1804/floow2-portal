@@ -475,6 +475,35 @@ const ProductEditorPage = () => {
 
               {form.campaigns_enabled && (
                 <div className="pt-2 space-y-3">
+                  <div className="border border-portal-border rounded-md p-4 space-y-4">
+                    <Row
+                      label="Campaigns endpoint"
+                      hint="The base URL of the campaigns API for this product. Required."
+                    >
+                      <Input
+                        type="url"
+                        placeholder="https://api.example.com/campaigns"
+                        value={form.campaigns_endpoint}
+                        onChange={(e) =>
+                          setForm({ ...form, campaigns_endpoint: e.target.value })
+                        }
+                      />
+                    </Row>
+                    <Row
+                      label="Campaigns API key"
+                      hint="API key used to authenticate against the campaigns endpoint. Required."
+                    >
+                      <Input
+                        type="password"
+                        autoComplete="off"
+                        value={form.campaigns_api_key}
+                        onChange={(e) =>
+                          setForm({ ...form, campaigns_api_key: e.target.value })
+                        }
+                      />
+                    </Row>
+                  </div>
+
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-portal-muted">
                       Choose which campaigns are active for this product.
