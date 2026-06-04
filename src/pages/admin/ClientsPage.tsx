@@ -87,7 +87,16 @@ const ClientsPage = () => {
 
   return (
     <AdminLayout title="Clients" crumbs={[{ label: "Clients" }]}>
-      <PortalPanel icon={Users} title="All clients">
+      <PortalPanel
+        icon={Users}
+        title="All clients"
+        rightContent={
+          <Button size="sm" variant="outline" className="h-7 px-3 text-xs" onClick={() => setAddOpen(true)}>
+            <Plus className="w-3 h-3 mr-1" />
+            Add client
+          </Button>
+        }
+      >
         <div className="flex items-center justify-between pb-4">
           <div className="font-semibold">
             {isLoading ? "Loading…" : `${rows.length} results found`}
@@ -120,13 +129,7 @@ const ClientsPage = () => {
           <div className="grid grid-cols-[1fr_1fr_auto] gap-4 px-4 py-3 text-sm font-semibold border-b border-portal-border">
             <div>Client ID</div>
             <div>Name</div>
-            <div className="w-32 text-right flex items-center justify-end gap-2">
-              Actions
-              <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => setAddOpen(true)}>
-                <Plus className="w-3 h-3 mr-1" />
-                Add client
-              </Button>
-            </div>
+            <div className="w-32 text-right">Actions</div>
           </div>
           {rows.length === 0 ? (
             <div className="px-4 py-8 text-sm text-portal-muted text-center">
