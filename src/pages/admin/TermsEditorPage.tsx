@@ -31,6 +31,7 @@ import {
 
 import { useAuth } from "@/hooks/useAuth";
 import AcceptanceStats from "@/components/admin/AcceptanceStats";
+import { useCustomer } from "@/contexts/CustomerContext";
 
 const TermsEditorPage = () => {
   const { id } = useParams();
@@ -39,6 +40,7 @@ const TermsEditorPage = () => {
   const [searchParams] = useSearchParams();
   const qc = useQueryClient();
   const { user } = useAuth();
+  const { selectedCustomerId } = useCustomer();
 
   const [version, setVersion] = useState("");
   const [title, setTitle] = useState("");
@@ -72,11 +74,13 @@ const TermsEditorPage = () => {
   });
 
   const { data: products = [] } = useQuery({
-    queryKey: ["products", "all"],
+    queryKey: ["products", "all", selectedCustomerId],
+    enabled: !!selectedCustomerId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
         .select("id, code, name, is_active")
+        .eq("customer_id", selectedCustomerId!)
         .order("code", { ascending: true });
       if (error) throw error;
       return data;
@@ -151,9 +155,10 @@ const TermsEditorPage = () => {
         if (error) throw error;
         return data;
       } else {
+        if (!selectedCustomerId) throw new Error("No customer selected");
         const { data, error } = await supabase
           .from("terms_versions")
-          .insert({ ...payload, state: "draft" as const, created_by: user?.id })
+          .insert({ ...payload, state: "draft" as const, created_by: user?.id, customer_id: selectedCustomerId })
           .select()
           .single();
         if (error) throw error;
