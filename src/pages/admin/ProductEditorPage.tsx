@@ -495,6 +495,7 @@ const ProductEditorPage = () => {
 
                   <div className="border border-portal-border rounded-md divide-y divide-portal-border">
                     {CAMPAIGNS.map((c) => {
+                      const alwaysOn = ALWAYS_ENABLED_CAMPAIGNS.includes(c.key);
                       const enabled = !!form.campaigns_config[c.key];
                       return (
                         <div
@@ -504,38 +505,46 @@ const ProductEditorPage = () => {
                           <div className="font-semibold text-portal-navy">{c.name}</div>
                           <div className="text-sm text-portal-text">{c.useCase}</div>
                           <div className="flex items-center gap-4 justify-self-end">
-                            <label className="flex items-center gap-2 cursor-pointer text-sm">
-                              <input
-                                type="radio"
-                                checked={enabled}
-                                onChange={() =>
-                                  setForm({
-                                    ...form,
-                                    campaigns_config: {
-                                      ...form.campaigns_config,
-                                      [c.key]: true,
-                                    },
-                                  })
-                                }
-                              />
-                              Enabled
-                            </label>
-                            <label className="flex items-center gap-2 cursor-pointer text-sm">
-                              <input
-                                type="radio"
-                                checked={!enabled}
-                                onChange={() =>
-                                  setForm({
-                                    ...form,
-                                    campaigns_config: {
-                                      ...form.campaigns_config,
-                                      [c.key]: false,
-                                    },
-                                  })
-                                }
-                              />
-                              Disabled
-                            </label>
+                            {alwaysOn ? (
+                              <span className="text-sm text-portal-navy font-medium">
+                                Always enabled
+                              </span>
+                            ) : (
+                              <>
+                                <label className="flex items-center gap-2 cursor-pointer text-sm">
+                                  <input
+                                    type="radio"
+                                    checked={enabled}
+                                    onChange={() =>
+                                      setForm({
+                                        ...form,
+                                        campaigns_config: {
+                                          ...form.campaigns_config,
+                                          [c.key]: true,
+                                        },
+                                      })
+                                    }
+                                  />
+                                  Enabled
+                                </label>
+                                <label className="flex items-center gap-2 cursor-pointer text-sm">
+                                  <input
+                                    type="radio"
+                                    checked={!enabled}
+                                    onChange={() =>
+                                      setForm({
+                                        ...form,
+                                        campaigns_config: {
+                                          ...form.campaigns_config,
+                                          [c.key]: false,
+                                        },
+                                      })
+                                    }
+                                  />
+                                  Disabled
+                                </label>
+                              </>
+                            )}
                           </div>
                         </div>
                       );
