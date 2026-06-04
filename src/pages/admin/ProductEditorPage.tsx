@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DEFAULT_SCORE_CONFIG } from "@/lib/defaultScoreConfig";
 
 const CODE_PREFIX = "aldostm-";
 
@@ -273,6 +274,10 @@ const ProductEditorPage = () => {
                   <span className="text-sm text-portal-text">Copy config from:</span>
                   <Select
                     onValueChange={(value) => {
+                      if (value === "__default__") {
+                        setForm({ ...form, score_config: DEFAULT_SCORE_CONFIG });
+                        return;
+                      }
                       const src = otherProducts.find((p) => p.id === value);
                       if (src)
                         setForm({
@@ -285,6 +290,7 @@ const ProductEditorPage = () => {
                       <SelectValue placeholder="Select config to copy" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="__default__">Default config</SelectItem>
                       {otherProducts
                         .filter((p) => p.id !== id)
                         .map((p) => (
