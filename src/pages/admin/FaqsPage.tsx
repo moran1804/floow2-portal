@@ -317,11 +317,9 @@ const FaqsPage = () => {
 
   const handleFaqSubmit = () => {
     if (!faqForm.question.trim() || !faqForm.answer.trim()) {
-      toast.error("Question and answer are required");
       return;
     }
     if (!faqForm.category_id) {
-      toast.error("Please select a category");
       return;
     }
     upsertFaq.mutate(faqForm);
