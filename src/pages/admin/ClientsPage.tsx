@@ -91,7 +91,7 @@ const ClientsPage = () => {
         icon={Users}
         title="All clients"
         rightContent={
-          <Button size="sm" variant="outline" className="h-7 px-3 text-xs" onClick={() => setAddOpen(true)}>
+          <Button size="sm" variant="outline" onClick={() => setAddOpen(true)}>
             <Plus className="w-3 h-3 mr-1" />
             Add client
           </Button>
