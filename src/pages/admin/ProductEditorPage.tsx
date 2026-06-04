@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DEFAULT_SCORE_CONFIG } from "@/lib/defaultScoreConfig";
-import { CAMPAIGNS } from "@/lib/campaigns";
+import { CAMPAIGNS, ALWAYS_ENABLED_CAMPAIGNS } from "@/lib/campaigns";
 
 const CODE_PREFIX = "aldostm-";
 
@@ -126,6 +126,14 @@ const ProductEditorPage = () => {
 
   useEffect(() => {
     if (product) {
+      const loadedConfig =
+        ((product as any).campaigns_config as Record<string, boolean>) ?? {};
+      const config: Record<string, boolean> = {};
+      CAMPAIGNS.forEach((c) => {
+        config[c.key] = ALWAYS_ENABLED_CAMPAIGNS.includes(c.key)
+          ? true
+          : !!loadedConfig[c.key];
+      });
       setForm({
         name: product.name ?? "",
         code: product.code ?? CODE_PREFIX,
@@ -136,8 +144,7 @@ const ProductEditorPage = () => {
         impact_detection_enabled:
           (product as any).impact_detection_enabled ?? false,
         campaigns_enabled: (product as any).campaigns_enabled ?? false,
-        campaigns_config:
-          ((product as any).campaigns_config as Record<string, boolean>) ?? {},
+        campaigns_config: config,
       });
     }
   }, [product]);
@@ -151,6 +158,12 @@ const ProductEditorPage = () => {
       const { data: userData } = await supabase.auth.getUser();
       const userId = userData.user?.id;
 
+      const campaignsConfig: Record<string, boolean> = {};
+      CAMPAIGNS.forEach((c) => {
+        campaignsConfig[c.key] = ALWAYS_ENABLED_CAMPAIGNS.includes(c.key)
+          ? true
+          : !!f.campaigns_config[c.key];
+      });
       const payload = {
         name: f.name.trim(),
         code: f.code.trim().toLowerCase(),
@@ -160,7 +173,7 @@ const ProductEditorPage = () => {
         score_config: f.score_config,
         impact_detection_enabled: f.impact_detection_enabled,
         campaigns_enabled: f.campaigns_enabled,
-        campaigns_config: f.campaigns_config,
+        campaigns_config: campaignsConfig,
         updated_by: userId,
       } as any;
 
@@ -469,7 +482,9 @@ const ProductEditorPage = () => {
                         size="sm"
                         onClick={() => {
                           const all: Record<string, boolean> = {};
-                          CAMPAIGNS.forEach((c) => (all[c.key] = false));
+                          CAMPAIGNS.forEach((c) => {
+                            all[c.key] = ALWAYS_ENABLED_CAMPAIGNS.includes(c.key);
+                          });
                           setForm({ ...form, campaigns_config: all });
                         }}
                       >
@@ -480,6 +495,7 @@ const ProductEditorPage = () => {
 
                   <div className="border border-portal-border rounded-md divide-y divide-portal-border">
                     {CAMPAIGNS.map((c) => {
+                      const alwaysOn = ALWAYS_ENABLED_CAMPAIGNS.includes(c.key);
                       const enabled = !!form.campaigns_config[c.key];
                       return (
                         <div
@@ -489,38 +505,46 @@ const ProductEditorPage = () => {
                           <div className="font-semibold text-portal-navy">{c.name}</div>
                           <div className="text-sm text-portal-text">{c.useCase}</div>
                           <div className="flex items-center gap-4 justify-self-end">
-                            <label className="flex items-center gap-2 cursor-pointer text-sm">
-                              <input
-                                type="radio"
-                                checked={enabled}
-                                onChange={() =>
-                                  setForm({
-                                    ...form,
-                                    campaigns_config: {
-                                      ...form.campaigns_config,
-                                      [c.key]: true,
-                                    },
-                                  })
-                                }
-                              />
-                              Enabled
-                            </label>
-                            <label className="flex items-center gap-2 cursor-pointer text-sm">
-                              <input
-                                type="radio"
-                                checked={!enabled}
-                                onChange={() =>
-                                  setForm({
-                                    ...form,
-                                    campaigns_config: {
-                                      ...form.campaigns_config,
-                                      [c.key]: false,
-                                    },
-                                  })
-                                }
-                              />
-                              Disabled
-                            </label>
+                            {alwaysOn ? (
+                              <span className="text-sm text-portal-navy font-medium">
+                                Always enabled
+                              </span>
+                            ) : (
+                              <>
+                                <label className="flex items-center gap-2 cursor-pointer text-sm">
+                                  <input
+                                    type="radio"
+                                    checked={enabled}
+                                    onChange={() =>
+                                      setForm({
+                                        ...form,
+                                        campaigns_config: {
+                                          ...form.campaigns_config,
+                                          [c.key]: true,
+                                        },
+                                      })
+                                    }
+                                  />
+                                  Enabled
+                                </label>
+                                <label className="flex items-center gap-2 cursor-pointer text-sm">
+                                  <input
+                                    type="radio"
+                                    checked={!enabled}
+                                    onChange={() =>
+                                      setForm({
+                                        ...form,
+                                        campaigns_config: {
+                                          ...form.campaigns_config,
+                                          [c.key]: false,
+                                        },
+                                      })
+                                    }
+                                  />
+                                  Disabled
+                                </label>
+                              </>
+                            )}
                           </div>
                         </div>
                       );
