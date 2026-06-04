@@ -109,6 +109,51 @@ export type Database = {
           },
         ]
       }
+      features: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          end_at: string | null
+          id: string
+          key: string
+          name: string
+          sort_order: number
+          start_at: string | null
+          state: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          end_at?: string | null
+          id?: string
+          key: string
+          name: string
+          sort_order?: number
+          start_at?: string | null
+          state?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          end_at?: string | null
+          id?: string
+          key?: string
+          name?: string
+          sort_order?: number
+          start_at?: string | null
+          state?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           code: string
@@ -254,7 +299,9 @@ export type Database = {
     }
     Functions: {
       activate_due_terms: { Args: never; Returns: undefined }
+      activate_feature: { Args: { _id: string }; Returns: undefined }
       archive_terms: { Args: { _id: string }; Returns: undefined }
+      deactivate_feature: { Args: { _id: string }; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
