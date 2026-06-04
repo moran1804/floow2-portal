@@ -191,7 +191,7 @@ const FaqsPage = () => {
       }
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["faqs", productFilter] });
+      qc.invalidateQueries({ queryKey: ["faqs", selectedCustomerId, productFilter] });
       setFaqOpen(false);
       setFaqForm(emptyFaq);
     },
@@ -204,7 +204,7 @@ const FaqsPage = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["faqs", productFilter] });
+      qc.invalidateQueries({ queryKey: ["faqs", selectedCustomerId, productFilter] });
     },
     onError: () => {},
   });
@@ -237,7 +237,7 @@ const FaqsPage = () => {
       }
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["faq_categories", productFilter] });
+      qc.invalidateQueries({ queryKey: ["faq_categories", selectedCustomerId, productFilter] });
       setCatOpen(false);
       setCatForm({ name: "", sort_order: 0 });
     },
@@ -250,7 +250,7 @@ const FaqsPage = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["faq_categories", productFilter] });
+      qc.invalidateQueries({ queryKey: ["faq_categories", selectedCustomerId, productFilter] });
     },
     onError: () => {},
   });
@@ -269,24 +269,24 @@ const FaqsPage = () => {
       }
     },
     onMutate: async (ordered) => {
-      await qc.cancelQueries({ queryKey: ["faq_categories", productFilter] });
+      await qc.cancelQueries({ queryKey: ["faq_categories", selectedCustomerId, productFilter] });
       const previous = qc.getQueryData<Category[]>([
         "faq_categories",
         productFilter,
       ]);
       qc.setQueryData(
-        ["faq_categories", productFilter],
+        ["faq_categories", selectedCustomerId, productFilter],
         ordered.map((c, i) => ({ ...c, sort_order: (i + 1) * 10 }))
       );
       return { previous };
     },
     onError: (_e: any, _vars, ctx) => {
       if (ctx?.previous) {
-        qc.setQueryData(["faq_categories", productFilter], ctx.previous);
+        qc.setQueryData(["faq_categories", selectedCustomerId, productFilter], ctx.previous);
       }
     },
     onSettled: () =>
-      qc.invalidateQueries({ queryKey: ["faq_categories", productFilter] }),
+      qc.invalidateQueries({ queryKey: ["faq_categories", selectedCustomerId, productFilter] }),
   });
 
   const sensors = useSensors(
