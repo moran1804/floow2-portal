@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Archive, ArchiveRestore } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { Users } from "lucide-react";
 import PortalPanel from "@/components/admin/PortalPanel";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -52,8 +53,8 @@ const ClientsPage = () => {
 
   return (
     <AdminLayout title="Clients" crumbs={[{ label: "Clients" }]}>
-      <PortalPanel>
-        <div className="flex items-center justify-between px-6 pt-5 pb-4">
+      <PortalPanel icon={Users} title="All clients">
+        <div className="flex items-center justify-between pb-4">
           <div className="font-semibold">
             {isLoading ? "Loading…" : `${rows.length} results found`}
           </div>
@@ -81,7 +82,7 @@ const ClientsPage = () => {
           </div>
         </div>
 
-        <div className="px-6 pb-6">
+        <div>
           <div className="grid grid-cols-[1fr_1fr_auto] gap-4 px-4 py-3 text-sm font-semibold border-b border-portal-border">
             <div>Client ID</div>
             <div>Name</div>
