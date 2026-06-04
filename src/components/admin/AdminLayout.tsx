@@ -8,7 +8,6 @@ import {
   Tag,
   Users,
   SlidersHorizontal,
-  CircleUser,
   LogOut,
   HelpCircle,
   KeyRound,
@@ -16,6 +15,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { useCustomer } from "@/contexts/CustomerContext";
+import floowLogo from "@/assets/the-floow-logo.svg.asset.json";
 import {
   Select,
   SelectContent,
@@ -59,12 +59,11 @@ const AdminLayout = ({ title, crumbs = [], actions, children }: AdminLayoutProps
       {/* Top bar */}
       <header className="flex items-center justify-between bg-portal-panel border-b border-portal-border px-6 h-16">
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 font-semibold text-portal-navy">
-            <div className="w-7 h-7 rounded-full bg-portal-navy flex items-center justify-center">
-              <CircleUser className="w-4 h-4 text-portal-navy-foreground" />
-            </div>
-            <span>The Portal</span>
-          </div>
+          <img
+            src={floowLogo.url}
+            alt="The Floow"
+            className="h-7 w-auto"
+          />
           <Select
             value={selectedCustomerId ?? undefined}
             onValueChange={setSelectedCustomerId}
