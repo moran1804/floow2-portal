@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       customers: {
         Row: {
+          archived_at: string | null
           code: string
           created_at: string
           created_by: string | null
@@ -26,6 +27,7 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          archived_at?: string | null
           code: string
           created_at?: string
           created_by?: string | null
@@ -36,6 +38,7 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          archived_at?: string | null
           code?: string
           created_at?: string
           created_by?: string | null
