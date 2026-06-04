@@ -56,7 +56,10 @@ interface AdminLayoutProps {
 const AdminLayout = ({ title, crumbs = [], actions, children }: AdminLayoutProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { customers, selectedCustomerId, setSelectedCustomerId } = useCustomer();
+  const isClientsPage = pathname === "/admin/clients";
+  const navItems = isClientsPage ? clientsNavItems : fullNavItems;
 
   const initials = (user?.email ?? "??")
     .split("@")[0]
