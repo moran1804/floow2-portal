@@ -26,14 +26,29 @@ type Client = {
   archived_at: string | null;
 };
 
+const slugify = (text: string) =>
+  text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]+/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+
 const ClientsPage = () => {
   const [tab, setTab] = useState<"active" | "archived">("active");
   const [addOpen, setAddOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const [newSlug, setNewSlug] = useState("");
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const qc = useQueryClient();
   const navigate = useNavigate();
   const { setSelectedCustomerId } = useCustomer();
+
+  useEffect(() => {
+    if (addOpen) {
+      setSlugManuallyEdited(false);
+    }
+  }, [addOpen]);
 
   const { data: clients = [], isLoading } = useQuery({
     queryKey: ["clients-all"],
