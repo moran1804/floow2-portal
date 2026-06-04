@@ -11,6 +11,7 @@ import {
   CircleUser,
   LogOut,
   HelpCircle,
+  KeyRound,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import { Button } from "@/components/ui/button";
 const navItems = [
   { to: "/admin/overview", icon: LayoutGrid, label: "Overview" },
   { to: "/admin/audit", icon: Fingerprint, label: "Audit" },
+  { to: "/admin/features", icon: KeyRound, label: "Features" },
   { to: "/admin/terms", icon: FileText, label: "Terms & Conditions" },
   { to: "/admin/faqs", icon: HelpCircle, label: "FAQs" },
   { to: "/admin/products", icon: Tag, label: "Products" },
