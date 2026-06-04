@@ -191,26 +191,36 @@ const ProductEditorPage = () => {
               </Row>
               <Row
                 label="Mode of transport user editable period"
-                hint={
-                  <>
-                    How long after they recorded a journey should a user be
-                    allowed to amend the mode of transport. Must be in ISO-8601
-                    duration format e.g. `P2D` is two days.
-                    <div className="mt-1">
-                      <a className="underline text-portal-accent" href="https://en.wikipedia.org/wiki/ISO_8601#Durations" target="_blank" rel="noreferrer">More info</a>
-                    </div>
-                  </>
-                }
+                hint="How long after they recorded a journey should a user be allowed to amend the mode of transport."
               >
-                <Input
+                <Select
                   value={form.mode_of_transport_user_editable_period}
-                  onChange={(e) =>
+                  onValueChange={(value) =>
                     setForm({
                       ...form,
-                      mode_of_transport_user_editable_period: e.target.value,
+                      mode_of_transport_user_editable_period: value,
                     })
                   }
-                />
+                >
+                  <SelectTrigger className="w-[260px]">
+                    <SelectValue placeholder="Select period" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 28 }, (_, i) => i + 1).map((days) => {
+                      const value = `P${days}D`;
+                      let label = `${days} day${days > 1 ? "s" : ""}`;
+                      if (days % 7 === 0) {
+                        const weeks = days / 7;
+                        label = `${weeks} week${weeks > 1 ? "s" : ""} (${days} days)`;
+                      }
+                      return (
+                        <SelectItem key={value} value={value}>
+                          {label}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
               </Row>
             </div>
           </Card>
