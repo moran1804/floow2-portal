@@ -99,6 +99,25 @@ const ProductEditorPage = () => {
     },
   });
 
+  const { data: featureStates } = useQuery({
+    queryKey: ["features", "client-states"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("features")
+        .select("key, state")
+        .in("key", ["scoring", "impact_detection"]);
+      if (error) throw error;
+      const map: Record<string, string> = {};
+      (data ?? []).forEach((f: any) => (map[f.key] = f.state));
+      return map;
+    },
+  });
+
+  const scoringFeatureEnabled = featureStates?.scoring === "active";
+  const impactFeatureEnabled = featureStates?.impact_detection === "active";
+  const disabledMessage =
+    "is not enabled at client level, contact your account manager to enable.";
+
   useEffect(() => {
     if (product) {
       setForm({
@@ -230,6 +249,12 @@ const ProductEditorPage = () => {
         <section>
           <SectionTitle>Journey scoring</SectionTitle>
           <Card>
+            <div
+              className={
+                !scoringFeatureEnabled ? "opacity-50 pointer-events-none select-none" : ""
+              }
+              aria-disabled={!scoringFeatureEnabled}
+            >
             <Row label="Enable scoring on this product">
               <div className="space-y-3">
                 <div className="flex items-center gap-6">
@@ -240,6 +265,7 @@ const ProductEditorPage = () => {
                       onChange={() =>
                         setForm({ ...form, scoring_enabled: true })
                       }
+                      disabled={!scoringFeatureEnabled}
                     />
                     Scoring enabled
                   </label>
@@ -250,6 +276,7 @@ const ProductEditorPage = () => {
                       onChange={() =>
                         setForm({ ...form, scoring_enabled: false })
                       }
+                      disabled={!scoringFeatureEnabled}
                     />
                     Scoring disabled
                   </label>
@@ -313,6 +340,13 @@ const ProductEditorPage = () => {
                 </div>
               </>
             )}
+            </div>
+            {!scoringFeatureEnabled && (
+              <div className="mt-4 flex items-start gap-2 text-sm text-portal-text bg-portal-surface border border-portal-border rounded-md p-3">
+                <AlertTriangle className="w-4 h-4 mt-0.5 text-portal-muted" />
+                <span>Scoring {disabledMessage}</span>
+              </div>
+            )}
           </Card>
         </section>
 
@@ -320,6 +354,12 @@ const ProductEditorPage = () => {
         <section>
           <SectionTitle>Impact detection</SectionTitle>
           <Card>
+            <div
+              className={
+                !impactFeatureEnabled ? "opacity-50 pointer-events-none select-none" : ""
+              }
+              aria-disabled={!impactFeatureEnabled}
+            >
             <Row label="Enable impact detection on this product">
               <div className="flex items-center gap-6">
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -329,6 +369,7 @@ const ProductEditorPage = () => {
                     onChange={() =>
                       setForm({ ...form, impact_detection_enabled: true })
                     }
+                    disabled={!impactFeatureEnabled}
                   />
                   Impact detection enabled
                 </label>
@@ -339,11 +380,19 @@ const ProductEditorPage = () => {
                     onChange={() =>
                       setForm({ ...form, impact_detection_enabled: false })
                     }
+                    disabled={!impactFeatureEnabled}
                   />
                   Impact detection disabled
                 </label>
               </div>
             </Row>
+            </div>
+            {!impactFeatureEnabled && (
+              <div className="mt-4 flex items-start gap-2 text-sm text-portal-text bg-portal-surface border border-portal-border rounded-md p-3">
+                <AlertTriangle className="w-4 h-4 mt-0.5 text-portal-muted" />
+                <span>Impact detection {disabledMessage}</span>
+              </div>
+            )}
           </Card>
         </section>
 
