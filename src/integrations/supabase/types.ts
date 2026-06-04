@@ -160,8 +160,12 @@ export type Database = {
           created_at: string
           created_by: string | null
           id: string
+          impact_detection_enabled: boolean
           is_active: boolean
+          mode_of_transport_user_editable_period: string
           name: string
+          score_config: string
+          scoring_enabled: boolean
           updated_at: string
           updated_by: string | null
         }
@@ -170,8 +174,12 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          impact_detection_enabled?: boolean
           is_active?: boolean
+          mode_of_transport_user_editable_period?: string
           name: string
+          score_config?: string
+          scoring_enabled?: boolean
           updated_at?: string
           updated_by?: string | null
         }
@@ -180,8 +188,12 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          impact_detection_enabled?: boolean
           is_active?: boolean
+          mode_of_transport_user_editable_period?: string
           name?: string
+          score_config?: string
+          scoring_enabled?: boolean
           updated_at?: string
           updated_by?: string | null
         }
