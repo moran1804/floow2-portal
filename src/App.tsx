@@ -11,6 +11,7 @@ import TermsEditorPage from "./pages/admin/TermsEditorPage.tsx";
 import FaqsPage from "./pages/admin/FaqsPage.tsx";
 import ProductsPage from "./pages/admin/ProductsPage.tsx";
 import OverviewPage from "./pages/admin/OverviewPage.tsx";
+import FeaturesPage from "./pages/admin/FeaturesPage.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import RequireAdmin from "@/components/admin/RequireAdmin";
 
@@ -71,6 +72,14 @@ const App = () => (
               element={
                 <RequireAdmin>
                   <ProductsPage />
+                </RequireAdmin>
+              }
+            />
+            <Route
+              path="/admin/features"
+              element={
+                <RequireAdmin>
+                  <FeaturesPage />
                 </RequireAdmin>
               }
             />
