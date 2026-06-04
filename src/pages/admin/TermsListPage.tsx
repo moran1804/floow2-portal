@@ -32,7 +32,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
+
 import { useState, useEffect } from "react";
 import AcceptanceStats from "@/components/admin/AcceptanceStats";
 
@@ -86,10 +86,9 @@ const TermsListPage = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Published");
       qc.invalidateQueries({ queryKey: ["terms_versions"] });
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: () => {},
   });
 
   const cancelSchedule = useMutation({
@@ -101,10 +100,9 @@ const TermsListPage = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Schedule cancelled");
       qc.invalidateQueries({ queryKey: ["terms_versions"] });
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: () => {},
   });
 
   const archive = useMutation({
@@ -113,10 +111,9 @@ const TermsListPage = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Archived");
       qc.invalidateQueries({ queryKey: ["terms_versions"] });
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: () => {},
   });
 
   const [confirmPublishId, setConfirmPublishId] = useState<string | null>(null);
