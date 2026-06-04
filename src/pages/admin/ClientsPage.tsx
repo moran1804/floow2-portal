@@ -240,14 +240,15 @@ const ClientsPage = () => {
               <Input
                 id="client-slug"
                 value={newSlug}
-                onChange={(e) =>
+                onChange={(e) => {
+                  setSlugManuallyEdited(true);
                   setNewSlug(
                     e.target.value
                       .toLowerCase()
                       .replace(/[^a-z0-9-]+/g, "-")
                       .replace(/-+/g, "-")
-                  )
-                }
+                  );
+                }}
               />
             </div>
             <DialogFooter>
