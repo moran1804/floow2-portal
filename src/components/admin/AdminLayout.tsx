@@ -122,13 +122,15 @@ const AdminLayout = ({ title, crumbs = [], actions, children }: AdminLayoutProps
       <div className="flex">
         {/* Sidebar */}
         <aside className="w-64 min-h-[calc(100vh-4rem)] bg-portal-sidebar border-r border-portal-border py-4">
-          <button
-            onClick={() => navigate(selectedCustomerId ? "/admin/clients" : "/")}
-            className="flex items-center gap-2 text-sm px-6 py-3 text-portal-text hover:text-portal-accent w-full"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to home
-          </button>
+          {!isClientsPage && (
+            <button
+              onClick={() => navigate(selectedCustomerId ? "/admin/clients" : "/")}
+              className="flex items-center gap-2 text-sm px-6 py-3 text-portal-text hover:text-portal-accent w-full"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to home
+            </button>
+          )}
           <nav className="mt-2">
             {navItems.map((item) =>
               item.disabled ? (
