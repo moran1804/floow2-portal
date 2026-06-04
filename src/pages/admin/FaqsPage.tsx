@@ -235,15 +235,9 @@ const FaqsPage = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Category deleted");
       qc.invalidateQueries({ queryKey: ["faq_categories", productFilter] });
     },
-    onError: (e: any) =>
-      toast.error(
-        e.message?.includes("foreign key")
-          ? "Move or delete the FAQs in this category first."
-          : e.message
-      ),
+    onError: () => {},
   });
 
   const reorderCategories = useMutation({
@@ -271,11 +265,10 @@ const FaqsPage = () => {
       );
       return { previous };
     },
-    onError: (e: any, _vars, ctx) => {
+    onError: (_e: any, _vars, ctx) => {
       if (ctx?.previous) {
         qc.setQueryData(["faq_categories", productFilter], ctx.previous);
       }
-      toast.error(e.message);
     },
     onSettled: () =>
       qc.invalidateQueries({ queryKey: ["faq_categories", productFilter] }),
