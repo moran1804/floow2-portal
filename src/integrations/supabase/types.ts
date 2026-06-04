@@ -310,6 +310,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activate_all_features: { Args: never; Returns: undefined }
       activate_due_terms: { Args: never; Returns: undefined }
       activate_feature: { Args: { _id: string }; Returns: undefined }
       archive_terms: { Args: { _id: string }; Returns: undefined }
