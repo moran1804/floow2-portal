@@ -1,81 +1,62 @@
 import { Link } from "react-router-dom";
-import {
-  Fingerprint,
-  FileText,
-  HelpCircle,
-  Tag,
-  Users,
-  SlidersHorizontal,
-  KeyRound,
-} from "lucide-react";
+import { UserCog, Code2, Search, PieChart, LucideIcon } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
 
-const tiles = [
+type Tile = {
+  to: string;
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  cta: string;
+  enabled: boolean;
+};
+
+const tiles: Tile[] = [
   {
     to: "/admin/audit",
-    icon: Fingerprint,
-    title: "Audit",
-    description: "Review acceptance history and user activity logs.",
+    icon: UserCog,
+    title: "Admin",
+    description: "Manage your company information, users and permissions.",
     cta: "View",
+    enabled: true,
   },
   {
-    to: "/admin/features",
-    icon: KeyRound,
-    title: "Features",
-    description: "Activate or deactivate product features (Floow staff only).",
+    to: "#",
+    icon: Code2,
+    title: "Developer tools",
+    description: "View developer logs and configure Apps, API keys and Webhook events.",
     cta: "View",
+    enabled: false,
   },
   {
-    to: "/admin/terms",
-    icon: FileText,
-    title: "Terms & Conditions",
-    description: "Manage live, scheduled and draft T&Cs per product.",
-    cta: "View",
+    to: "#",
+    icon: Search,
+    title: "Search for information",
+    description: "Look for policies, vehicles, drivers, journeys and impact information.",
+    cta: "Search",
+    enabled: false,
   },
   {
-    to: "/admin/faqs",
-    icon: HelpCircle,
-    title: "FAQs",
-    description: "Maintain frequently asked questions for the mobile app.",
+    to: "#",
+    icon: PieChart,
+    title: "Insights",
+    description: "Analyse the performance of your product and policies.",
     cta: "View",
-  },
-  {
-    to: "/admin/products",
-    icon: Tag,
-    title: "Products",
-    description: "Define products that have their own T&Cs and FAQs.",
-    cta: "View",
-  },
-  {
-    to: "/admin/staff",
-    icon: Users,
-    title: "Staff",
-    description: "Manage admin users and their portal access.",
-    cta: "View",
-  },
-  {
-    to: "/admin/configuration",
-    icon: SlidersHorizontal,
-    title: "Configuration",
-    description: "Adjust portal-wide settings and preferences.",
-    cta: "View",
+    enabled: false,
   },
 ];
 
 const OverviewPage = () => {
-  const { user } = useAuth();
-
   return (
     <AdminLayout
-      title={`Welcome back, ${user?.email ?? ""}`}
-      crumbs={[{ label: "Home", to: "/" }, { label: "Overview" }]}
+      title="Welcome back"
+      crumbs={[{ label: "Home" }]}
     >
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {tiles.map((tile) => (
           <div
-            key={tile.to}
+            key={tile.title}
             className="bg-portal-panel border border-portal-border rounded-lg p-6 flex flex-col"
           >
             <div className="w-10 h-10 rounded-md bg-portal-surface border border-portal-border flex items-center justify-center text-portal-navy mb-4">
@@ -87,9 +68,15 @@ const OverviewPage = () => {
             <p className="text-sm text-portal-muted flex-1 mb-6">
               {tile.description}
             </p>
-            <Button asChild className="w-full">
-              <Link to={tile.to}>{tile.cta}</Link>
-            </Button>
+            {tile.enabled ? (
+              <Button asChild className="w-full bg-portal-navy hover:bg-portal-navy/90 text-portal-navy-foreground">
+                <Link to={tile.to}>{tile.cta}</Link>
+              </Button>
+            ) : (
+              <Button disabled className="w-full bg-portal-navy/60 text-portal-navy-foreground">
+                {tile.cta}
+              </Button>
+            )}
           </div>
         ))}
       </div>

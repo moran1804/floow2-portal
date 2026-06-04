@@ -1,7 +1,6 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
-  ArrowLeft,
   LayoutGrid,
   Fingerprint,
   FileText,
@@ -14,6 +13,12 @@ import {
   Activity,
   Building2,
   BookOpen,
+  UserCog,
+  Code2,
+  Search as SearchIcon,
+  PieChart,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -34,8 +39,13 @@ type NavItem = {
   disabled?: boolean;
 };
 
-const fullNavItems: NavItem[] = [
-  { to: "/admin/overview", icon: LayoutGrid, label: "Overview" },
+const dashboardItem: NavItem = {
+  to: "/admin/overview",
+  icon: LayoutGrid,
+  label: "Dashboard",
+};
+
+const adminChildren: NavItem[] = [
   { to: "/admin/audit", icon: Fingerprint, label: "Audit" },
   { to: "/admin/features", icon: KeyRound, label: "Features" },
   { to: "/admin/terms", icon: FileText, label: "Terms & Conditions" },
@@ -43,6 +53,12 @@ const fullNavItems: NavItem[] = [
   { to: "/admin/products", icon: Tag, label: "Products" },
   { to: "/admin/staff", icon: Users, label: "Staff" },
   { to: "/admin/configuration", icon: SlidersHorizontal, label: "Configuration" },
+];
+
+const otherTopItems: NavItem[] = [
+  { to: "#", icon: Code2, label: "Developer tools", disabled: true },
+  { to: "#", icon: SearchIcon, label: "Search for information", disabled: true },
+  { to: "#", icon: PieChart, label: "Insights", disabled: true },
 ];
 
 const clientsNavItems: NavItem[] = [
@@ -66,12 +82,24 @@ const AdminLayout = ({ title, crumbs = [], actions, children }: AdminLayoutProps
   const { pathname } = useLocation();
   const { customers, selectedCustomerId, setSelectedCustomerId } = useCustomer();
   const isClientsPage = pathname === "/admin/clients";
-  const navItems = isClientsPage ? clientsNavItems : fullNavItems;
+
+  const isAdminChildActive = adminChildren.some((c) => pathname.startsWith(c.to));
+  const [adminOpen, setAdminOpen] = useState<boolean>(isAdminChildActive);
 
   const initials = (user?.email ?? "??")
     .split("@")[0]
     .slice(0, 2)
     .toUpperCase();
+
+  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `flex items-center gap-3 px-6 py-3 text-sm font-medium border-l-2 ${
+      isActive
+        ? "bg-portal-sidebar-active border-portal-accent text-portal-accent"
+        : "border-transparent text-portal-text hover:bg-portal-sidebar-active/50"
+    }`;
+
+  const disabledClass =
+    "flex items-center gap-3 px-6 py-3 text-sm font-medium border-l-2 border-transparent text-portal-muted cursor-default";
 
   return (
     <div className="min-h-screen bg-portal-surface text-portal-text">
@@ -122,41 +150,73 @@ const AdminLayout = ({ title, crumbs = [], actions, children }: AdminLayoutProps
       <div className="flex">
         {/* Sidebar */}
         <aside className="w-64 min-h-[calc(100vh-4rem)] bg-portal-sidebar border-r border-portal-border py-4">
-          {!isClientsPage && (
-            <button
-              onClick={() => navigate(selectedCustomerId ? "/admin/clients" : "/")}
-              className="flex items-center gap-2 text-sm px-6 py-3 text-portal-text hover:text-portal-accent w-full"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to home
-            </button>
-          )}
           <nav className="mt-2">
-            {navItems.map((item) =>
-              item.disabled ? (
-                <div
-                  key={item.label}
-                  className="flex items-center gap-3 px-6 py-3 text-sm font-medium border-l-2 border-transparent text-portal-muted cursor-default"
-                >
-                  <item.icon className="w-5 h-5" />
-                  {item.label}
-                </div>
-              ) : (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-6 py-3 text-sm font-medium border-l-2 ${
-                      isActive
-                        ? "bg-portal-sidebar-active border-portal-accent text-portal-accent"
-                        : "border-transparent text-portal-text hover:bg-portal-sidebar-active/50"
-                    }`
-                  }
-                >
-                  <item.icon className="w-5 h-5" />
-                  {item.label}
-                </NavLink>
+            {isClientsPage ? (
+              clientsNavItems.map((item) =>
+                item.disabled ? (
+                  <div key={item.label} className={disabledClass}>
+                    <item.icon className="w-5 h-5" />
+                    {item.label}
+                  </div>
+                ) : (
+                  <NavLink key={item.to} to={item.to} className={navLinkClass}>
+                    <item.icon className="w-5 h-5" />
+                    {item.label}
+                  </NavLink>
+                )
               )
+            ) : (
+              <>
+                <NavLink to={dashboardItem.to} className={navLinkClass} end>
+                  <dashboardItem.icon className="w-5 h-5" />
+                  {dashboardItem.label}
+                </NavLink>
+
+                <button
+                  type="button"
+                  onClick={() => setAdminOpen((o) => !o)}
+                  className={`w-full flex items-center gap-3 px-6 py-3 text-sm font-medium border-l-2 border-transparent ${
+                    isAdminChildActive
+                      ? "text-portal-accent"
+                      : "text-portal-text hover:bg-portal-sidebar-active/50"
+                  }`}
+                >
+                  <UserCog className="w-5 h-5" />
+                  <span className="flex-1 text-left">Admin</span>
+                  {adminOpen ? (
+                    <ChevronDown className="w-4 h-4" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4" />
+                  )}
+                </button>
+                {adminOpen && (
+                  <div className="bg-portal-sidebar-active/30">
+                    {adminChildren.map((item) => (
+                      <NavLink
+                        key={item.to}
+                        to={item.to}
+                        className={({ isActive }) =>
+                          `flex items-center gap-3 pl-14 pr-6 py-2.5 text-sm font-medium border-l-2 ${
+                            isActive
+                              ? "bg-portal-sidebar-active border-portal-accent text-portal-accent"
+                              : "border-transparent text-portal-text hover:bg-portal-sidebar-active/50"
+                          }`
+                        }
+                      >
+                        <item.icon className="w-4 h-4" />
+                        {item.label}
+                      </NavLink>
+                    ))}
+                  </div>
+                )}
+
+                {otherTopItems.map((item) => (
+                  <div key={item.label} className={disabledClass}>
+                    <item.icon className="w-5 h-5" />
+                    {item.label}
+                  </div>
+                ))}
+              </>
             )}
           </nav>
         </aside>
