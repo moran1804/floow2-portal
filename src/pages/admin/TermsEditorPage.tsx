@@ -308,10 +308,9 @@ const TermsEditorPage = () => {
             onClick={async () => {
               try {
                 await saveDraft.mutateAsync();
-                toast.success("Saved as draft");
                 navigate("/admin/terms");
               } catch {
-                /* error toast handled in mutation */
+                /* errors handled in mutation */
               }
             }}
             disabled={saveDraft.isPending}
@@ -322,7 +321,7 @@ const TermsEditorPage = () => {
             variant="outline"
             onClick={async () => {
               const err = await validate();
-              if (err) return toast.error(err);
+              if (err) return;
               setScheduleOpen(true);
             }}
           >
@@ -331,7 +330,7 @@ const TermsEditorPage = () => {
           <Button
             onClick={async () => {
               const err = await validate();
-              if (err) return toast.error(err);
+              if (err) return;
               setConfirmPublish(true);
             }}
           >
