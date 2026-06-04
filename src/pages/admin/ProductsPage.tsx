@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Tag, MoreHorizontal, Pencil } from "lucide-react";
+import { Tag, MoreHorizontal, Eye, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import PortalPanel from "@/components/admin/PortalPanel";
@@ -17,18 +17,19 @@ type Product = {
   id: string;
   code: string;
   name: string;
+  is_default: boolean;
 };
 
 const ProductsPage = () => {
   const [perPage, setPerPage] = useState(10);
   const [page, setPage] = useState(1);
 
-  const { data: products = [], isLoading } = useQuery({
+  const { data: products = [], isLoading, refetch } = useQuery({
     queryKey: ["products"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, code, name")
+        .select("id, code, name, is_default")
         .order("code", { ascending: true });
       if (error) throw error;
       return data as Product[];
@@ -120,7 +121,14 @@ const ProductsPage = () => {
                           {p.code}
                         </Link>
                       </td>
-                      <td className="px-4 py-3 text-portal-text">{p.name}</td>
+                      <td className="px-4 py-3 text-portal-text">
+                        {p.name}
+                        {p.is_default && (
+                          <span className="ml-2 font-semibold text-portal-navy">
+                            (default product)
+                          </span>
+                        )}
+                      </td>
                       <td className="px-4 py-3 text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -131,8 +139,22 @@ const ProductsPage = () => {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem asChild>
                               <Link to={`/admin/products/${p.id}`}>
-                                <Pencil className="w-4 h-4 mr-2" /> Edit
+                                <Eye className="w-4 h-4 mr-2" /> View product
                               </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              disabled={p.is_default}
+                              onSelect={async (e) => {
+                                e.preventDefault();
+                                const { error } = await supabase.rpc(
+                                  "set_default_product",
+                                  { _id: p.id },
+                                );
+                                if (error) console.error(error.message);
+                                else refetch();
+                              }}
+                            >
+                              <Star className="w-4 h-4 mr-2" /> Set as default product
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
