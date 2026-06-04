@@ -162,6 +162,7 @@ export type Database = {
           id: string
           impact_detection_enabled: boolean
           is_active: boolean
+          is_default: boolean
           mode_of_transport_user_editable_period: string
           name: string
           score_config: string
@@ -176,6 +177,7 @@ export type Database = {
           id?: string
           impact_detection_enabled?: boolean
           is_active?: boolean
+          is_default?: boolean
           mode_of_transport_user_editable_period?: string
           name: string
           score_config?: string
@@ -190,6 +192,7 @@ export type Database = {
           id?: string
           impact_detection_enabled?: boolean
           is_active?: boolean
+          is_default?: boolean
           mode_of_transport_user_editable_period?: string
           name?: string
           score_config?: string
@@ -327,6 +330,7 @@ export type Database = {
         Args: { _id: string; _scheduled_at: string }
         Returns: undefined
       }
+      set_default_product: { Args: { _id: string }; Returns: undefined }
       terms_acceptance_stats: {
         Args: { _id: string }
         Returns: {
