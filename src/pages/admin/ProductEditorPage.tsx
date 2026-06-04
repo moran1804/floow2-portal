@@ -166,7 +166,9 @@ const ProductEditorPage = () => {
       if (f.campaigns_enabled) {
         if (!f.campaigns_endpoint.trim())
           throw new Error("Campaigns endpoint is required");
-        if (!f.campaigns_api_key.trim())
+        if (isNew && !f.campaigns_api_key.trim())
+          throw new Error("Campaigns API key is required");
+        if (!isNew && !hasSavedApiKey && !f.campaigns_api_key.trim())
           throw new Error("Campaigns API key is required");
       }
 
@@ -179,7 +181,7 @@ const ProductEditorPage = () => {
           ? true
           : !!f.campaigns_config[c.key];
       });
-      const payload = {
+      const payload: any = {
         name: f.name.trim(),
         code: f.code.trim().toLowerCase(),
         mode_of_transport_user_editable_period:
@@ -190,9 +192,11 @@ const ProductEditorPage = () => {
         campaigns_enabled: f.campaigns_enabled,
         campaigns_config: campaignsConfig,
         campaigns_endpoint: f.campaigns_endpoint.trim(),
-        campaigns_api_key: f.campaigns_api_key.trim(),
         updated_by: userId,
-      } as any;
+      };
+      if (isNew || f.campaigns_api_key.trim()) {
+        payload.campaigns_api_key = f.campaigns_api_key.trim();
+      }
 
       if (isNew) {
         const { error } = await supabase
