@@ -272,6 +272,7 @@ const FaqsPage = () => {
       await qc.cancelQueries({ queryKey: ["faq_categories", selectedCustomerId, productFilter] });
       const previous = qc.getQueryData<Category[]>([
         "faq_categories",
+        selectedCustomerId,
         productFilter,
       ]);
       qc.setQueryData(
