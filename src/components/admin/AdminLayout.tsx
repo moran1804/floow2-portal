@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
   LayoutGrid,
@@ -11,6 +11,9 @@ import {
   LogOut,
   HelpCircle,
   KeyRound,
+  Activity,
+  Building2,
+  BookOpen,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -24,7 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const navItems = [
+const fullNavItems = [
   { to: "/admin/overview", icon: LayoutGrid, label: "Overview" },
   { to: "/admin/audit", icon: Fingerprint, label: "Audit" },
   { to: "/admin/features", icon: KeyRound, label: "Features" },
@@ -33,6 +36,12 @@ const navItems = [
   { to: "/admin/products", icon: Tag, label: "Products" },
   { to: "/admin/staff", icon: Users, label: "Staff" },
   { to: "/admin/configuration", icon: SlidersHorizontal, label: "Configuration" },
+];
+
+const clientsNavItems = [
+  { to: "/admin/clients", icon: Building2, label: "Clients" },
+  { to: "/admin/monitoring", icon: Activity, label: "Monitoring" },
+  { to: "/admin/api-docs", icon: BookOpen, label: "API Docs" },
 ];
 
 type Crumb = { label: string; to?: string };
@@ -47,7 +56,10 @@ interface AdminLayoutProps {
 const AdminLayout = ({ title, crumbs = [], actions, children }: AdminLayoutProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { customers, selectedCustomerId, setSelectedCustomerId } = useCustomer();
+  const isClientsPage = pathname === "/admin/clients";
+  const navItems = isClientsPage ? clientsNavItems : fullNavItems;
 
   const initials = (user?.email ?? "??")
     .split("@")[0]
