@@ -9,13 +9,13 @@ export const ALWAYS_ENABLED_CAMPAIGNS = ["app_usage", "permissions"];
 export const CAMPAIGNS: CampaignDef[] = [
   {
     key: "app_usage",
-    name: "APP Usage Campaigns",
+    name: "APP Usage Attributes",
     useCase:
       "Use the last session date to communicate with users who are not opening the app, helping drive them back in.",
   },
   {
     key: "permissions",
-    name: "Permissions Campaigns",
+    name: "Permissions Attributes",
     useCase:
       "Send communications when mobile permissions (location, motion, optimisation, notifications) are not set correctly so users can get set up.",
   },
@@ -27,7 +27,7 @@ export const CAMPAIGNS: CampaignDef[] = [
   },
   {
     key: "trip_and_usage_based",
-    name: "Trip and Usage Based Campaigns",
+    name: "Trip and Usage Based Attributes",
     useCase:
       "When a user is logged in and taking part in a programme, send campaigns and rewards encouraging them to record journeys and take part in the programme.",
   },
@@ -45,13 +45,13 @@ export const CAMPAIGNS: CampaignDef[] = [
   },
   {
     key: "product_code",
-    name: "Product Code Campaigns",
+    name: "Product Code Attributes",
     useCase:
       "Tailor communications based on the user's currently active product so campaign logic can target the right programme.",
   },
   {
     key: "crash",
-    name: "Crash Campaigns",
+    name: "Crash Attributes",
     useCase:
       "When a crash of a certain probability is detected, trigger emergency and help communications.",
   },
