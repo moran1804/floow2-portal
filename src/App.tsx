@@ -10,6 +10,7 @@ import TermsListPage from "./pages/admin/TermsListPage.tsx";
 import TermsEditorPage from "./pages/admin/TermsEditorPage.tsx";
 import FaqsPage from "./pages/admin/FaqsPage.tsx";
 import ProductsPage from "./pages/admin/ProductsPage.tsx";
+import OverviewPage from "./pages/admin/OverviewPage.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import RequireAdmin from "@/components/admin/RequireAdmin";
 
@@ -25,6 +26,14 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route
+              path="/admin/overview"
+              element={
+                <RequireAdmin>
+                  <OverviewPage />
+                </RequireAdmin>
+              }
+            />
             <Route
               path="/admin/terms"
               element={
