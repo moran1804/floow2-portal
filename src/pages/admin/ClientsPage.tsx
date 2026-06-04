@@ -20,6 +20,8 @@ type Client = {
 const ClientsPage = () => {
   const [tab, setTab] = useState<"active" | "archived">("active");
   const qc = useQueryClient();
+  const navigate = useNavigate();
+  const { setSelectedCustomerId } = useCustomer();
 
   const { data: clients = [], isLoading } = useQuery({
     queryKey: ["clients-all"],
