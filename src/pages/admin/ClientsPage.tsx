@@ -100,9 +100,15 @@ const ClientsPage = () => {
             rows.map((c, i) => (
               <div
                 key={c.id}
-                className={`grid grid-cols-[1fr_1fr_auto] gap-4 items-center px-4 py-4 text-sm ${
+                onClick={() => {
+                  if (!c.archived_at) {
+                    setSelectedCustomerId(c.id);
+                    navigate("/admin/overview");
+                  }
+                }}
+                className={`grid grid-cols-[1fr_1fr_auto] gap-4 items-center px-4 py-4 text-sm cursor-pointer hover:bg-portal-accent/30 transition-colors ${
                   i % 2 === 0 ? "bg-portal-surface" : ""
-                }`}
+                } ${c.archived_at ? "cursor-default hover:bg-transparent opacity-70" : ""}`}
               >
                 <div className="font-mono text-xs">{c.id}</div>
                 <div className="font-semibold">{c.name}</div>
@@ -111,9 +117,10 @@ const ClientsPage = () => {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() =>
-                        setArchived.mutate({ id: c.id, archived: false })
-                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setArchived.mutate({ id: c.id, archived: false });
+                      }}
                     >
                       <ArchiveRestore className="w-4 h-4 mr-1" />
                       Restore
@@ -122,7 +129,8 @@ const ClientsPage = () => {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         if (confirm(`Archive client "${c.name}"?`)) {
                           setArchived.mutate({ id: c.id, archived: true });
                         }
