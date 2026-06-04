@@ -27,7 +27,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const fullNavItems = [
+type NavItem = {
+  to: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  disabled?: boolean;
+};
+
+const fullNavItems: NavItem[] = [
   { to: "/admin/overview", icon: LayoutGrid, label: "Overview" },
   { to: "/admin/audit", icon: Fingerprint, label: "Audit" },
   { to: "/admin/features", icon: KeyRound, label: "Features" },
