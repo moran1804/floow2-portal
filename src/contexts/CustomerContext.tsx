@@ -7,6 +7,7 @@ export type Customer = {
   name: string;
   code: string;
   is_default: boolean;
+  archived_at: string | null;
 };
 
 type CustomerContextValue = {
@@ -31,7 +32,8 @@ export const CustomerProvider = ({ children }: { children: ReactNode }) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("customers")
-        .select("id, name, code, is_default")
+        .select("id, name, code, is_default, archived_at")
+        .is("archived_at", null)
         .order("name", { ascending: true });
       if (error) throw error;
       return data as Customer[];

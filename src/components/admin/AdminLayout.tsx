@@ -59,11 +59,18 @@ const AdminLayout = ({ title, crumbs = [], actions, children }: AdminLayoutProps
       {/* Top bar */}
       <header className="flex items-center justify-between bg-portal-panel border-b border-portal-border px-6 h-16">
         <div className="flex items-center gap-6">
-          <img
-            src={floowLogo.url}
-            alt="The Floow"
-            className="h-6 w-auto"
-          />
+          <button
+            type="button"
+            onClick={() => navigate("/admin/clients")}
+            className="flex items-center"
+            title="View all clients"
+          >
+            <img
+              src={floowLogo.url}
+              alt="The Floow"
+              className="h-6 w-auto"
+            />
+          </button>
           <Select
             value={selectedCustomerId ?? undefined}
             onValueChange={setSelectedCustomerId}
