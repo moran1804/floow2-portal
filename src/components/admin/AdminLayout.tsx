@@ -27,7 +27,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const fullNavItems = [
+type NavItem = {
+  to: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  disabled?: boolean;
+};
+
+const fullNavItems: NavItem[] = [
   { to: "/admin/overview", icon: LayoutGrid, label: "Overview" },
   { to: "/admin/audit", icon: Fingerprint, label: "Audit" },
   { to: "/admin/features", icon: KeyRound, label: "Features" },
@@ -38,10 +45,10 @@ const fullNavItems = [
   { to: "/admin/configuration", icon: SlidersHorizontal, label: "Configuration" },
 ];
 
-const clientsNavItems = [
+const clientsNavItems: NavItem[] = [
   { to: "/admin/clients", icon: Building2, label: "Clients" },
-  { to: "/admin/monitoring", icon: Activity, label: "Monitoring" },
-  { to: "/admin/api-docs", icon: BookOpen, label: "API Docs" },
+  { to: "#", icon: Activity, label: "Monitoring", disabled: true },
+  { to: "#", icon: BookOpen, label: "API Docs", disabled: true },
 ];
 
 type Crumb = { label: string; to?: string };
@@ -123,22 +130,32 @@ const AdminLayout = ({ title, crumbs = [], actions, children }: AdminLayoutProps
             Back to home
           </button>
           <nav className="mt-2">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-6 py-3 text-sm font-medium border-l-2 ${
-                    isActive
-                      ? "bg-portal-sidebar-active border-portal-accent text-portal-accent"
-                      : "border-transparent text-portal-text hover:bg-portal-sidebar-active/50"
-                  }`
-                }
-              >
-                <item.icon className="w-5 h-5" />
-                {item.label}
-              </NavLink>
-            ))}
+            {navItems.map((item) =>
+              item.disabled ? (
+                <div
+                  key={item.label}
+                  className="flex items-center gap-3 px-6 py-3 text-sm font-medium border-l-2 border-transparent text-portal-muted cursor-default"
+                >
+                  <item.icon className="w-5 h-5" />
+                  {item.label}
+                </div>
+              ) : (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-6 py-3 text-sm font-medium border-l-2 ${
+                      isActive
+                        ? "bg-portal-sidebar-active border-portal-accent text-portal-accent"
+                        : "border-transparent text-portal-text hover:bg-portal-sidebar-active/50"
+                    }`
+                  }
+                >
+                  <item.icon className="w-5 h-5" />
+                  {item.label}
+                </NavLink>
+              )
+            )}
           </nav>
         </aside>
 
