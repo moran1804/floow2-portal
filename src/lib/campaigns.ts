@@ -26,12 +26,6 @@ export const CAMPAIGNS: CampaignDef[] = [
       "When a user is created they need to be sent communications detailing where they can download the app and how to log in.",
   },
   {
-    key: "first_trip_encouragement",
-    name: "First Trip Encouragement",
-    useCase:
-      "When a user is logged in successfully, we should encourage them to take their first trip.",
-  },
-  {
     key: "trip_and_usage_based",
     name: "Trip and Usage Based Campaigns",
     useCase:
