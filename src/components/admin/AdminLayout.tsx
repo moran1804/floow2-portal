@@ -11,6 +11,9 @@ import {
   LogOut,
   HelpCircle,
   KeyRound,
+  Activity,
+  Building2,
+  BookOpen,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
