@@ -33,7 +33,7 @@ export const CAMPAIGNS: CampaignDef[] = [
   },
   {
     key: "digital_driver_coaching",
-    name: "Digital Driver Coaching",
+    name: "Scoring Attributes",
     useCase:
       "Serve driver coaching hints and tips based on the user's driver behaviour scoring, matching what is shown in the application.",
   },
