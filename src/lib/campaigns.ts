@@ -4,7 +4,7 @@ export type CampaignDef = {
   useCase: string;
 };
 
-export const ALWAYS_ENABLED_CAMPAIGNS = ["app_usage", "permissions"];
+export const ALWAYS_ENABLED_CAMPAIGNS = ["app_usage", "permissions", "welcome_comms"];
 
 export const CAMPAIGNS: CampaignDef[] = [
   {
@@ -21,7 +21,7 @@ export const CAMPAIGNS: CampaignDef[] = [
   },
   {
     key: "welcome_comms",
-    name: "Welcome Comms",
+    name: "User Attributes",
     useCase:
       "When a user is created they need to be sent communications detailing where they can download the app and how to log in.",
   },
@@ -42,12 +42,6 @@ export const CAMPAIGNS: CampaignDef[] = [
     name: "Driver Cancellation",
     useCase:
       "When a driver is deactivated, ensure no further comms are sent to the customer as they are out of the programme.",
-  },
-  {
-    key: "product_code",
-    name: "Product Code Attributes",
-    useCase:
-      "Tailor communications based on the user's currently active product so campaign logic can target the right programme.",
   },
   {
     key: "crash",
