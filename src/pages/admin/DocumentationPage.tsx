@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Award, Code2, LucideIcon } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ type Tile = {
   title: string;
   description: string;
   href?: string;
+  to?: string;
 };
 
 const tiles: Tile[] = [
@@ -14,6 +16,7 @@ const tiles: Tile[] = [
     icon: Award,
     title: "Driver score",
     description: "How scores are calculated for journeys processed by the Floow.",
+    to: "/admin/documentation/driver-score",
   },
   {
     icon: Code2,
@@ -39,7 +42,11 @@ const DocumentationPage = () => (
           </div>
           <h2 className="text-lg font-bold text-portal-navy mb-2">{tile.title}</h2>
           <p className="text-sm text-portal-muted flex-1 mb-6">{tile.description}</p>
-          {tile.href ? (
+          {tile.to ? (
+            <Button asChild className="w-full bg-portal-navy hover:bg-portal-navy/90 text-portal-navy-foreground">
+              <Link to={tile.to}>View</Link>
+            </Button>
+          ) : tile.href ? (
             <Button
               asChild
               className="w-full bg-portal-navy hover:bg-portal-navy/90 text-portal-navy-foreground"
