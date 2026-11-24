@@ -21,7 +21,6 @@ import {
   ChevronRight,
   FileText as DocIcon,
 } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { useCustomer } from "@/contexts/CustomerContext";
@@ -127,10 +126,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
             <Building2 className="w-4 h-4" />
             {isClientsPage ? "Clients" : selectedCustomer?.name ?? "Select client"}
           </Button>
-        </div>
-        <div className="flex-1 max-w-xl mx-6 hidden md:block relative">
-          <SearchIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-portal-muted" />
-          <Input placeholder="Search..." className="pl-9 h-10 bg-portal-panel border-portal-border" />
+
         </div>
         <div className="flex items-center gap-3">
           <span className="text-sm text-portal-muted hidden sm:inline">
