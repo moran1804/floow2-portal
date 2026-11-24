@@ -28,7 +28,6 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { useCustomer } from "@/contexts/CustomerContext";
 import floowLogo from "@/assets/the-floow-logo.svg.asset.json";
 
 type NavItem = {
@@ -91,7 +90,6 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { selectedCustomer } = useCustomer();
   const isClientsPage = pathname === "/admin/clients";
 
   const isAdminChildActive = adminChildren.some((c) => pathname.startsWith(c.to));
@@ -142,10 +140,10 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
             variant="outline"
             onClick={() => navigate("/admin/clients")}
             className="h-9 gap-2 border-portal-border"
-            title="Switch client"
+            title="Change client"
           >
             <Building2 className="w-4 h-4" />
-            {isClientsPage ? "Clients" : selectedCustomer?.name ?? "Select client"}
+            Change client
           </Button>
 
         </div>
