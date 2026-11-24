@@ -24,6 +24,7 @@ import {
   Send,
   Network,
   Webhook,
+  AlertTriangle,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -54,7 +55,6 @@ const adminChildren: NavItem[] = [
 ];
 
 const otherTopItems: NavItem[] = [
-  { to: "#", icon: SearchIcon, label: "Search for information", disabled: true },
   { to: "#", icon: PieChart, label: "Insights", disabled: true },
   { to: "#", icon: DocIcon, label: "Documentation", disabled: true },
 ];
@@ -64,6 +64,11 @@ const devChildren: NavItem[] = [
   { to: "#", icon: Send, label: "Campaigns", disabled: true },
   { to: "#", icon: Network, label: "REST API", disabled: true },
   { to: "#", icon: Webhook, label: "Webhooks", disabled: true },
+];
+
+const insurerChildren: NavItem[] = [
+  { to: "#", icon: AlertTriangle, label: "Impacts", disabled: true },
+  { to: "#", icon: Users, label: "Users", disabled: true },
 ];
 
 const clientsNavItems: NavItem[] = [
@@ -97,6 +102,9 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
 
   const isDevHome = pathname === "/admin/developer";
   const [devOpen, setDevOpen] = useState<boolean>(isDevHome);
+
+  const isInsurerHome = pathname === "/admin/insurer";
+  const [insurerOpen, setInsurerOpen] = useState<boolean>(isInsurerHome);
 
   const initials = (user?.email ?? "??")
     .split("@")[0]
@@ -256,6 +264,43 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                 {devOpen && (
                   <div className="bg-portal-sidebar-active/30">
                     {devChildren.map((item) => (
+                      <div
+                        key={item.label}
+                        className="flex items-center gap-3 pl-14 pr-6 py-2.5 text-sm font-medium border-l-2 border-transparent text-portal-muted cursor-default"
+                      >
+                        <item.icon className="w-4 h-4" />
+                        {item.label}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setInsurerOpen(true);
+                    navigate("/admin/insurer");
+                  }}
+                  className={`w-full flex items-center gap-3 px-6 py-3 text-sm font-medium border-l-2 border-transparent ${
+                    isInsurerHome ? "text-portal-accent" : "text-portal-text hover:bg-portal-sidebar-active/50"
+                  }`}
+                >
+                  <SearchIcon className="w-5 h-5" />
+                  <span className="flex-1 text-left">Insurer Portal</span>
+                  <span
+                    role="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setInsurerOpen((o) => !o);
+                    }}
+                    className="p-1 -m-1 rounded hover:bg-portal-sidebar-active/50"
+                  >
+                    {insurerOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                  </span>
+                </button>
+                {insurerOpen && (
+                  <div className="bg-portal-sidebar-active/30">
+                    {insurerChildren.map((item) => (
                       <div
                         key={item.label}
                         className="flex items-center gap-3 pl-14 pr-6 py-2.5 text-sm font-medium border-l-2 border-transparent text-portal-muted cursor-default"

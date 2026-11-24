@@ -31,12 +31,12 @@ const tiles: Tile[] = [
     enabled: true,
   },
   {
-    to: "#",
+    to: "/admin/insurer",
     icon: Search,
-    title: "Search for information",
+    title: "Insurer Portal",
     description: "Look for policies, vehicles, drivers, journeys and impact information.",
     cta: "Search",
-    enabled: false,
+    enabled: true,
   },
   {
     to: "#",
