@@ -23,12 +23,12 @@ const tiles: Tile[] = [
     enabled: true,
   },
   {
-    to: "#",
+    to: "/admin/developer",
     icon: Code2,
     title: "Developer tools",
     description: "View developer logs and configure Apps, API keys and Webhook events.",
     cta: "View",
-    enabled: false,
+    enabled: true,
   },
   {
     to: "#",
