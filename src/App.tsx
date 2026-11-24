@@ -19,6 +19,7 @@ import StaffPage from "./pages/admin/StaffPage.tsx";
 import ConfigurationPage from "./pages/admin/ConfigurationPage.tsx";
 import DeveloperToolsPage from "./pages/admin/DeveloperToolsPage.tsx";
 import InsurerPortalPage from "./pages/admin/InsurerPortalPage.tsx";
+import DocumentationPage from "./pages/admin/DocumentationPage.tsx";
 import AdminHomePage from "./pages/admin/AdminHomePage.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import RequireAdmin from "@/components/admin/RequireAdmin";
@@ -144,6 +145,14 @@ const App = () => (
               element={
                 <RequireAdmin>
                   <InsurerPortalPage />
+                </RequireAdmin>
+              }
+            />
+            <Route
+              path="/admin/documentation"
+              element={
+                <RequireAdmin>
+                  <DocumentationPage />
                 </RequireAdmin>
               }
             />

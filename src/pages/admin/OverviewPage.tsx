@@ -47,12 +47,12 @@ const tiles: Tile[] = [
     enabled: false,
   },
   {
-    to: "#",
+    to: "/admin/documentation",
     icon: FileText,
     title: "Documentation",
     description: "Knowledge base and general feature and service support.",
     cta: "View",
-    enabled: false,
+    enabled: true,
   },
 ];
 

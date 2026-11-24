@@ -55,7 +55,7 @@ const adminChildren: NavItem[] = [
 
 const otherTopItems: NavItem[] = [
   { to: "#", icon: PieChart, label: "Insights", disabled: true },
-  { to: "#", icon: DocIcon, label: "Documentation", disabled: true },
+  { to: "/admin/documentation", icon: DocIcon, label: "Documentation" },
 ];
 
 const devChildren: NavItem[] = [
@@ -310,12 +310,19 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                   </div>
                 )}
 
-                {otherTopItems.map((item) => (
-                  <div key={item.label} className={disabledClass}>
-                    <item.icon className="w-5 h-5" />
-                    {item.label}
-                  </div>
-                ))}
+                {otherTopItems.map((item) =>
+                  item.disabled ? (
+                    <div key={item.label} className={disabledClass}>
+                      <item.icon className="w-5 h-5" />
+                      {item.label}
+                    </div>
+                  ) : (
+                    <NavLink key={item.label} to={item.to} className={navLinkClass}>
+                      <item.icon className="w-5 h-5" />
+                      {item.label}
+                    </NavLink>
+                  )
+                )}
               </>
             )}
           </nav>
