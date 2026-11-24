@@ -170,7 +170,7 @@ const ClientsPage = () => {
   const rows = tab === "active" ? active : archived;
 
   return (
-    <AdminLayout title="Clients" crumbs={[{ label: "Clients" }]}>
+    <AdminLayout title="Clients" crumbs={[{ label: "Clients" }]} hideSidebar>
       <PortalPanel
         icon={Users}
         title="All clients"

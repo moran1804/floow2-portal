@@ -19,18 +19,13 @@ import {
   PieChart,
   ChevronDown,
   ChevronRight,
+  FileText as DocIcon,
 } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { useCustomer } from "@/contexts/CustomerContext";
 import floowLogo from "@/assets/the-floow-logo.svg.asset.json";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 type NavItem = {
   to: string;
@@ -59,6 +54,7 @@ const otherTopItems: NavItem[] = [
   { to: "#", icon: Code2, label: "Developer tools", disabled: true },
   { to: "#", icon: SearchIcon, label: "Search for information", disabled: true },
   { to: "#", icon: PieChart, label: "Insights", disabled: true },
+  { to: "#", icon: DocIcon, label: "Documentation", disabled: true },
 ];
 
 const clientsNavItems: NavItem[] = [
@@ -74,13 +70,14 @@ interface AdminLayoutProps {
   crumbs?: Crumb[];
   actions?: ReactNode;
   children: ReactNode;
+  hideSidebar?: boolean;
 }
 
-const AdminLayout = ({ title, crumbs = [], actions, children }: AdminLayoutProps) => {
+const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = false }: AdminLayoutProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { customers, selectedCustomerId, setSelectedCustomerId } = useCustomer();
+  const { selectedCustomer } = useCustomer();
   const isClientsPage = pathname === "/admin/clients";
 
   const isAdminChildActive = adminChildren.some((c) => pathname.startsWith(c.to));
@@ -121,21 +118,19 @@ const AdminLayout = ({ title, crumbs = [], actions, children }: AdminLayoutProps
               className="h-6 w-auto"
             />
           </button>
-          <Select
-            value={selectedCustomerId ?? undefined}
-            onValueChange={setSelectedCustomerId}
+          <Button
+            variant="outline"
+            onClick={() => navigate("/admin/clients")}
+            className="h-9 gap-2 border-portal-border"
+            title="Switch client"
           >
-            <SelectTrigger className="h-9 w-[200px] text-sm bg-portal-panel border-portal-border">
-              <SelectValue placeholder="Select customer" />
-            </SelectTrigger>
-            <SelectContent>
-              {customers.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <Building2 className="w-4 h-4" />
+            {isClientsPage ? "Clients" : selectedCustomer?.name ?? "Select client"}
+          </Button>
+        </div>
+        <div className="flex-1 max-w-xl mx-6 hidden md:block relative">
+          <SearchIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-portal-muted" />
+          <Input placeholder="Search..." className="pl-9 h-10 bg-portal-panel border-portal-border" />
         </div>
         <div className="flex items-center gap-3">
           <span className="text-sm text-portal-muted hidden sm:inline">
@@ -152,6 +147,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children }: AdminLayoutProps
 
       <div className="flex">
         {/* Sidebar */}
+        {!hideSidebar && (
         <aside className="w-64 min-h-[calc(100vh-4rem)] bg-portal-sidebar border-r border-portal-border py-4">
           <nav className="mt-2">
             {isClientsPage ? (
@@ -235,6 +231,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children }: AdminLayoutProps
             )}
           </nav>
         </aside>
+        )}
 
         {/* Main */}
         <main className="flex-1 min-w-0">
@@ -261,6 +258,9 @@ const AdminLayout = ({ title, crumbs = [], actions, children }: AdminLayoutProps
             </div>
           </div>
           <div className="p-8">{children}</div>
+          <footer className="px-8 pb-8 text-xs text-portal-muted">
+            Copyright © {new Date().getFullYear()} The Floow Limited - All Rights Reserved
+          </footer>
         </main>
       </div>
     </div>

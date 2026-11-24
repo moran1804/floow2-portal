@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
-import { UserCog, Code2, Search, PieChart, LucideIcon } from "lucide-react";
+import { UserCog, Code2, Search, PieChart, FileText, LucideIcon } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 type Tile = {
   to: string;
@@ -45,12 +46,21 @@ const tiles: Tile[] = [
     cta: "View",
     enabled: false,
   },
+  {
+    to: "#",
+    icon: FileText,
+    title: "Documentation",
+    description: "Knowledge base and general feature and service support.",
+    cta: "View",
+    enabled: false,
+  },
 ];
 
 const OverviewPage = () => {
+  const { user } = useAuth();
   return (
     <AdminLayout
-      title="Welcome back"
+      title={`Welcome back${user?.email ? `, ${user.email}` : ""}`}
       crumbs={[{ label: "Home" }]}
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
