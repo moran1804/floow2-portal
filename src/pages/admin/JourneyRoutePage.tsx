@@ -6,7 +6,7 @@ import L, { type LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { renderToStaticMarkup } from "react-dom/server";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { sampleJourneys } from "@/components/admin/UserJourneysSection";
+import { sampleJourneys } from "@/lib/userJourneys";
 
 type RouteEvent = { label: string; time: string; icon: LucideIcon; at: number };
 const sampleEvents: RouteEvent[] = [

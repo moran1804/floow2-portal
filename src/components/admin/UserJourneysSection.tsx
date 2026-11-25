@@ -1,82 +1,205 @@
 import { useUnits } from "@/hooks/useUnits";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Clock, Route, Car, Bike, Flag } from "lucide-react";
+import { Bike, Car, ChevronLeft, ChevronRight, Clock, Flag, Route, SlidersHorizontal, X } from "lucide-react";
 import { MapContainer, TileLayer, Polyline, CircleMarker } from "react-leaflet";
 import type { LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  EVENT_STATES,
+  JOURNEY_TAGS,
+  MODES,
+  SCORE_BANDS,
+  SORTS,
+  defaultJourneyFilters,
+  filterJourneys,
+  isDefaultFilters,
+  journeyDateLabel,
+  journeyWindowLabel,
+  sampleJourneys,
+  shiftDate,
+  type JourneyFilters,
+} from "@/lib/userJourneys";
 
-export type Journey = { id: string; date: string; score: number | null; duration: string; miles: string; mode: "Car" | "Bike"; start: string; end: string; events: number | null; route: LatLngTuple[] };
-const a: LatLngTuple[] = [[53.7065, -1.7835], [53.7052, -1.7848], [53.7038, -1.7862], [53.7010, -1.7866], [53.6985, -1.7864], [53.6972, -1.7852], [53.6978, -1.7838]];
-const b: LatLngTuple[] = [[53.6960, -1.7866], [53.6985, -1.7860], [53.7010, -1.7855], [53.7030, -1.7870], [53.7048, -1.7852], [53.7072, -1.7845]];
-export const sampleJourneys: Journey[] = [
-  { id: "j1", date: "Tuesday 03 November", score: 75, duration: "5m 34s", miles: "1.14 miles", mode: "Car", start: "8:00 pm", end: "8:05 pm", events: 16, route: a },
-  { id: "j2", date: "Tuesday 03 November", score: 77, duration: "5m 17s", miles: "1.15 miles", mode: "Car", start: "7:35 pm", end: "7:41 pm", events: 9, route: b },
-  { id: "j3", date: "Tuesday 03 November", score: 79, duration: "7m 42s", miles: "1.18 miles", mode: "Car", start: "5:38 pm", end: "5:46 pm", events: 11, route: a },
-  { id: "j4", date: "Tuesday 03 November", score: null, duration: "9m 40s", miles: "0.91 miles", mode: "Bike", start: "5:25 pm", end: "5:34 pm", events: null, route: b },
-];
+export type { Journey } from "@/lib/userJourneys";
+export { sampleJourneys } from "@/lib/userJourneys";
 
 function ScoreRing({ score }: { score: number }) {
-  const r = 21, c = 2 * Math.PI * r;
-  return <svg viewBox="0 0 48 48" className="h-12 w-12 shrink-0" role="img" aria-label={`Journey score ${score}`}>
-    <circle cx="24" cy="24" r={r} fill="none" strokeWidth="3" className="stroke-score-good-track" />
-    <circle cx="24" cy="24" r={r} fill="none" strokeWidth="3" strokeLinecap="round" strokeDasharray={`${(score / 100) * c} ${c}`} transform="rotate(-90 24 24)" className="stroke-score-good" />
-    <text x="24" y="28.5" textAnchor="middle" className="fill-score-good text-[13px] font-semibold">{score}</text>
-  </svg>;
+  const r = 22;
+  const c = 2 * Math.PI * r;
+  const color = score >= 70 ? "hsl(var(--score-good))" : "hsl(var(--score-caution))";
+  return (
+    <svg viewBox="0 0 56 56" className="h-14 w-14 -rotate-90" role="img" aria-label={`Score ${score}`}>
+      <circle cx="28" cy="28" r={r} fill="none" stroke="hsl(var(--score-caution-track))" strokeWidth="5" />
+      <circle cx="28" cy="28" r={r} fill="none" stroke={color} strokeWidth="5" strokeLinecap="round" strokeDasharray={`${(score / 100) * c} ${c}`} />
+      <text x="28" y="28" transform="rotate(90 28 28)" textAnchor="middle" dominantBaseline="central" className="fill-score-ink text-[15px] font-semibold">{score}</text>
+    </svg>
+  );
 }
 
-export function JourneyMap({ route }: { route: LatLngTuple[] }) {
-  const start = route[0], end = route[route.length - 1];
-  if (!start || !end) return null;
-  return <div className="relative z-0 h-64 overflow-hidden" aria-label="Sample journey map">
-    <MapContainer bounds={route} boundsOptions={{ padding: [30, 30] }} scrollWheelZoom={false} zoomControl={false} className="h-full w-full">
-      <TileLayer attribution='&copy; OpenStreetMap' url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <Polyline positions={route} pathOptions={{ color: "hsl(var(--portal-accent, var(--primary)))", weight: 4, opacity: 0.85 }} />
-      <CircleMarker center={start} radius={6} pathOptions={{ color: "hsl(var(--foreground))", fillColor: "hsl(var(--foreground))", fillOpacity: 1 }} />
-      <CircleMarker center={end} radius={6} pathOptions={{ color: "hsl(var(--foreground))", fillColor: "hsl(var(--background))", fillOpacity: 1, weight: 2 }} />
-    </MapContainer>
-  </div>;
+export function JourneyMap({ route, height = 260 }: { route: LatLngTuple[]; height?: number }) {
+  const center = route[Math.floor(route.length / 2)] as LatLngTuple;
+  return (
+    <div className="overflow-hidden rounded-md border border-portal-border" style={{ height }}>
+      <MapContainer center={center} zoom={15} scrollWheelZoom={false} className="h-full w-full">
+        <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <Polyline positions={route} pathOptions={{ color: "hsl(var(--portal-navy))", weight: 4 }} />
+        <CircleMarker center={route[0]} radius={6} pathOptions={{ color: "hsl(var(--portal-navy))", fillColor: "#ffffff", fillOpacity: 1, weight: 2 }} />
+        <CircleMarker center={route[route.length - 1]} radius={6} pathOptions={{ color: "hsl(var(--portal-navy))", fillColor: "hsl(var(--portal-accent))", fillOpacity: 1, weight: 2 }} />
+      </MapContainer>
+    </div>
+  );
 }
 
 export default function UserJourneysSection() {
-  const { speed, speedValue, speedLabel, distance } = useUnits();
-  const [before, setBefore] = useState("2026-11-25T23:59");
-  const [dateOpen, setDateOpen] = useState(false);
+  const { distance } = useUnits();
   const navigate = useNavigate();
   const { userId } = useParams();
-  const label = new Date(before).toLocaleString("en-GB", { hour: "numeric", minute: "2-digit", day: "numeric", month: "long", year: "numeric" });
-  const navBtn = "h-12 gap-1 rounded-md border-2 border-portal-navy bg-background px-4 text-lg font-normal text-portal-navy hover:bg-portal-surface";
-  return <section className="space-y-6">
-    <p className="text-xs text-portal-muted">Example journeys only · No live journey data is connected for this user.</p>
-    <div className="flex flex-wrap items-center justify-between gap-4">
-      <Button variant="outline" className={navBtn}><ChevronLeft className="h-5 w-5" />Earlier journeys</Button>
-      <div className="text-center text-base"><p>Showing {sampleJourneys.length} journeys started before {label}</p><button type="button" className="underline underline-offset-2" onClick={() => setDateOpen(true)}>Change date</button></div>
-      <Button variant="outline" className={navBtn}>Later journeys<ChevronRight className="h-5 w-5" /></Button>
+  const [filters, setFilters] = useState<JourneyFilters>(defaultJourneyFilters);
+  const [dateOpen, setDateOpen] = useState(false);
+  const rows = useMemo(() => filterJourneys(sampleJourneys, filters), [filters]);
+  const set = (patch: Partial<JourneyFilters>) => setFilters((f) => ({ ...f, ...patch }));
+  const toggleTag = (tag: string) => setFilters((f) => ({ ...f, tags: f.tags.includes(tag) ? f.tags.filter((t) => t !== tag) : [...f.tags, tag] }));
+  const reset = () => setFilters(defaultJourneyFilters);
+  const times = sampleJourneys.map((j) => new Date(j.startedAt).getTime());
+  const earliest = Math.min(...times);
+  const latest = Math.max(...times);
+  const toTime = filters.to ? new Date(filters.to).getTime() : null;
+  const canGoEarlier = toTime === null || toTime > earliest;
+  const canGoLater = toTime === null || toTime < latest;
+  const shift = (days: number) => setFilters((f) => ({ ...f, to: shiftDate(f.to, days), from: f.from ? shiftDate(f.from, days) : f.from }));
+
+  return (
+    <div className="space-y-5">
+      <p className="text-xs text-portal-muted">Example journeys only · No live journey data is connected for this user.</p>
+
+      <section aria-label="Filter journeys" className="rounded-md border border-portal-border bg-portal-panel p-5">
+        <header className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <h3 className="flex items-center gap-3 text-base font-semibold text-portal-navy">
+            <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-portal-panel-header text-portal-navy"><SlidersHorizontal className="h-5 w-5" /></span>
+            Filter journeys
+          </h3>
+          <Button type="button" variant="ghost" onClick={reset} disabled={isDefaultFilters(filters)} className="px-0 text-xs">Reset all</Button>
+        </header>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="min-w-0 space-y-2"><Label htmlFor="journey-from">Date from</Label><Input id="journey-from" type="datetime-local" value={filters.from} onChange={(e) => set({ from: e.target.value })} className="min-w-0 rounded-sm" /></div>
+          <div className="min-w-0 space-y-2"><Label htmlFor="journey-to">Date to</Label><Input id="journey-to" type="datetime-local" value={filters.to} onChange={(e) => set({ to: e.target.value })} className="min-w-0 rounded-sm" /></div>
+          <div className="space-y-2"><Label htmlFor="journey-score">Score</Label>
+            <Select value={filters.score} onValueChange={(score) => set({ score })}><SelectTrigger id="journey-score" className="rounded-sm"><SelectValue /></SelectTrigger>
+              <SelectContent>{Object.entries(SCORE_BANDS).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2"><Label htmlFor="journey-mode">Mode of transport</Label>
+            <Select value={filters.mode} onValueChange={(mode) => set({ mode })}><SelectTrigger id="journey-mode" className="rounded-sm"><SelectValue /></SelectTrigger>
+              <SelectContent>{Object.entries(MODES).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2"><Label htmlFor="journey-events">Driving events</Label>
+            <Select value={filters.events} onValueChange={(events) => set({ events })}><SelectTrigger id="journey-events" className="rounded-sm"><SelectValue /></SelectTrigger>
+              <SelectContent>{Object.entries(EVENT_STATES).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2"><Label htmlFor="journey-sort">Sort by</Label>
+            <Select value={filters.sort} onValueChange={(sort) => set({ sort })}><SelectTrigger id="journey-sort" className="rounded-sm"><SelectValue /></SelectTrigger>
+              <SelectContent>{Object.entries(SORTS).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="mt-5 space-y-2">
+          <Label className="text-xs text-portal-muted">Tags — shows journeys with any selected tag</Label>
+          <div className="flex flex-wrap gap-2">
+            {JOURNEY_TAGS.map((tag) => {
+              const on = filters.tags.includes(tag);
+              return (
+                <button key={tag} type="button" aria-pressed={on} onClick={() => toggleTag(tag)}
+                  className={`rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${on ? "border-portal-navy bg-portal-navy text-primary-foreground" : "border-portal-border bg-portal-surface text-portal-muted hover:border-portal-accent hover:text-portal-navy"}`}>
+                  {tag}
+                </button>
+              );
+            })}
+          </div>
+          {!!filters.tags.length && (
+            <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-portal-muted">
+              {filters.tags.map((tag) => (
+                <button key={tag} type="button" onClick={() => toggleTag(tag)} className="flex items-center gap-1 rounded-sm bg-portal-panel-header px-2 py-1 font-semibold text-portal-navy">
+                  {tag}<X className="h-3 w-3" />
+                </button>
+              ))}
+              <button type="button" onClick={() => set({ tags: [] })} className="underline underline-offset-2">Clear tags</button>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm font-semibold" aria-live="polite">{journeyWindowLabel(rows.length, filters)}</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outline" size="sm" className="gap-1 border-2 border-portal-navy text-portal-navy" disabled={!canGoEarlier} onClick={() => shift(-7)}>
+            <ChevronLeft className="h-4 w-4" />Earlier journeys
+          </Button>
+          <Button variant="outline" size="sm" className="gap-1 border-2 border-portal-navy text-portal-navy" disabled={!canGoLater} onClick={() => shift(7)}>
+            Later journeys<ChevronRight className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="sm" className="text-xs underline underline-offset-4" onClick={() => setDateOpen(true)}>Change date</Button>
+        </div>
+      </div>
+
+      {!!rows.length ? rows.map((j) => (
+        <article key={j.id} className="rounded-md border border-portal-border bg-portal-panel p-6">
+          <div className="flex flex-wrap items-center gap-6">
+            <ScoreRing score={j.score ?? 0} />
+            <div>
+              <h3 className="text-lg font-semibold">{journeyDateLabel(j.startedAt)}</h3>
+              <div className="mt-2 flex flex-wrap items-center gap-4 text-xs font-semibold">
+                <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{j.duration}</span>
+                <span className="flex items-center gap-1"><Route className="h-3.5 w-3.5" />{distance(j.miles)}</span>
+                <span className="flex items-center gap-1">{j.mode === "Car" ? <Car className="h-3.5 w-3.5" /> : <Bike className="h-3.5 w-3.5" />}{j.mode}</span>
+              </div>
+            </div>
+            <div className="ml-auto flex flex-col items-end gap-1 text-xs font-semibold">
+              <span className="flex items-center gap-1 text-portal-navy"><Flag className="h-3.5 w-3.5" />{j.start}</span>
+              <span className="text-portal-muted">to</span>
+              <span className="flex items-center gap-1 text-portal-navy"><Flag className="h-3.5 w-3.5" />{j.end}</span>
+            </div>
+          </div>
+          {j.events !== null && <p className="mt-4 bg-score-caution-track py-1 text-center text-sm">{j.events} driving events</p>}
+          {!!j.tags.length && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {j.tags.map((tag) => <span key={tag} className="rounded-full bg-portal-surface px-2.5 py-1 text-[11px] font-semibold text-portal-muted">{tag}</span>)}
+            </div>
+          )}
+          <div className="mt-5 grid gap-5 lg:grid-cols-2">
+            <div className="lg:[&>div]:h-64"><JourneyMap route={j.route as LatLngTuple[]} height={256} /></div>
+            <div className="flex items-end justify-end">
+              <Button className="gap-1 text-lg font-normal" onClick={() => navigate(`/admin/insurer/users/${userId}/journeys/${j.id}`)}>View journey details<ChevronRight className="h-4 w-4" /></Button>
+            </div>
+          </div>
+        </article>
+      )) : (
+        <div className="rounded-md border border-portal-border bg-portal-panel p-10 text-center">
+          <p role="status" className="text-portal-muted">No journeys match your filters.</p>
+          <Button variant="ghost" onClick={reset} className="mt-3 px-0 text-xs underline underline-offset-4">Reset all filters</Button>
+        </div>
+      )}
+
+      <Dialog open={dateOpen} onOpenChange={(o) => !o && setDateOpen(false)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Change date</DialogTitle><DialogDescription>Choose the date and time to show journeys started before.</DialogDescription></DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="journey-window">Show journeys started before</Label>
+            <Input id="journey-window" type="datetime-local" value={filters.to} onChange={(e) => set({ to: e.target.value })} className="rounded-sm" />
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="ghost" onClick={() => setDateOpen(false)}>Cancel</Button>
+            <Button onClick={() => setDateOpen(false)}>Apply</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
-    {sampleJourneys.map((j) => <article key={j.id} className="grid gap-3 rounded-md border border-portal-border bg-background p-6 shadow-sm lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-      <div className="flex flex-col">
-        <div className="flex items-start justify-between gap-4 pb-6">
-          <div className="flex items-center gap-4">{j.score !== null ? <ScoreRing score={j.score} /> : <span className="w-12" />}<h3 className="text-base font-semibold">{j.date}</h3></div>
-          <ul className="space-y-2 text-right text-xs font-semibold">
-            <li className="flex items-center justify-end gap-1"><Clock className="h-3.5 w-3.5" />{j.duration}</li>
-            <li className="flex items-center justify-end gap-1"><Route className="h-3.5 w-3.5" />{distance(j.miles)}</li>
-            <li className="flex items-center justify-end gap-1">{j.mode === "Car" ? <Car className="h-3.5 w-3.5" /> : <Bike className="h-3.5 w-3.5" />}{j.mode}</li>
-          </ul>
-        </div>
-        <div className="flex items-center gap-3 border-t border-portal-border pt-6 text-xs">
-          <span>{j.start}</span><span className="h-3.5 w-3.5 rounded-full border-[3px] border-foreground bg-foreground ring-2 ring-background" />
-          <span className="relative flex flex-1 items-center justify-center"><span className="absolute inset-x-0 top-1/2 h-px bg-portal-border" />{j.events !== null && <span className="relative bg-score-caution-track px-4 py-1">{j.events} events</span>}</span>
-          <Flag className="h-4 w-4" /><span>{j.end}</span>
-        </div>
-      </div>
-      <div className="space-y-3">
-        <JourneyMap route={j.route} />
-        <Button className="h-9 gap-1 rounded-md px-4 text-lg font-normal" onClick={() => navigate(`/admin/insurer/users/${userId}/journeys/${j.id}`)}>View journey details<ChevronRight className="h-4 w-4" /></Button>
-      </div>
-    </article>)}
-    <Dialog open={dateOpen} onOpenChange={setDateOpen}><DialogContent><DialogHeader><DialogTitle>Change date</DialogTitle><DialogDescription>Show journeys started before this date and time. Example data only.</DialogDescription></DialogHeader><Input type="datetime-local" value={before} onChange={(e) => e.target.value && setBefore(e.target.value)} /></DialogContent></Dialog>
-  </section>;
+  );
 }

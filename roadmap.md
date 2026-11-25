@@ -43,3 +43,8 @@
 # Journey details screen
 - [x] Journey details page opened from Journeys
 - [x] Journey route page with events list and map
+
+# Journey list filters
+
+- [x] Add score, tag, date, mode, events and sort filters to the journeys list.
+- [x] Verify signed-in filtering, empty state, window controls and journey details.

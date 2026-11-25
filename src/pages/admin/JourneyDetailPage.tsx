@@ -4,15 +4,10 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { Car, Bike, ChevronRight, Clock, FileText, Pencil, Route } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import UserScoreTile from "@/components/admin/UserScoreTile";
-import { JourneyMap, sampleJourneys } from "@/components/admin/UserJourneysSection";
+import { JourneyMap } from "@/components/admin/UserJourneysSection";
+import { journeyFullDateLabel, journeyInfluences, sampleJourneys } from "@/lib/userJourneys";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-
-const sampleInfluences: Record<string, [string, number][]> = {
-  j1: [["Mobile use", 92], ["Smooth driving", 54], ["Speed", 93], ["Time of day", 95], ["Time on task", 98]],
-  j2: [["Mobile use", 88], ["Smooth driving", 63], ["Speed", 90], ["Time of day", 95], ["Time on task", 97]],
-  j3: [["Mobile use", 85], ["Smooth driving", 72], ["Speed", 88], ["Time of day", 94], ["Time on task", 96]],
-};
 
 function Card({ icon, title, action, children, className = "" }: { icon: ReactNode; title: string; action?: ReactNode; children: ReactNode; className?: string }) {
   return <section className={`rounded-md border border-portal-border/60 bg-background p-6 shadow-sm ${className}`}>
@@ -33,14 +28,14 @@ export default function JourneyDetailPage() {
   const base = `/admin/insurer/users/${userId}`;
   const crumbs = [{ label: "Search", to: "/admin/insurer/search" }, { label: "Users" }, { label: userId ?? "User", to: base }, { label: "Journeys", to: `${base}/journeys` }, { label: `Journey: ${journeyId}` }];
   if (!journey) return <AdminLayout title="Journey details" crumbs={crumbs}><p role="status">This journey was not found.</p></AdminLayout>;
-  const influences = sampleInfluences[journey.id];
+  const influences = journeyInfluences[journey.id];
   return <AdminLayout title="Journey details" subtitle={`Journey ID: ${journey.id}`} crumbs={crumbs}>
     <div className="mx-auto max-w-6xl space-y-5">
       <p className="text-xs text-portal-muted">Example journey only · No live journey data is connected for this user.</p>
       <div className="grid gap-5 lg:grid-cols-2">
         <div className="space-y-5">
           <Card icon={<FileText className="h-5 w-5" />} title="User information"><Rows rows={[["User ID", <Link key="u" to={base} className="underline underline-offset-2">{userId}</Link>]]} /></Card>
-          <Card icon={<Clock className="h-5 w-5" />} title="Time of journey"><Rows rows={[["Date", "Tuesday 3rd November 2026"], ["Start time", journey.start], ["End time", journey.end], ["Timezone", "Europe/London"]]} /></Card>
+          <Card icon={<Clock className="h-5 w-5" />} title="Time of journey"><Rows rows={[["Date", journeyFullDateLabel(journey.startedAt)], ["Start time", journey.start], ["End time", journey.end], ["Timezone", "Europe/London"]]} /></Card>
           <Card icon={journey.mode === "Car" ? <Car className="h-5 w-5" /> : <Bike className="h-5 w-5" />} title="Mode of transport" action={<Button variant="outline" size="sm" className="gap-1 border-2 border-portal-navy text-portal-navy" onClick={() => setInfo("Editing the mode of transport is not connected yet.")}><Pencil className="h-3.5 w-3.5" />Edit</Button>}>
             <Rows rows={[["Mode of transport", <span key="m" className="inline-flex items-center gap-1 text-xs">{journey.mode === "Car" ? <Car className="h-4 w-4" /> : <Bike className="h-4 w-4" />}{journey.mode}</span>], ["Locked for user edits since", "8:10 pm 06 November, 2026"]]} />
           </Card>
