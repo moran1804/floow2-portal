@@ -39,3 +39,6 @@
 # Terms acceptance screen
 - [x] Style user Terms Acceptance screen like the reference
 - [x] Example T&Cs and acceptances for both clients
+
+# Journey details screen
+- [x] Journey details page opened from Journeys

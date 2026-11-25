@@ -31,6 +31,8 @@ import {
   ClipboardList,
   MessageSquare,
   ArrowLeft,
+  Route as RouteIcon,
+  Pencil,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -115,6 +117,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
   const isInsurerHome = pathname.startsWith("/admin/insurer");
   const isImpactReport = pathname.startsWith("/admin/insurer/impacts/");
   const isUserAccount = pathname.startsWith("/admin/insurer/users/");
+  const isJourneyDetail = /^\/admin\/insurer\/users\/[^/]+\/journeys\/[^/]+/.test(pathname);
   const userAccountBase = pathname.split("/").slice(0, 5).join("/");
   const impactReportBase = pathname.split("/").slice(0, 5).join("/");
   const isUserSearchPage = pathname === "/admin/insurer/search" || pathname.startsWith("/admin/insurer/impacts") || isUserAccount;
@@ -194,6 +197,13 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                 <NavLink to="/admin/developer/rest-api" className={navLinkClass} end><Network className="h-5 w-5" />REST API</NavLink>
                 <NavLink to="/admin/developer/rest-api/credentials" className={navLinkClass}><KeyRound className="h-5 w-5" />Credentials</NavLink>
                 <NavLink to="/admin/developer/rest-api/docs" className={navLinkClass}><FileText className="h-5 w-5" />Documentation</NavLink>
+              </>
+            ) : isJourneyDetail ? (
+              <>
+                <Button asChild variant="ghost" className="mb-3 w-full justify-start rounded-none px-6"><NavLink to={userAccountBase} end><ArrowLeft />User overview</NavLink></Button>
+                <NavLink to={pathname.split("/").slice(0, 7).join("/")} className={navLinkClass} end><FileText className="h-5 w-5" />Journey detail</NavLink>
+                <span className="flex cursor-default items-center gap-3 px-6 py-3 text-sm text-portal-muted" title="Not connected yet"><RouteIcon className="h-5 w-5" />Journey route</span>
+                <span className="flex cursor-default items-center gap-3 px-6 py-3 text-sm text-portal-muted" title="Not connected yet"><Pencil className="h-5 w-5" />Journey revisions</span>
               </>
             ) : isUserAccount ? (
               <>

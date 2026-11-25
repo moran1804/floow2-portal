@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Clock, Route, Car, Bike, Flag } from "lucide-react";
 import { MapContainer, TileLayer, Polyline, CircleMarker } from "react-leaflet";
 import type { LatLngTuple } from "leaflet";
@@ -7,10 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
-type Journey = { id: string; date: string; score: number | null; duration: string; miles: string; mode: "Car" | "Bike"; start: string; end: string; events: number | null; route: LatLngTuple[] };
+export type Journey = { id: string; date: string; score: number | null; duration: string; miles: string; mode: "Car" | "Bike"; start: string; end: string; events: number | null; route: LatLngTuple[] };
 const a: LatLngTuple[] = [[53.7065, -1.7835], [53.7052, -1.7848], [53.7038, -1.7862], [53.7010, -1.7866], [53.6985, -1.7864], [53.6972, -1.7852], [53.6978, -1.7838]];
 const b: LatLngTuple[] = [[53.6960, -1.7866], [53.6985, -1.7860], [53.7010, -1.7855], [53.7030, -1.7870], [53.7048, -1.7852], [53.7072, -1.7845]];
-const sampleJourneys: Journey[] = [
+export const sampleJourneys: Journey[] = [
   { id: "j1", date: "Tuesday 03 November", score: 75, duration: "5m 34s", miles: "1.14 miles", mode: "Car", start: "8:00 pm", end: "8:05 pm", events: 16, route: a },
   { id: "j2", date: "Tuesday 03 November", score: 77, duration: "5m 17s", miles: "1.15 miles", mode: "Car", start: "7:35 pm", end: "7:41 pm", events: 9, route: b },
   { id: "j3", date: "Tuesday 03 November", score: 79, duration: "7m 42s", miles: "1.18 miles", mode: "Car", start: "5:38 pm", end: "5:46 pm", events: 11, route: a },
@@ -26,7 +27,7 @@ function ScoreRing({ score }: { score: number }) {
   </svg>;
 }
 
-function JourneyMap({ route }: { route: LatLngTuple[] }) {
+export function JourneyMap({ route }: { route: LatLngTuple[] }) {
   const start = route[0], end = route[route.length - 1];
   if (!start || !end) return null;
   return <div className="relative z-0 h-64 overflow-hidden" aria-label="Sample journey map">
@@ -42,7 +43,8 @@ function JourneyMap({ route }: { route: LatLngTuple[] }) {
 export default function UserJourneysSection() {
   const [before, setBefore] = useState("2026-11-25T23:59");
   const [dateOpen, setDateOpen] = useState(false);
-  const [detail, setDetail] = useState<Journey | null>(null);
+  const navigate = useNavigate();
+  const { userId } = useParams();
   const label = new Date(before).toLocaleString("en-GB", { hour: "numeric", minute: "2-digit", day: "numeric", month: "long", year: "numeric" });
   const navBtn = "h-12 gap-1 rounded-md border-2 border-portal-navy bg-background px-4 text-lg font-normal text-portal-navy hover:bg-portal-surface";
   return <section className="space-y-6">
@@ -70,10 +72,9 @@ export default function UserJourneysSection() {
       </div>
       <div className="space-y-3">
         <JourneyMap route={j.route} />
-        <Button className="h-9 gap-1 rounded-md px-4 text-lg font-normal" onClick={() => setDetail(j)}>View journey details<ChevronRight className="h-4 w-4" /></Button>
+        <Button className="h-9 gap-1 rounded-md px-4 text-lg font-normal" onClick={() => navigate(`/admin/insurer/users/${userId}/journeys/${j.id}`)}>View journey details<ChevronRight className="h-4 w-4" /></Button>
       </div>
     </article>)}
     <Dialog open={dateOpen} onOpenChange={setDateOpen}><DialogContent><DialogHeader><DialogTitle>Change date</DialogTitle><DialogDescription>Show journeys started before this date and time. Example data only.</DialogDescription></DialogHeader><Input type="datetime-local" value={before} onChange={(e) => e.target.value && setBefore(e.target.value)} /></DialogContent></Dialog>
-    <Dialog open={detail !== null} onOpenChange={(o) => !o && setDetail(null)}><DialogContent><DialogHeader><DialogTitle>{detail?.date}</DialogTitle><DialogDescription>Journey details are not connected yet. This is an example journey.</DialogDescription></DialogHeader></DialogContent></Dialog>
   </section>;
 }
