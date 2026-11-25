@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -61,8 +62,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.subscription.unsubscribe();
   }, []);
 
+  const queryClient = useQueryClient();
   const signOut = async () => {
     await supabase.auth.signOut();
+    // Drop the previous account's cached data so the next sign-in loads fresh.
+    queryClient.clear();
   };
 
   return (
