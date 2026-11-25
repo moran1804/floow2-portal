@@ -90,9 +90,10 @@ interface AdminLayoutProps {
   actions?: ReactNode;
   children: ReactNode;
   hideSidebar?: boolean;
+  subtitle?: ReactNode;
 }
 
-const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = false }: AdminLayoutProps) => {
+const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = false, subtitle }: AdminLayoutProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -431,6 +432,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                 ))}
               </div>
             )}
+            {subtitle && <p className="mb-2 break-all text-sm font-semibold text-portal-navy">{subtitle}</p>}
             <div className="flex items-center justify-between gap-4">
               <h1 className="text-4xl font-bold text-portal-navy">{title}</h1>
               {actions}
