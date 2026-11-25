@@ -14,6 +14,59 @@ export type Database = {
   }
   public: {
     Tables: {
+      apps: {
+        Row: {
+          app_type: string
+          aud_claim: string | null
+          callback_urls: string[]
+          created_at: string
+          created_by: string | null
+          customer_id: string
+          id: string
+          name: string
+          oidc_issuer_url: string | null
+          signout_urls: string[]
+          updated_at: string
+          user_id_claim: string | null
+        }
+        Insert: {
+          app_type: string
+          aud_claim?: string | null
+          callback_urls?: string[]
+          created_at?: string
+          created_by?: string | null
+          customer_id: string
+          id?: string
+          name: string
+          oidc_issuer_url?: string | null
+          signout_urls?: string[]
+          updated_at?: string
+          user_id_claim?: string | null
+        }
+        Update: {
+          app_type?: string
+          aud_claim?: string | null
+          callback_urls?: string[]
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string
+          id?: string
+          name?: string
+          oidc_issuer_url?: string | null
+          signout_urls?: string[]
+          updated_at?: string
+          user_id_claim?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "apps_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customers: {
         Row: {
           archived_at: string | null

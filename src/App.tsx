@@ -23,6 +23,8 @@ import DocumentationPage from "./pages/admin/DocumentationPage.tsx";
 import DriverScorePage from "./pages/admin/DriverScorePage.tsx";
 import AdminHomePage from "./pages/admin/AdminHomePage.tsx";
 import InsightsPage from "./pages/admin/InsightsPage.tsx";
+import AppsPage from "./pages/admin/AppsPage.tsx";
+import AppAddPage from "./pages/admin/AppAddPage.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import RequireAdmin from "@/components/admin/RequireAdmin";
 import { CustomerProvider } from "@/contexts/CustomerContext";
@@ -39,6 +41,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin/insights" element={<RequireAdmin><InsightsPage /></RequireAdmin>} />
+            <Route path="/admin/developer/apps" element={<RequireAdmin><AppsPage /></RequireAdmin>} />
+            <Route path="/admin/developer/apps/add" element={<RequireAdmin><AppAddPage /></RequireAdmin>} />
             <Route
               path="/admin/overview"
               element={

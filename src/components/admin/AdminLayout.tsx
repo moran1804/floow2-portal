@@ -62,7 +62,7 @@ const otherTopItems: NavItem[] = [
 ];
 
 const devChildren: NavItem[] = [
-  { to: "#", icon: Smartphone, label: "Apps", disabled: true },
+  { to: "/admin/developer/apps", icon: Smartphone, label: "Apps" },
   { to: "#", icon: Send, label: "Campaigns", disabled: true },
   { to: "#", icon: Network, label: "REST API", disabled: true },
   { to: "#", icon: Webhook, label: "Webhooks", disabled: true },
@@ -102,7 +102,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
     isAdminChildActive || isAdminHome
   );
 
-  const isDevHome = pathname === "/admin/developer";
+  const isDevHome = pathname.startsWith("/admin/developer");
   const [devOpen, setDevOpen] = useState<boolean>(isDevHome);
 
   const isInsurerHome = pathname === "/admin/insurer";
@@ -272,15 +272,32 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                 </button>
                 {devOpen && (
                   <div className="bg-portal-sidebar-active/30">
-                    {devChildren.map((item) => (
-                      <div
-                        key={item.label}
-                        className="flex items-center gap-3 pl-14 pr-6 py-2.5 text-sm font-medium border-l-2 border-transparent text-portal-muted cursor-default"
-                      >
-                        <item.icon className="w-4 h-4" />
-                        {item.label}
-                      </div>
-                    ))}
+                    {devChildren.map((item) =>
+                      item.disabled ? (
+                        <div
+                          key={item.label}
+                          className="flex items-center gap-3 pl-14 pr-6 py-2.5 text-sm font-medium border-l-2 border-transparent text-portal-muted cursor-default"
+                        >
+                          <item.icon className="w-4 h-4" />
+                          {item.label}
+                        </div>
+                      ) : (
+                        <NavLink
+                          key={item.label}
+                          to={item.to}
+                          className={({ isActive }) =>
+                            `flex items-center gap-3 pl-14 pr-6 py-2.5 text-sm font-medium border-l-2 ${
+                              isActive
+                                ? "bg-portal-sidebar-active border-portal-accent text-portal-accent"
+                                : "border-transparent text-portal-text hover:bg-portal-sidebar-active/50"
+                            }`
+                          }
+                        >
+                          <item.icon className="w-4 h-4" />
+                          {item.label}
+                        </NavLink>
+                      )
+                    )}
                   </div>
                 )}
 
