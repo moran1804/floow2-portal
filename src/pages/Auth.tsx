@@ -44,7 +44,11 @@ const Auth = () => {
         if (error) throw error;
         setInfo("If an account exists for that email, a reset link is on its way.");
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        // Demo only: empty fields sign into the shared demo account.
+        const creds = !email && !password
+          ? { email: "demo@thefloow.com", password: "FloowDemo!2026x" }
+          : { email, password };
+        const { error } = await supabase.auth.signInWithPassword(creds);
         if (error) throw error;
       }
     } catch (err: any) {
@@ -78,12 +82,12 @@ const Auth = () => {
         <form className="space-y-4" onSubmit={submit}>
           <div>
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input id="email" type="email" required={mode === "reset"} value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           {mode === "login" && (
             <div>
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
               <div className="mt-2 flex justify-end">
                 <button type="button" className="text-sm font-medium text-portal-accent hover:text-portal-navy hover:underline underline-offset-4 transition-colors"
                   onClick={() => { setMode("reset"); setError(null); setInfo(null); }}>
