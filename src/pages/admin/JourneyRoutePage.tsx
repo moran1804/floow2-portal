@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Circle, CornerUpLeft, Filter, Gauge, AlertCircle, Smartphone, Route as RouteIcon, type LucideIcon } from "lucide-react";
-import { MapContainer, TileLayer, Polyline, CircleMarker, Popup, ZoomControl, useMap } from "react-leaflet";
-import type { LatLngTuple } from "leaflet";
+import { MapContainer, TileLayer, Polyline, CircleMarker, Popup, Marker, ZoomControl, useMap } from "react-leaflet";
+import L, { type LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { renderToStaticMarkup } from "react-dom/server";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { sampleJourneys } from "@/components/admin/UserJourneysSection";
 
@@ -31,6 +32,14 @@ function OpenPopup({ id }: { id: number | null }) {
   useEffect(() => { if (id === null) map.closePopup(); }, [id, map]);
   return null;
 }
+
+const eventPinIcon = (Icon: LucideIcon) => L.divIcon({
+  className: "journey-event-pin",
+  html: renderToStaticMarkup(<Icon className="journey-event-pin-icon" />),
+  iconSize: [34, 34],
+  iconAnchor: [17, 17],
+  popupAnchor: [0, -16],
+});
 
 export default function JourneyRoutePage() {
   const { userId, journeyId } = useParams();
@@ -65,9 +74,9 @@ export default function JourneyRoutePage() {
               <Polyline positions={route} pathOptions={{ color: "hsl(var(--foreground))", weight: 3 }} />
               <CircleMarker center={route[0]} radius={8} pathOptions={{ color: "hsl(var(--foreground))", fillColor: "hsl(var(--foreground))", fillOpacity: 1 }} />
               <CircleMarker center={route[route.length - 1]} radius={8} pathOptions={{ color: "hsl(var(--foreground))", fillColor: "hsl(var(--background))", fillOpacity: 1, weight: 3 }} />
-              {sel && <CircleMarker key={selected} center={pointAt(route, sel.at)} radius={12} pathOptions={{ color: "hsl(var(--portal-navy))", fillColor: "hsl(var(--background))", fillOpacity: 1, weight: 3 }} eventHandlers={{ add: (ev) => ev.target.openPopup() }}>
+              {sel && <Marker key={selected} position={pointAt(route, sel.at)} icon={eventPinIcon(sel.icon)} eventHandlers={{ add: (ev) => ev.target.openPopup() }}>
                 <Popup closeButton={false}><strong>{sel.label}</strong><br />{sel.time}</Popup>
-              </CircleMarker>}
+              </Marker>}
               <OpenPopup id={selected} />
               <ZoomControl position="bottomright" />
             </MapContainer>

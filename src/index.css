@@ -144,3 +144,23 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* Map marker for the selected journey event: same glyph as the event card. */
+.journey-event-pin {
+  background: transparent;
+  border: none;
+}
+
+.journey-event-pin-icon {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 34px;
+  height: 34px;
+  padding: 7px;
+  border-radius: 9999px;
+  border: 2px solid hsl(var(--portal-navy));
+  background: hsl(var(--background));
+  color: hsl(var(--portal-navy));
+  box-shadow: 0 4px 10px hsl(var(--portal-navy) / 0.28);
+}
