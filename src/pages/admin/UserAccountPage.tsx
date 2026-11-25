@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCustomer } from "@/contexts/CustomerContext";
 import UserScoreTile from "@/components/admin/UserScoreTile";
 import UserJourneysSection from "@/components/admin/UserJourneysSection";
+import UserFilesSection from "@/components/admin/UserFilesSection";
 
 const influences = [{ name: "Mobile use", score: 79 }, { name: "Smooth driving", score: 67 }, { name: "Speed", score: 82 }, { name: "Time of day", score: 91 }, { name: "Time on task", score: 80 }];
 const exampleDetails: Record<string, string> = {
@@ -45,7 +46,7 @@ export default function UserAccountPage() {
       return data;
     },
   });
-  const sectionTitle = section === "journeys" ? "Journeys" : section === "files" ? "Files" : section === "terms" ? "Terms Acceptance" : "User overview";
+  const sectionTitle = section === "journeys" ? "Journeys" : section === "files" ? "User files" : section === "terms" ? "Terms Acceptance" : "User overview";
   const base = `/admin/insurer/users/${userId}`;
   const nav = [[base, "User overview"], [`${base}/journeys`, "Journeys"], [`${base}/files`, "Files"], [`${base}/terms`, "Terms Acceptance"]];
   const productCode = user?.products?.code ?? "Not assigned";
@@ -53,7 +54,7 @@ export default function UserAccountPage() {
     <div className="mx-auto max-w-6xl space-y-7">
       <nav className="flex flex-wrap gap-2 md:hidden" aria-label="User account sections"><Button variant="ghost" size="sm" asChild><Link to="/admin/insurer/search"><ArrowLeft />Users</Link></Button>{nav.map(([to, label]) => <Button key={to} asChild variant="outline" size="sm"><Link to={to}>{label}</Link></Button>)}</nav>
       <p className="break-all text-xs text-portal-muted">User ID: {userId}</p>
-      {isLoading ? <p role="status">Loading user…</p> : error ? <p role="alert">Unable to load this user. Please try again.</p> : !user ? <p role="status">This user was not found in the selected client.</p> : section === "journeys" ? <UserJourneysSection /> : section ? <section><h2 className="mb-4 text-xl font-semibold text-portal-navy">{sectionTitle}</h2><p className="border border-portal-border bg-portal-panel p-5 text-sm text-portal-muted">{section === "terms" ? "Acceptance history is not connected for this user. No acceptance is being implied." : `${sectionTitle} are not connected for this user yet.`}</p></section> : <>
+      {isLoading ? <p role="status">Loading user…</p> : error ? <p role="alert">Unable to load this user. Please try again.</p> : !user ? <p role="status">This user was not found in the selected client.</p> : section === "journeys" ? <UserJourneysSection /> : section === "files" ? <UserFilesSection /> : section ? <section><h2 className="mb-4 text-xl font-semibold text-portal-navy">{sectionTitle}</h2><p className="border border-portal-border bg-portal-panel p-5 text-sm text-portal-muted">{section === "terms" ? "Acceptance history is not connected for this user. No acceptance is being implied." : `${sectionTitle} are not connected for this user yet.`}</p></section> : <>
         <section><h2 className="mb-4 text-2xl font-semibold text-portal-navy">User Details</h2><div className="grid gap-5 rounded-md border border-portal-border bg-portal-panel p-5 sm:grid-cols-2"><DetailRows rows={[["Product code", productCode], ["First name", user.first_name], ["Display name", user.display_name]]} /><div className="sm:border-l sm:border-portal-border sm:pl-5"><DetailRows rows={[["Email", user.email], ["Last name", user.last_name]]} /></div></div></section>
         <section><div className="mb-4 flex flex-wrap items-center justify-between gap-3"><h2 className="text-2xl font-semibold text-portal-navy">Scores</h2><div className="flex flex-wrap items-center gap-3 text-xs"><span>Period:</span><strong>{period}</strong><Button variant="outline" size="sm" className="h-7 gap-1 text-xs" onClick={() => setPeriodOpen(true)}>Change period<CalendarDays className="h-3 w-3" /></Button></div></div>
           <p className="mb-4 text-xs text-portal-muted">Example scores only · No driving or scoring data is connected for this user.</p>
