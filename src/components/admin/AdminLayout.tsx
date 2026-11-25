@@ -72,7 +72,7 @@ const devChildren: NavItem[] = [
 ];
 
 const insurerChildren: NavItem[] = [
-  { to: "#", icon: AlertTriangle, label: "Impacts", disabled: true },
+  { to: "/admin/insurer/impacts", icon: AlertTriangle, label: "Impacts" },
   { to: "/admin/insurer/search", icon: SearchIcon, label: "Search User Data" },
 ];
 
@@ -112,7 +112,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
   const [devOpen, setDevOpen] = useState<boolean>(isDevHome);
 
   const isInsurerHome = pathname.startsWith("/admin/insurer");
-  const isUserSearchPage = pathname === "/admin/insurer/search";
+  const isUserSearchPage = pathname === "/admin/insurer/search" || pathname === "/admin/insurer/impacts";
   const [insurerOpen, setInsurerOpen] = useState<boolean>(isInsurerHome);
 
   const initials = (user?.email ?? "??")
@@ -133,8 +133,8 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
   return (
     <div className="min-h-screen bg-portal-surface text-portal-text">
       {/* Top bar */}
-      <header className={`flex items-center justify-between bg-portal-panel border-b border-portal-border ${isInsightsPage ? "px-3 sm:px-6" : "px-6"} h-16`}>
-        <div className={`flex items-center ${isInsightsPage ? "gap-3 sm:gap-6" : "gap-6"}`}>
+      <header className={`flex items-center justify-between bg-portal-panel border-b border-portal-border ${isInsightsPage || isUserSearchPage ? "px-3 sm:px-6" : "px-6"} h-16`}>
+        <div className={`flex items-center ${isInsightsPage || isUserSearchPage ? "gap-3 sm:gap-6" : "gap-6"}`}>
           <button
             type="button"
             onClick={() => navigate("/admin/clients")}
@@ -144,7 +144,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
             <img
               src={floowLogo.url}
               alt="The Floow"
-              className="h-6 w-auto"
+              className={isUserSearchPage ? "h-4 sm:h-6 w-auto" : "h-6 w-auto"}
             />
           </button>
           <Button
@@ -194,7 +194,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
               <>
                 <Button asChild variant="ghost" className="mb-3 w-full justify-start rounded-none px-6"><NavLink to="/admin/overview"><ArrowLeft />Back to home</NavLink></Button>
                 <NavLink to="/admin/insurer" className={navLinkClass} end><AlertCircle className="h-5 w-5" />Overview</NavLink>
-                <div className={disabledClass} aria-disabled="true"><AlertTriangle className="h-5 w-5" />Impacts</div>
+                <NavLink to="/admin/insurer/impacts" className={navLinkClass}><AlertTriangle className="h-5 w-5" />Impacts</NavLink>
                 <NavLink to="/admin/insurer/search" className={navLinkClass}><SearchIcon className="h-5 w-5" />Search User Data</NavLink>
               </>
             ) : isWebhooksPage ? (

@@ -26,7 +26,7 @@ const InsurerPortalPage = () => (
           {tile.title === "Search User Data" ? (
             <Button asChild className="w-full"><Link to="/admin/insurer/search">View</Link></Button>
           ) : (
-            <Button disabled className="w-full bg-portal-navy/60 text-portal-navy-foreground">View</Button>
+            <Button asChild className="w-full"><Link to="/admin/insurer/impacts">View</Link></Button>
           )}
         </div>
       ))}

@@ -6,3 +6,4 @@
 - Store REST API credentials per customer in api_credentials (admin-only), so each client manages its own API access.
 - Store webhook subscriptions and sent-event logs per customer (webhook_subscriptions, webhook_events; admin-only), so each client manages its own webhook targets.
 - Keep insurer user search in the protected portal; show an explicit unavailable state until a real customer-scoped user data source is connected, so UI submissions never imply a completed search.
+- Keep the Impacts screen's presentation-only sample records visibly labelled and separate from client telemetry until a real impact source is connected, so examples cannot be mistaken for live cases.
