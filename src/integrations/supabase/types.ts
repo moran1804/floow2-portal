@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_credentials: {
+        Row: {
+          client_id: string
+          created_at: string
+          customer_id: string
+          id: string
+          name: string
+          scopes: string[]
+        }
+        Insert: {
+          client_id?: string
+          created_at?: string
+          customer_id: string
+          id?: string
+          name: string
+          scopes?: string[]
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          customer_id?: string
+          id?: string
+          name?: string
+          scopes?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_credentials_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       apps: {
         Row: {
           app_type: string

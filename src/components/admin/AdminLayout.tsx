@@ -64,7 +64,7 @@ const otherTopItems: NavItem[] = [
 const devChildren: NavItem[] = [
   { to: "/admin/developer/apps", icon: Smartphone, label: "Apps" },
   { to: "/admin/developer/campaigns", icon: Send, label: "Campaigns" },
-  { to: "#", icon: Network, label: "REST API", disabled: true },
+  { to: "/admin/developer/rest-api", icon: Network, label: "REST API" },
   { to: "#", icon: Webhook, label: "Webhooks", disabled: true },
 ];
 
@@ -96,6 +96,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
   const isClientsPage = pathname === "/admin/clients";
   const isInsightsPage = pathname.startsWith("/admin/insights");
   const isCampaignsPage = pathname.startsWith("/admin/developer/campaigns");
+  const isRestApiPage = pathname.startsWith("/admin/developer/rest-api");
 
   const isAdminChildActive = adminChildren.some((c) => pathname.startsWith(c.to));
   const isAdminHome = pathname === "/admin/home";
@@ -176,6 +177,13 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                 <NavLink to="/admin/developer/campaigns" className={navLinkClass} end><LayoutGrid className="h-5 w-5" />Overview</NavLink>
                 <NavLink to="/admin/developer/campaigns/config" className={navLinkClass}><SlidersHorizontal className="h-5 w-5" />Configuration</NavLink>
                 <NavLink to="/admin/developer/campaigns/tracking-failures" className={navLinkClass}><AlertTriangle className="h-5 w-5" />Tracking Failures</NavLink>
+              </>
+            ) : isRestApiPage ? (
+              <>
+                <Button asChild variant="ghost" className="mb-3 w-full justify-start rounded-none px-6"><NavLink to="/admin/developer"><ArrowLeft />Developer tools</NavLink></Button>
+                <NavLink to="/admin/developer/rest-api" className={navLinkClass} end><Network className="h-5 w-5" />REST API</NavLink>
+                <NavLink to="/admin/developer/rest-api/credentials" className={navLinkClass}><KeyRound className="h-5 w-5" />Credentials</NavLink>
+                <NavLink to="/admin/developer/rest-api/docs" className={navLinkClass}><FileText className="h-5 w-5" />Documentation</NavLink>
               </>
             ) : isInsightsPage ? (
               <>

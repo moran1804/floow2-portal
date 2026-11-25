@@ -27,6 +27,10 @@ import AppsPage from "./pages/admin/AppsPage.tsx";
 import AppAddPage from "./pages/admin/AppAddPage.tsx";
 import CampaignsOverviewPage from "./pages/admin/campaigns/CampaignsOverviewPage.tsx";
 import CampaignsConfigPage from "./pages/admin/campaigns/CampaignsConfigPage.tsx";
+import RestApiOverviewPage from "./pages/admin/restapi/RestApiOverviewPage.tsx";
+import CredentialsPage from "./pages/admin/restapi/CredentialsPage.tsx";
+import CredentialsAddPage from "./pages/admin/restapi/CredentialsAddPage.tsx";
+import ApiDocumentationPage from "./pages/admin/restapi/ApiDocumentationPage.tsx";
 import TrackingFailuresPage from "./pages/admin/campaigns/TrackingFailuresPage.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import RequireAdmin from "@/components/admin/RequireAdmin";
@@ -46,6 +50,10 @@ const App = () => (
             <Route path="/admin/insights" element={<RequireAdmin><InsightsPage /></RequireAdmin>} />
             <Route path="/admin/developer/apps" element={<RequireAdmin><AppsPage /></RequireAdmin>} />
             <Route path="/admin/developer/apps/add" element={<RequireAdmin><AppAddPage /></RequireAdmin>} />
+            <Route path="/admin/developer/rest-api" element={<RequireAdmin><RestApiOverviewPage /></RequireAdmin>} />
+            <Route path="/admin/developer/rest-api/credentials" element={<RequireAdmin><CredentialsPage /></RequireAdmin>} />
+            <Route path="/admin/developer/rest-api/credentials/add" element={<RequireAdmin><CredentialsAddPage /></RequireAdmin>} />
+            <Route path="/admin/developer/rest-api/docs" element={<RequireAdmin><ApiDocumentationPage /></RequireAdmin>} />
             <Route path="/admin/developer/campaigns" element={<RequireAdmin><CampaignsOverviewPage /></RequireAdmin>} />
             <Route path="/admin/developer/campaigns/config" element={<RequireAdmin><CampaignsConfigPage /></RequireAdmin>} />
             <Route path="/admin/developer/campaigns/tracking-failures" element={<RequireAdmin><TrackingFailuresPage /></RequireAdmin>} />

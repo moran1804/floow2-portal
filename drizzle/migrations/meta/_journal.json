@@ -15,6 +15,13 @@
       "when": 1795601525750,
       "tag": "0001_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795601882890,
+      "tag": "0002_create_api_credentials",
+      "breakpoints": true
     }
   ]
 }

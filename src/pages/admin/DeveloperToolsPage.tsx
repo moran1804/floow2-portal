@@ -8,7 +8,7 @@ type Tile = { icon: LucideIcon; title: string; description: string; to?: string 
 const tiles: Tile[] = [
   { icon: Smartphone, title: "Apps", description: "Manage access for your applications and API requests.", to: "/admin/developer/apps" },
   { icon: Send, title: "Campaigns", description: "Manage communication campaigns.", to: "/admin/developer/campaigns" },
-  { icon: Network, title: "REST API", description: "Access to and documentation of the REST APIs available." },
+  { icon: Network, title: "REST API", description: "Access to and documentation of the REST APIs available.", to: "/admin/developer/rest-api" },
   { icon: Webhook, title: "Webhooks", description: "Send events to external HTTP endpoints." },
 ];
 
