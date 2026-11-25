@@ -18,6 +18,7 @@ import {
   Search as SearchIcon,
   PieChart,
   ChevronDown,
+  AlertCircle,
   Inbox,
   Mail,
   ChevronRight,
@@ -187,6 +188,14 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                 <NavLink to="/admin/developer/rest-api" className={navLinkClass} end><Network className="h-5 w-5" />REST API</NavLink>
                 <NavLink to="/admin/developer/rest-api/credentials" className={navLinkClass}><KeyRound className="h-5 w-5" />Credentials</NavLink>
                 <NavLink to="/admin/developer/rest-api/docs" className={navLinkClass}><FileText className="h-5 w-5" />Documentation</NavLink>
+              </>
+            ) : isInsurerHome ? (
+              <>
+                <Button asChild variant="ghost" className="mb-3 w-full justify-start rounded-none px-6"><NavLink to="/admin/overview"><ArrowLeft />Back to home</NavLink></Button>
+                <NavLink to="/admin/insurer" className={navLinkClass} end><AlertCircle className="h-5 w-5" />Overview</NavLink>
+                <div className={disabledClass} aria-disabled="true"><AlertTriangle className="h-5 w-5" />Impacts</div>
+                <div className={disabledClass} aria-disabled="true"><FileText className="h-5 w-5" />Policies</div>
+                <div className={disabledClass} aria-disabled="true"><Users className="h-5 w-5" />Users</div>
               </>
             ) : isWebhooksPage ? (
               <>

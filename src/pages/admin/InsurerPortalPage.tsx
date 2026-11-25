@@ -1,4 +1,4 @@
-import { AlertTriangle, Users, LucideIcon } from "lucide-react";
+import { AlertTriangle, FileText, Users, LucideIcon } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 
@@ -6,12 +6,13 @@ type Tile = { icon: LucideIcon; title: string; description: string };
 
 const tiles: Tile[] = [
   { icon: AlertTriangle, title: "Impacts", description: "See impacts detected during user journeys." },
+  { icon: FileText, title: "Policies", description: "View policy data" },
   { icon: Users, title: "Users", description: "Search users and their journeys." },
 ];
 
 const InsurerPortalPage = () => (
   <AdminLayout
-    title="Insurer Portal"
+    title="Overview"
     crumbs={[{ label: "Home", to: "/admin/overview" }, { label: "Insurer Portal" }]}
   >
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
