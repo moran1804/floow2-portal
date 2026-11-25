@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 export type Customer = {
   id: string;
@@ -27,8 +28,11 @@ export const CustomerProvider = ({ children }: { children: ReactNode }) => {
     () => (typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null)
   );
 
+  const { user } = useAuth();
+  // Keyed by signed-in user so the list reloads after login (signed-out reads return nothing).
   const { data: customers = [], isLoading } = useQuery({
-    queryKey: ["customers"],
+    queryKey: ["customers", user?.id ?? null],
+    enabled: !!user,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("customers")
