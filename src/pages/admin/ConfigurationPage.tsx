@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Car,
   User,
@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
+import { useSearchMatching, SearchMatchingMode } from "@/hooks/useSearchMatching";
 
 type Mode = { key: string; label: string; icon: LucideIcon };
 
@@ -33,8 +34,10 @@ const MODES: Mode[] = [
 ];
 
 const ConfigurationPage = () => {
-  const [searchMode, setSearchMode] = useState<"exact" | "smart">("exact");
+  const { mode, saveMode } = useSearchMatching();
+  const [searchMode, setSearchMode] = useState<SearchMatchingMode>(mode);
   const [initialSearchMode, setInitialSearchMode] = useState(searchMode);
+  useEffect(() => { setSearchMode(mode); setInitialSearchMode(mode); }, [mode]);
   const [selected, setSelected] = useState<Record<string, boolean>>(
     Object.fromEntries(MODES.map((m) => [m.key, true]))
   );
@@ -107,6 +110,7 @@ const ConfigurationPage = () => {
           onClick={() => {
             setInitial(selected);
             setInitialSearchMode(searchMode);
+            saveMode(searchMode);
           }}
           className="bg-portal-navy hover:bg-portal-navy/90 text-portal-navy-foreground disabled:opacity-50 px-8"
         >

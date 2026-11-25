@@ -8,3 +8,4 @@
 - Keep insurer user search in the protected portal; show an explicit unavailable state until a real customer-scoped user data source is connected, so UI submissions never imply a completed search.
 - Keep the Impacts screen's presentation-only sample records visibly labelled and separate from client telemetry until a real impact source is connected, so examples cannot be mistaken for live cases.
 - Share synthetic impact records between the list and protected report routes; use Leaflet/OpenStreetMap for sample journeys and show embedded Street View as unavailable until connected, so navigation stays consistent without fabricating live geographic evidence.
+- Share customer-keyed browser search-matching preferences between Configuration and insurer search until server settings are connected; retain the explicit search-unavailable state so presentation changes never imply real partial-search results.

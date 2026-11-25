@@ -18,3 +18,8 @@
 - [x] Replace the small impact dialog with a full report and dedicated navigation.
 - [x] Add impact details, journey map, phone-use/speed factors, and before/after timelines.
 - [x] Verify report navigation, sample status changes, charts, maps, and phone layout.
+
+# Smart match search
+
+- [x] Connect the saved search mode to a single-bar partial-search form with guidance.
+- [x] Test saved mode, partial input, exact-match preservation, and phone layout.
