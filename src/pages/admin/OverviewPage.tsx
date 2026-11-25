@@ -39,12 +39,12 @@ const tiles: Tile[] = [
     enabled: true,
   },
   {
-    to: "#",
+    to: "/admin/insights",
     icon: PieChart,
     title: "Insights",
     description: "Analyse the performance of your product and policies.",
     cta: "View",
-    enabled: false,
+    enabled: true,
   },
   {
     to: "/admin/documentation",

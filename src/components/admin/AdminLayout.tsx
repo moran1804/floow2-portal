@@ -25,6 +25,9 @@ import {
   Network,
   Webhook,
   AlertTriangle,
+  ClipboardList,
+  MessageSquare,
+  ArrowLeft,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -54,7 +57,7 @@ const adminChildren: NavItem[] = [
 ];
 
 const otherTopItems: NavItem[] = [
-  { to: "#", icon: PieChart, label: "Insights", disabled: true },
+  { to: "/admin/insights", icon: PieChart, label: "Insights" },
   { to: "/admin/documentation", icon: DocIcon, label: "Documentation" },
 ];
 
@@ -91,6 +94,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const isClientsPage = pathname === "/admin/clients";
+  const isInsightsPage = pathname.startsWith("/admin/insights");
 
   const isAdminChildActive = adminChildren.some((c) => pathname.startsWith(c.to));
   const isAdminHome = pathname === "/admin/home";
@@ -122,8 +126,8 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
   return (
     <div className="min-h-screen bg-portal-surface text-portal-text">
       {/* Top bar */}
-      <header className="flex items-center justify-between bg-portal-panel border-b border-portal-border px-6 h-16">
-        <div className="flex items-center gap-6">
+      <header className={`flex items-center justify-between bg-portal-panel border-b border-portal-border ${isInsightsPage ? "px-3 sm:px-6" : "px-6"} h-16`}>
+        <div className={`flex items-center ${isInsightsPage ? "gap-3 sm:gap-6" : "gap-6"}`}>
           <button
             type="button"
             onClick={() => navigate("/admin/clients")}
@@ -163,9 +167,16 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
       <div className="flex">
         {/* Sidebar */}
         {!hideSidebar && (
-        <aside className="w-64 min-h-[calc(100vh-4rem)] bg-portal-sidebar border-r border-portal-border py-4">
+        <aside className={`${isInsightsPage ? "hidden md:block w-52 shrink-0" : "w-64"} min-h-[calc(100vh-4rem)] bg-portal-sidebar border-r border-portal-border py-4`}>
           <nav className="mt-2">
-            {isClientsPage ? (
+            {isInsightsPage ? (
+              <>
+                <Button asChild variant="ghost" className="mb-3 w-full justify-start rounded-none px-6"><NavLink to="/admin/overview"><ArrowLeft />Back to home</NavLink></Button>
+                <NavLink to="/admin/insights" className={navLinkClass} end><PieChart className="h-5 w-5" />Overview</NavLink>
+                <div className={disabledClass} aria-disabled="true"><ClipboardList className="h-5 w-5" />Reporting</div>
+                <div className={disabledClass} aria-disabled="true"><MessageSquare className="h-5 w-5" />Feedback</div>
+              </>
+            ) : isClientsPage ? (
               clientsNavItems.map((item) =>
                 item.disabled ? (
                   <div key={item.label} className={disabledClass}>
@@ -331,7 +342,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
 
         {/* Main */}
         <main className="flex-1 min-w-0">
-          <div className="bg-portal-panel border-b border-portal-border px-8 pt-6 pb-8">
+          <div className={`${isInsightsPage ? "bg-portal-panel-header px-5 md:px-8" : "bg-portal-panel px-8"} border-b border-portal-border pt-6 pb-8`}>
             {crumbs.length > 0 && (
               <div className="text-sm text-portal-muted mb-3">
                 {crumbs.map((c, i) => (
@@ -353,7 +364,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
               {actions}
             </div>
           </div>
-          <div className="p-8">{children}</div>
+          <div className={isInsightsPage ? "p-4 md:p-6" : "p-8"}>{children}</div>
           <footer className="px-8 pb-8 text-xs text-portal-muted">
             Copyright © {new Date().getFullYear()} The Floow Limited - All Rights Reserved
           </footer>

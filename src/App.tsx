@@ -22,6 +22,7 @@ import InsurerPortalPage from "./pages/admin/InsurerPortalPage.tsx";
 import DocumentationPage from "./pages/admin/DocumentationPage.tsx";
 import DriverScorePage from "./pages/admin/DriverScorePage.tsx";
 import AdminHomePage from "./pages/admin/AdminHomePage.tsx";
+import InsightsPage from "./pages/admin/InsightsPage.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import RequireAdmin from "@/components/admin/RequireAdmin";
 import { CustomerProvider } from "@/contexts/CustomerContext";
@@ -37,6 +38,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/admin/insights" element={<RequireAdmin><InsightsPage /></RequireAdmin>} />
             <Route
               path="/admin/overview"
               element={

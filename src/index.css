@@ -67,6 +67,11 @@ All colors MUST be HSL.
     --portal-muted: 216 30% 35%;
     --portal-border: 204 39% 81%;
     --portal-accent: 203 49% 44%;
+    --chart-ios: 203 49% 44%;
+    --chart-android: 145 55% 42%;
+    --chart-other: 280 45% 50%;
+    --chart-unknown: 38 90% 48%;
+    --chart-time: 0 70% 55%;
 
     --status-active-bg: 145 60% 90%;
     --status-active-fg: 145 70% 24%;
