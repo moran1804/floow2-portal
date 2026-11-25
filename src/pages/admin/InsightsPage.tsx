@@ -1,3 +1,4 @@
+import { useUnits } from "@/hooks/useUnits";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format, subMonths } from "date-fns";
@@ -42,6 +43,7 @@ function OperatingSystems({ ios, android }: { ios: number; android: number }) {
 }
 
 export default function InsightsPage() {
+  const { speed, speedValue, speedLabel, distance } = useUnits();
   const { selectedCustomerId } = useCustomer();
   const [today] = useState(() => new Date());
   const defaults = { product: "all", from: format(subMonths(today, 1), "yyyy-MM-dd"), to: format(today, "yyyy-MM-dd") };
@@ -91,7 +93,7 @@ export default function InsightsPage() {
       </InsightPanel>
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
         <InsightPanel title="Journeys" icon={Route}>
-          <dl className="space-y-3 text-xs"><div className="flex justify-between"><dt>Total journeys recorded</dt><dd className="font-bold">{count}</dd></div><div className="flex justify-between"><dt>Total distance driven</dt><dd className="font-bold">{Math.round(rows.reduce((s, r) => s + r.miles, 0)).toLocaleString()} miles</dd></div><div className="flex justify-between"><dt>Total driving duration</dt><dd className="font-bold">{Math.floor(duration / 60)}h {duration % 60}m</dd></div></dl>
+          <dl className="space-y-3 text-xs"><div className="flex justify-between"><dt>Total journeys recorded</dt><dd className="font-bold">{count}</dd></div><div className="flex justify-between"><dt>Total distance driven</dt><dd className="font-bold">{distance(Math.round(rows.reduce((s, r) => s + r.miles, 0)), 0)}</dd></div><div className="flex justify-between"><dt>Total driving duration</dt><dd className="font-bold">{Math.floor(duration / 60)}h {duration % 60}m</dd></div></dl>
           <p className="mb-2 mt-7 text-xs">Journeys by operating system</p><OperatingSystems ios={ios} android={count - ios} />
         </InsightPanel>
         <InsightPanel title="Users" icon={Users} className="flex flex-col">

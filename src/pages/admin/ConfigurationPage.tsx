@@ -16,6 +16,8 @@ import {
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { useSearchMatching, SearchMatchingMode } from "@/hooks/useSearchMatching";
+import { useUnits } from "@/hooks/useUnits";
+import type { SpeedUnit } from "@/lib/units";
 
 type Mode = { key: string; label: string; icon: LucideIcon };
 
@@ -38,6 +40,10 @@ const ConfigurationPage = () => {
   const [searchMode, setSearchMode] = useState<SearchMatchingMode>(mode);
   const [initialSearchMode, setInitialSearchMode] = useState(searchMode);
   useEffect(() => { setSearchMode(mode); setInitialSearchMode(mode); }, [mode]);
+  const { unit, saveUnit } = useUnits();
+  const [unitChoice, setUnitChoice] = useState<SpeedUnit>(unit);
+  const [initialUnit, setInitialUnit] = useState<SpeedUnit>(unit);
+  useEffect(() => { setUnitChoice(unit); setInitialUnit(unit); }, [unit]);
   const [selected, setSelected] = useState<Record<string, boolean>>(
     Object.fromEntries(MODES.map((m) => [m.key, true]))
   );
@@ -47,7 +53,7 @@ const ConfigurationPage = () => {
     setSelected((s) => ({ ...s, [k]: !s[k] }));
 
   const dirty =
-    searchMode !== initialSearchMode || MODES.some((m) => selected[m.key] !== initial[m.key]);
+    searchMode !== initialSearchMode || unitChoice !== initialUnit || MODES.some((m) => selected[m.key] !== initial[m.key]);
 
   return (
     <AdminLayout
@@ -104,6 +110,25 @@ const ConfigurationPage = () => {
         </div>
       </section>
 
+      <section className="bg-portal-panel border border-portal-border rounded-lg p-6 max-w-3xl mt-6">
+        <h2 className="text-lg font-bold text-portal-navy mb-5">Units of measure</h2>
+        <div className="flex flex-col gap-3">
+          {[
+            { key: "mph", label: "MPH (miles)", hint: "Show speeds in miles per hour and distances in miles." },
+            { key: "kph", label: "KPH (kilometres)", hint: "Show speeds in kilometres per hour and distances in kilometres." },
+          ].map((o) => (
+            <label key={o.key} className="flex items-start gap-2 text-sm text-portal-text cursor-pointer">
+              <input type="radio" name="units" checked={unitChoice === o.key}
+                onChange={() => setUnitChoice(o.key as SpeedUnit)} className="w-4 h-4 mt-0.5 accent-portal-accent" />
+              <span>
+                <span className="font-semibold block">{o.label}</span>
+                <span className="text-portal-muted">{o.hint}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+      </section>
+
       <div className="max-w-3xl mt-6 flex justify-end">
         <Button
           disabled={!dirty}
@@ -111,6 +136,8 @@ const ConfigurationPage = () => {
             setInitial(selected);
             setInitialSearchMode(searchMode);
             saveMode(searchMode);
+            setInitialUnit(unitChoice);
+            saveUnit(unitChoice);
           }}
           className="bg-portal-navy hover:bg-portal-navy/90 text-portal-navy-foreground disabled:opacity-50 px-8"
         >

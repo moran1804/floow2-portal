@@ -1,3 +1,4 @@
+import { useUnits } from "@/hooks/useUnits";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Clock, Route, Car, Bike, Flag } from "lucide-react";
@@ -41,6 +42,7 @@ export function JourneyMap({ route }: { route: LatLngTuple[] }) {
 }
 
 export default function UserJourneysSection() {
+  const { speed, speedValue, speedLabel, distance } = useUnits();
   const [before, setBefore] = useState("2026-11-25T23:59");
   const [dateOpen, setDateOpen] = useState(false);
   const navigate = useNavigate();
@@ -60,7 +62,7 @@ export default function UserJourneysSection() {
           <div className="flex items-center gap-4">{j.score !== null ? <ScoreRing score={j.score} /> : <span className="w-12" />}<h3 className="text-base font-semibold">{j.date}</h3></div>
           <ul className="space-y-2 text-right text-xs font-semibold">
             <li className="flex items-center justify-end gap-1"><Clock className="h-3.5 w-3.5" />{j.duration}</li>
-            <li className="flex items-center justify-end gap-1"><Route className="h-3.5 w-3.5" />{j.miles}</li>
+            <li className="flex items-center justify-end gap-1"><Route className="h-3.5 w-3.5" />{distance(j.miles)}</li>
             <li className="flex items-center justify-end gap-1">{j.mode === "Car" ? <Car className="h-3.5 w-3.5" /> : <Bike className="h-3.5 w-3.5" />}{j.mode}</li>
           </ul>
         </div>

@@ -1,3 +1,4 @@
+import { useUnits } from "@/hooks/useUnits";
 import { useState, type ReactNode } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Car, Bike, ChevronRight, Clock, FileText, Pencil, Route } from "lucide-react";
@@ -24,6 +25,7 @@ function Rows({ rows }: { rows: [string, ReactNode][] }) {
 }
 
 export default function JourneyDetailPage() {
+  const { speed, speedValue, speedLabel, distance } = useUnits();
   const { userId, journeyId } = useParams();
   const navigate = useNavigate();
   const [info, setInfo] = useState<string | null>(null);
@@ -44,7 +46,7 @@ export default function JourneyDetailPage() {
           </Card>
         </div>
         <Card icon={<Route className="h-5 w-5" />} title="Route overview" className="flex flex-col">
-          <div className="mb-3 flex justify-end gap-4 text-xs font-semibold"><span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{journey.duration}</span><span className="flex items-center gap-1"><Route className="h-3.5 w-3.5" />{journey.miles}</span></div>
+          <div className="mb-3 flex justify-end gap-4 text-xs font-semibold"><span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{journey.duration}</span><span className="flex items-center gap-1"><Route className="h-3.5 w-3.5" />{distance(journey.miles)}</span></div>
           <div className="lg:[&>div]:h-96"><JourneyMap route={journey.route} /></div>
           {journey.events !== null && <p className="bg-score-caution-track py-1 text-center text-sm">{journey.events} driving events</p>}
           <div className="mt-auto flex justify-end pt-6"><Button className="gap-1 text-lg font-normal" onClick={() => navigate(`${base}/journeys/${journey.id}/route`)}>View route<ChevronRight className="h-4 w-4" /></Button></div>
