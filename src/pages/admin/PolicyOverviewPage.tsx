@@ -7,6 +7,8 @@ import UserScoreTile from "@/components/admin/UserScoreTile";
 import { supabase } from "@/integrations/supabase/client";
 import { useCustomer } from "@/contexts/CustomerContext";
 import { averageScores, sampleDriverScores } from "@/lib/sampleScores";
+import { sampleDeviceInfo } from "@/lib/sampleDeviceInfo";
+import { AlertTriangle, CheckCircle2 } from "lucide-react";
 
 function DetailRows({ rows }: { rows: [string, string][] }) {
   return <dl className="space-y-4 text-xs">{rows.map(([l, v]) => <div key={l} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] gap-3"><dt className="text-portal-muted">{l}</dt><dd className="break-words text-right font-semibold">{v}</dd></div>)}</dl>;
@@ -27,6 +29,12 @@ export default function PolicyOverviewPage() {
   });
   const scored = drivers.map((d) => ({ d, s: sampleDriverScores(d.id) }));
   const policy = averageScores(scored.map((x) => x.s));
+  const fmt = (d: string) => new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+  const created = drivers.length ? fmt(drivers.map((d) => d.created_at).sort()[0]) : "—";
+  const devices = drivers.map((d) => ({ d, info: sampleDeviceInfo(d.id) }));
+  const resetInfo = devices.map((x) => x.info.reset).find(Boolean) ?? null;
+  const withIssues = devices.filter((x) => x.info.permissions.some((p) => !p.ok) || !x.info.compatible);
+  const paused = devices.filter((x) => x.info.pause.on);
   const products = [...new Set(drivers.map((d) => d.products?.code).filter(Boolean))].join(", ") || "Not assigned";
 
   return <AdminLayout title="Policy overview" subtitle={`Policy Client ID: ${policyId}`} crumbs={[{ label: "Search", to: "/admin/insurer/search" }, { label: selectedCustomer?.name ?? "Client" }, { label: policyId }]}>
@@ -45,6 +53,17 @@ export default function PolicyOverviewPage() {
             <div className="min-w-0 bg-score-surface p-4 sm:p-6"><h3 className="mb-5 mt-2 text-xl font-semibold">Policy Score Influences</h3><div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">{policy.influences.map((i) => <UserScoreTile key={i.name} {...i} />)}</div></div>
           </div>
         </section>}
+        <section><h2 className="mb-2 text-2xl font-semibold text-portal-navy">Policy Account</h2>
+          <p className="mb-4 text-xs text-portal-muted">Example status, journey, reset and device data · Only the created date comes from saved records.</p>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div className="rounded-md border border-portal-border bg-portal-panel p-5"><h3 className="mb-4 text-sm font-semibold text-portal-navy">Policy status</h3><DetailRows rows={[["Status", "Active"], ["Created", created], ["Deactivated", "—"], ["First recorded journey", devices[0].info.firstJourney], ["Most recent journey", devices[0].info.lastJourney]]} /></div>
+            <div className="rounded-md border border-portal-border bg-portal-panel p-5"><h3 className="mb-4 text-sm font-semibold text-portal-navy">Score reset</h3>{resetInfo ? <DetailRows rows={[["Last reset", resetInfo.lastResetAt], ["Policy score before reset", String(resetInfo.scoreBefore)], ["Scores counted from", resetInfo.visibleFrom]]} /> : <p className="text-xs text-portal-muted">This policy's score has never been reset.</p>}<p className="mt-4 text-[11px] text-portal-muted">In Floow 2 a reset counts journeys from a date forward; earlier journeys stay visible but don't count towards the score.</p></div>
+            <div className="rounded-md border border-portal-border bg-portal-panel p-5 lg:col-span-2"><h3 className="mb-4 text-sm font-semibold text-portal-navy">Driver device health</h3>
+              <p className={`mb-4 flex items-center gap-2 rounded-sm p-2 text-xs font-semibold ${withIssues.length ? "bg-destructive/10 text-destructive" : "bg-portal-surface text-portal-navy"}`}>{withIssues.length ? <AlertTriangle className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}{withIssues.length ? `${withIssues.length} of ${drivers.length} drivers have a permission or phone issue` : "All drivers' phones are set up correctly"}{paused.length ? ` · ${paused.length} paused` : ""}</p>
+              <div className="overflow-x-auto"><table className="w-full min-w-[600px] text-left text-xs"><thead className="bg-portal-panel-header"><tr>{["Driver", "Phone / OS", "Permissions", "Wi-Fi only upload", "Battery", "Pause"].map((h) => <th key={h} className="p-3">{h}</th>)}</tr></thead><tbody>{devices.map(({ d, info }) => { const bad = info.permissions.filter((p) => !p.ok).length; return <tr key={d.id} className="border-t border-portal-border"><td className="p-3 font-semibold">{d.display_name}</td><td className="p-3">{info.model} · {info.os}{!info.compatible && <span className="ml-2 rounded-sm bg-destructive/10 px-1.5 py-0.5 text-[10px] text-destructive">May not be compatible</span>}</td><td className={`p-3 ${bad ? "text-destructive" : ""}`}>{bad ? `${bad} issue${bad > 1 ? "s" : ""}` : "All correct"}</td><td className="p-3">{info.wifiOnlyUpload ? "Yes" : "No"}</td><td className="p-3">{info.battery}</td><td className="p-3">{info.pause.on ? "On" : "Off"}</td></tr>; })}</tbody></table></div>
+            </div>
+          </div>
+        </section>
         <section><h2 className="mb-4 text-2xl font-semibold text-portal-navy">Drivers</h2>
           <div className="space-y-4">{scored.map(({ d, s }) => <article key={d.id} className="rounded-md border border-portal-border bg-portal-panel p-4 sm:p-5">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
