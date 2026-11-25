@@ -2,6 +2,22 @@ import { useState } from "react";
 import { MoreHorizontal, Plus } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type StaffMember = {
   id: string;
@@ -20,7 +36,12 @@ const SAMPLE_STAFF: StaffMember[] = [
 ];
 
 const StaffPage = () => {
-  const [staff] = useState<StaffMember[]>(SAMPLE_STAFF);
+  const [staff, setStaff] = useState<StaffMember[]>(SAMPLE_STAFF);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [toDelete, setToDelete] = useState<StaffMember | null>(null);
+
+  const setEnabled = (id: string, enabled: boolean) =>
+    setStaff((list) => list.map((s) => (s.id === id ? { ...s, enabled } : s)));
 
   return (
     <AdminLayout
@@ -38,6 +59,12 @@ const StaffPage = () => {
             <Plus className="w-4 h-4 ml-2" />
           </Button>
         </div>
+
+        {notice && (
+          <p role="status" className="mb-4 rounded border border-portal-border bg-portal-panel-header px-4 py-2 text-sm text-portal-navy">
+            {notice}
+          </p>
+        )}
 
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -66,20 +93,89 @@ const StaffPage = () => {
                     </span>
                   </td>
                   <td className="px-4 py-4 text-right">
-                    <button
-                      type="button"
-                      className="inline-flex items-center justify-center w-8 h-8 rounded hover:bg-portal-sidebar-active/50 text-portal-text"
-                      aria-label="Row actions"
-                    >
-                      <MoreHorizontal className="w-4 h-4" />
-                    </button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          type="button"
+                          className="inline-flex items-center justify-center w-8 h-8 rounded hover:bg-portal-sidebar-active/50 text-portal-text"
+                          aria-label="Row actions"
+                        >
+                          <MoreHorizontal className="w-4 h-4" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          disabled={!s.enabled}
+                          onSelect={() => setNotice(`Welcome email resent to ${s.email}.`)}
+                        >
+                          Resend welcome email
+                        </DropdownMenuItem>
+                        {s.enabled ? (
+                          <DropdownMenuItem
+                            onSelect={() => {
+                              setEnabled(s.id, false);
+                              setNotice(`${s.email} has been disabled.`);
+                            }}
+                          >
+                            Disable user
+                          </DropdownMenuItem>
+                        ) : (
+                          <>
+                            <DropdownMenuItem
+                              onSelect={() => {
+                                setEnabled(s.id, true);
+                                setNotice(`${s.email} has been enabled.`);
+                              }}
+                            >
+                              Enable user
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onSelect={() => setToDelete(s)}
+                            >
+                              Delete user
+                            </DropdownMenuItem>
+                          </>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </td>
                 </tr>
               ))}
+              {staff.length === 0 && (
+                <tr className="border-t border-portal-border">
+                  <td colSpan={4} className="px-4 py-6 text-center text-portal-muted">No staff members.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       </section>
+
+      <AlertDialog open={!!toDelete} onOpenChange={(o) => !o && setToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete user?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {toDelete?.email} will be permanently removed. This can't be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (!toDelete) return;
+                setStaff((list) => list.filter((x) => x.id !== toDelete.id));
+                setNotice(`${toDelete.email} has been deleted.`);
+                setToDelete(null);
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AdminLayout>
   );
 };
