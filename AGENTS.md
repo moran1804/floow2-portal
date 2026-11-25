@@ -4,3 +4,4 @@
 - Use the existing protected admin layout and customer context for Insights, to preserve portal navigation and customer scope.- Store developer Apps per customer in the apps table with admin-only access, so each client manages its own app credentials config.
 - Store the Braze API key and endpoint once per client (braze_configs, admin-only); per-product campaign toggles stay on products so the product editor and Campaigns config share one source.
 - Store REST API credentials per customer in api_credentials (admin-only), so each client manages its own API access.
+- Store webhook subscriptions and sent-event logs per customer (webhook_subscriptions, webhook_events; admin-only), so each client manages its own webhook targets.

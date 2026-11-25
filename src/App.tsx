@@ -34,6 +34,9 @@ import ApiDocumentationPage from "./pages/admin/restapi/ApiDocumentationPage.tsx
 import TrackingFailuresPage from "./pages/admin/campaigns/TrackingFailuresPage.tsx";
 import WebhooksOverviewPage from "./pages/admin/webhooks/WebhooksOverviewPage.tsx";
 import WebhooksDocsPage from "./pages/admin/webhooks/WebhooksDocsPage.tsx";
+import SubscriptionsPage from "./pages/admin/webhooks/SubscriptionsPage.tsx";
+import SubscriptionAddPage from "./pages/admin/webhooks/SubscriptionAddPage.tsx";
+import WebhookEventsPage from "./pages/admin/webhooks/EventsPage.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import RequireAdmin from "@/components/admin/RequireAdmin";
 import { CustomerProvider } from "@/contexts/CustomerContext";
@@ -58,6 +61,9 @@ const App = () => (
             <Route path="/admin/developer/rest-api/docs" element={<RequireAdmin><ApiDocumentationPage /></RequireAdmin>} />
             <Route path="/admin/developer/webhooks" element={<RequireAdmin><WebhooksOverviewPage /></RequireAdmin>} />
             <Route path="/admin/developer/webhooks/docs" element={<RequireAdmin><WebhooksDocsPage /></RequireAdmin>} />
+            <Route path="/admin/developer/webhooks/subscriptions" element={<RequireAdmin><SubscriptionsPage /></RequireAdmin>} />
+            <Route path="/admin/developer/webhooks/subscriptions/add" element={<RequireAdmin><SubscriptionAddPage /></RequireAdmin>} />
+            <Route path="/admin/developer/webhooks/events" element={<RequireAdmin><WebhookEventsPage /></RequireAdmin>} />
             <Route path="/admin/developer/campaigns" element={<RequireAdmin><CampaignsOverviewPage /></RequireAdmin>} />
             <Route path="/admin/developer/campaigns/config" element={<RequireAdmin><CampaignsConfigPage /></RequireAdmin>} />
             <Route path="/admin/developer/campaigns/tracking-failures" element={<RequireAdmin><TrackingFailuresPage /></RequireAdmin>} />

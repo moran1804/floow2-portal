@@ -193,8 +193,8 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                 <Button asChild variant="ghost" className="mb-3 w-full justify-start rounded-none px-6"><NavLink to="/admin/developer"><ArrowLeft />Developer tools</NavLink></Button>
                 <NavLink to="/admin/developer/webhooks" className={navLinkClass} end><Webhook className="h-5 w-5" />Webhooks</NavLink>
                 <NavLink to="/admin/developer/webhooks/docs" className={navLinkClass}><FileText className="h-5 w-5" />Documentation</NavLink>
-                <div className={disabledClass} aria-disabled="true"><Inbox className="h-5 w-5" />Subscriptions</div>
-                <div className={disabledClass} aria-disabled="true"><Mail className="h-5 w-5" />Events</div>
+                <NavLink to="/admin/developer/webhooks/subscriptions" className={navLinkClass}><Inbox className="h-5 w-5" />Subscriptions</NavLink>
+                <NavLink to="/admin/developer/webhooks/events" className={navLinkClass}><Mail className="h-5 w-5" />Events</NavLink>
               </>
             ) : isInsightsPage ? (
               <>

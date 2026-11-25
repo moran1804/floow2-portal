@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 
 const tiles = [
   { icon: FileText, title: "Documentation", description: "Get information on how the webhooks work and how you can use them.", to: "/admin/developer/webhooks/docs" },
-  { icon: Inbox, title: "Subscriptions", description: "Manage subscriptions to webhook events." },
-  { icon: Mail, title: "Events", description: "List the latest events sent out via webhooks." },
+  { icon: Inbox, title: "Subscriptions", description: "Manage subscriptions to webhook events.", to: "/admin/developer/webhooks/subscriptions" },
+  { icon: Mail, title: "Events", description: "List the latest events sent out via webhooks.", to: "/admin/developer/webhooks/events" },
 ];
 
 const WebhooksOverviewPage = () => (

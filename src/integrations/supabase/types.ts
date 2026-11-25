@@ -569,6 +569,79 @@ export type Database = {
         }
         Relationships: []
       }
+      webhook_events: {
+        Row: {
+          customer_id: string
+          event_type: string
+          id: string
+          sent_at: string
+        }
+        Insert: {
+          customer_id: string
+          event_type: string
+          id?: string
+          sent_at?: string
+        }
+        Update: {
+          customer_id?: string
+          event_type?: string
+          id?: string
+          sent_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_events_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webhook_subscriptions: {
+        Row: {
+          created_at: string
+          customer_id: string
+          description: string
+          event_types: string[]
+          headers: Json
+          id: string
+          is_active: boolean
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          description: string
+          event_types?: string[]
+          headers?: Json
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          description?: string
+          event_types?: string[]
+          headers?: Json
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_subscriptions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
