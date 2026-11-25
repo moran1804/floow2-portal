@@ -82,18 +82,20 @@ const Auth = () => {
           </div>
           {mode === "login" && (
             <div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <button type="button" className="text-xs text-portal-accent hover:underline"
+              <Label htmlFor="password">Password</Label>
+              <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+              <div className="mt-2 flex justify-end">
+                <button type="button" className="text-sm font-medium text-portal-accent hover:text-portal-navy hover:underline underline-offset-4 transition-colors"
                   onClick={() => { setMode("reset"); setError(null); setInfo(null); }}>
-                  Forgot password?
+                  Forgot your password?
                 </button>
               </div>
-              <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
           )}
           {error && <p className="text-sm text-destructive">{error}</p>}
-          {info && <p className="text-sm text-portal-navy">{info}</p>}
+          {info && (
+            <div className="rounded-md border border-portal-border bg-portal-surface p-3 text-sm text-portal-navy">{info}</div>
+          )}
           <Button type="submit" disabled={busy} className="w-full">
             {busy ? "Please wait…" : mode === "login" ? "Sign in" : "Send reset link"}
           </Button>
@@ -109,10 +111,10 @@ const Auth = () => {
           </>
         )}
         {mode === "reset" && (
-          <button type="button" className="mt-4 text-sm text-portal-accent hover:underline w-full text-center"
+          <Button type="button" variant="ghost" className="mt-3 w-full text-portal-navy"
             onClick={() => { setMode("login"); setError(null); setInfo(null); }}>
-            Back to sign in
-          </button>
+            ← Back to sign in
+          </Button>
         )}
       </div>
     </div>
