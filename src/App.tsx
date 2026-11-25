@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Auth from "./pages/Auth.tsx";
+import ResetPassword from "./pages/ResetPassword";
 import TermsListPage from "./pages/admin/TermsListPage.tsx";
 import TermsEditorPage from "./pages/admin/TermsEditorPage.tsx";
 import FaqsPage from "./pages/admin/FaqsPage.tsx";
@@ -58,6 +59,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/admin/insights" element={<RequireAdmin><InsightsPage /></RequireAdmin>} />
             <Route path="/admin/insurer/search" element={<RequireAdmin><SearchUserDataPage /></RequireAdmin>} />
             <Route path="/admin/insurer/users/:userId" element={<RequireAdmin><UserAccountPage /></RequireAdmin>} />
