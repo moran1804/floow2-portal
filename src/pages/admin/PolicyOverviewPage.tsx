@@ -14,6 +14,18 @@ function DetailRows({ rows }: { rows: [string, string][] }) {
   return <dl className="space-y-4 text-xs">{rows.map(([l, v]) => <div key={l} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] gap-3"><dt className="text-portal-muted">{l}</dt><dd className="break-words text-right font-semibold">{v}</dd></div>)}</dl>;
 }
 
+function MiniDial({ name, score, overall = false }: { name: string; score: number; overall?: boolean }) {
+  const caution = score < 70;
+  return <div className="flex min-w-0 flex-col items-center gap-1 rounded-md bg-portal-panel px-2 py-2 transition hover:-translate-y-0.5 hover:shadow-score-tile-hover motion-reduce:transform-none">
+    <svg viewBox="0 0 80 80" className={`h-11 w-11 ${caution ? "text-score-caution" : "text-score-good"}`} role="img" aria-label={`${name} example score ${score}`}>
+      <circle cx="40" cy="40" r="32" fill="none" stroke="currentColor" className={caution ? "text-score-caution-track" : "text-score-good-track"} strokeWidth="8" />
+      <circle cx="40" cy="40" r="32" fill="none" stroke="currentColor" strokeWidth="8" pathLength="100" strokeDasharray={`${score} 100`} transform="rotate(-90 40 40)" />
+      <text x="40" y="49" textAnchor="middle" fill="currentColor" className="text-2xl font-bold">{score}</text>
+    </svg>
+    <span className={`text-center text-[10px] leading-tight ${overall ? "font-bold text-portal-navy" : "font-semibold"}`}>{name}</span>
+  </div>;
+}
+
 export default function PolicyOverviewPage() {
   const { policyId = "" } = useParams();
   const { selectedCustomerId, selectedCustomer } = useCustomer();
@@ -65,15 +77,12 @@ export default function PolicyOverviewPage() {
           </div>
         </section>
         <section><h2 className="mb-4 text-2xl font-semibold text-portal-navy">Drivers</h2>
-          <div className="space-y-4">{scored.map(({ d, s }) => <article key={d.id} className="rounded-md border border-portal-border bg-portal-panel p-4 sm:p-5">
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-              <div><h3 className="text-lg font-semibold text-portal-navy">{d.display_name}</h3><p className="text-xs text-portal-muted">{d.email}</p></div>
-              <Button asChild size="sm"><Link to={`/admin/insurer/users/${d.id}`}>View driver<ChevronRight /></Link></Button>
+          <div className="grid gap-3 lg:grid-cols-2">{scored.map(({ d, s }) => <article key={d.id} className="rounded-md border border-portal-border bg-portal-panel p-3">
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <div className="min-w-0"><h3 className="truncate text-sm font-semibold text-portal-navy">{d.display_name}</h3><p className="truncate text-[11px] text-portal-muted">{d.email}</p></div>
+              <Button asChild size="sm" className="h-7 px-2 text-xs"><Link to={`/admin/insurer/users/${d.id}`}>View driver<ChevronRight /></Link></Button>
             </div>
-            <div className="grid gap-2 xl:grid-cols-[160px_minmax(0,1fr)]">
-              <div className="flex items-center justify-center bg-score-surface p-4"><div className="w-full max-w-[130px]"><UserScoreTile name="Driver score" score={s.overall} overall /></div></div>
-              <div className="grid grid-cols-2 gap-3 bg-score-surface p-4 sm:grid-cols-3 lg:grid-cols-5">{s.influences.map((i) => <UserScoreTile key={i.name} {...i} />)}</div>
-            </div>
+            <div className="grid grid-cols-6 gap-1.5 rounded-md bg-score-surface p-1.5"><MiniDial name="Overall" score={s.overall} overall />{s.influences.map((i) => <MiniDial key={i.name} {...i} />)}</div>
           </article>)}</div>
         </section>
       </>}
