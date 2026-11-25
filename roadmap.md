@@ -35,3 +35,7 @@
 - [x] Rebuild the user Terms Acceptance screen to match the reference: user ID banner, product code / version / accepted at table, items-per-page bars.
 - [x] Verify signed-in rendering for both clients and add a test that only the selected client's acceptances are listed.
 - [ ] Add example T&Cs and acceptances for the "product" client if the user wants that screen populated too.
+
+# Terms acceptance screen
+- [x] Style user Terms Acceptance screen like the reference
+- [x] Example T&Cs and acceptances for both clients
