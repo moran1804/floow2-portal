@@ -120,23 +120,21 @@ const StaffPage = () => {
                             Disable user
                           </DropdownMenuItem>
                         ) : (
-                          <>
-                            <DropdownMenuItem
-                              onSelect={() => {
-                                setEnabled(s.id, true);
-                                setNotice(`${s.email} has been enabled.`);
-                              }}
-                            >
-                              Enable user
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive focus:text-destructive"
-                              onSelect={() => setToDelete(s)}
-                            >
-                              Delete user
-                            </DropdownMenuItem>
-                          </>
+                          <DropdownMenuItem
+                            onSelect={() => {
+                              setEnabled(s.id, true);
+                              setNotice(`${s.email} has been enabled.`);
+                            }}
+                          >
+                            Enable user
+                          </DropdownMenuItem>
                         )}
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive"
+                          onSelect={() => setToDelete(s)}
+                        >
+                          Remove user
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </td>
@@ -155,7 +153,7 @@ const StaffPage = () => {
       <AlertDialog open={!!toDelete} onOpenChange={(o) => !o && setToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete user?</AlertDialogTitle>
+            <AlertDialogTitle>Remove user?</AlertDialogTitle>
             <AlertDialogDescription>
               {toDelete?.email} will be permanently removed. This can't be undone.
             </AlertDialogDescription>
@@ -167,11 +165,11 @@ const StaffPage = () => {
               onClick={() => {
                 if (!toDelete) return;
                 setStaff((list) => list.filter((x) => x.id !== toDelete.id));
-                setNotice(`${toDelete.email} has been deleted.`);
+                setNotice(`${toDelete.email} has been removed.`);
                 setToDelete(null);
               }}
             >
-              Delete
+              Remove
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
