@@ -14,6 +14,13 @@ export default {
     },
     extend: {
       colors: {
+        score: {
+          surface: "hsl(var(--score-surface))",
+          good: "hsl(var(--score-good))",
+          "good-track": "hsl(var(--score-good-track))",
+          caution: "hsl(var(--score-caution))",
+          "caution-track": "hsl(var(--score-caution-track))",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -79,6 +86,9 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        "score-tile": "var(--score-tile-shadow)",
       },
       keyframes: {
         "accordion-down": {

@@ -72,6 +72,12 @@ All colors MUST be HSL.
     --chart-other: 280 45% 50%;
     --chart-unknown: 38 90% 48%;
     --chart-time: 0 70% 55%;
+    --score-surface: 0 0% 96%;
+    --score-good: 103 44% 34%;
+    --score-good-track: 103 35% 94%;
+    --score-caution: 35 100% 35%;
+    --score-caution-track: 40 65% 94%;
+    --score-tile-shadow: 0 2px 8px hsl(var(--portal-text) / 0.22);
 
     --status-active-bg: 145 60% 90%;
     --status-active-fg: 145 70% 24%;
@@ -84,6 +90,11 @@ All colors MUST be HSL.
   }
 
   .dark {
+    --score-surface: 216 15% 18%;
+    --score-good: 103 42% 62%;
+    --score-good-track: 103 20% 22%;
+    --score-caution: 38 85% 65%;
+    --score-caution-track: 38 25% 22%;
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
