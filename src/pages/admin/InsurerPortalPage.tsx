@@ -1,6 +1,7 @@
 import { AlertTriangle, Search, LucideIcon } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 type Tile = { icon: LucideIcon; title: string; description: string };
 
@@ -22,7 +23,11 @@ const InsurerPortalPage = () => (
           </div>
           <h2 className="text-lg font-bold text-portal-navy mb-2">{tile.title}</h2>
           <p className="text-sm text-portal-muted flex-1 mb-6">{tile.description}</p>
-          <Button disabled className="w-full bg-portal-navy/60 text-portal-navy-foreground">View</Button>
+          {tile.title === "Search User Data" ? (
+            <Button asChild className="w-full"><Link to="/admin/insurer/search">View</Link></Button>
+          ) : (
+            <Button disabled className="w-full bg-portal-navy/60 text-portal-navy-foreground">View</Button>
+          )}
         </div>
       ))}
     </div>

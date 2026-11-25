@@ -73,7 +73,7 @@ const devChildren: NavItem[] = [
 
 const insurerChildren: NavItem[] = [
   { to: "#", icon: AlertTriangle, label: "Impacts", disabled: true },
-  { to: "#", icon: Users, label: "Users", disabled: true },
+  { to: "/admin/insurer/search", icon: SearchIcon, label: "Search User Data" },
 ];
 
 const clientsNavItems: NavItem[] = [
@@ -111,7 +111,8 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
   const isDevHome = pathname.startsWith("/admin/developer");
   const [devOpen, setDevOpen] = useState<boolean>(isDevHome);
 
-  const isInsurerHome = pathname === "/admin/insurer";
+  const isInsurerHome = pathname.startsWith("/admin/insurer");
+  const isUserSearchPage = pathname === "/admin/insurer/search";
   const [insurerOpen, setInsurerOpen] = useState<boolean>(isInsurerHome);
 
   const initials = (user?.email ?? "??")
@@ -173,7 +174,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
       <div className="flex">
         {/* Sidebar */}
         {!hideSidebar && (
-        <aside className={`${isInsightsPage ? "hidden md:block w-52 shrink-0" : "w-64"} min-h-[calc(100vh-4rem)] bg-portal-sidebar border-r border-portal-border py-4`}>
+        <aside className={`${isInsightsPage || isUserSearchPage ? "hidden md:block w-52 shrink-0" : "w-64"} min-h-[calc(100vh-4rem)] bg-portal-sidebar border-r border-portal-border py-4`}>
           <nav className="mt-2">
             {isCampaignsPage ? (
               <>
@@ -194,7 +195,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                 <Button asChild variant="ghost" className="mb-3 w-full justify-start rounded-none px-6"><NavLink to="/admin/overview"><ArrowLeft />Back to home</NavLink></Button>
                 <NavLink to="/admin/insurer" className={navLinkClass} end><AlertCircle className="h-5 w-5" />Overview</NavLink>
                 <div className={disabledClass} aria-disabled="true"><AlertTriangle className="h-5 w-5" />Impacts</div>
-                <div className={disabledClass} aria-disabled="true"><SearchIcon className="h-5 w-5" />Search User Data</div>
+                <NavLink to="/admin/insurer/search" className={navLinkClass}><SearchIcon className="h-5 w-5" />Search User Data</NavLink>
               </>
             ) : isWebhooksPage ? (
               <>
@@ -362,13 +363,13 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                 {insurerOpen && (
                   <div className="bg-portal-sidebar-active/30">
                     {insurerChildren.map((item) => (
-                      <div
+                      item.disabled ? <div
                         key={item.label}
                         className="flex items-center gap-3 pl-14 pr-6 py-2.5 text-sm font-medium border-l-2 border-transparent text-portal-muted cursor-default"
                       >
                         <item.icon className="w-4 h-4" />
                         {item.label}
-                      </div>
+                      </div> : <NavLink key={item.label} to={item.to} className="flex items-center gap-3 pl-14 pr-6 py-2.5 text-sm font-medium text-portal-text hover:bg-portal-sidebar-active/50"><item.icon className="w-4 h-4" />{item.label}</NavLink>
                     ))}
                   </div>
                 )}
@@ -393,8 +394,8 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
         )}
 
         {/* Main */}
-        <main className="flex-1 min-w-0">
-          <div className={`${isInsightsPage ? "bg-portal-panel-header px-5 md:px-8" : "bg-portal-panel px-8"} border-b border-portal-border pt-6 pb-8`}>
+        <main className={`flex-1 min-w-0 ${isUserSearchPage ? "flex flex-col min-h-[calc(100vh-4rem)]" : ""}`}>
+          <div className={`${isInsightsPage || isUserSearchPage ? "bg-portal-panel-header px-5 md:px-8" : "bg-portal-panel px-8"} border-b border-portal-border pt-6 pb-8`}>
             {crumbs.length > 0 && (
               <div className="text-sm text-portal-muted mb-3">
                 {crumbs.map((c, i) => (
@@ -416,8 +417,8 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
               {actions}
             </div>
           </div>
-          <div className={isInsightsPage ? "p-4 md:p-6" : "p-8"}>{children}</div>
-          <footer className="px-8 pb-8 text-xs text-portal-muted">
+          <div className={isInsightsPage || isUserSearchPage ? "p-4 md:p-6" : "p-8"}>{children}</div>
+          <footer className={`px-8 pb-8 text-xs text-portal-muted ${isUserSearchPage ? "mt-auto pt-8" : ""}`}>
             Copyright © {new Date().getFullYear()} The Floow Limited - All Rights Reserved
           </footer>
         </main>

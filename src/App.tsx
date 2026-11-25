@@ -19,6 +19,7 @@ import StaffPage from "./pages/admin/StaffPage.tsx";
 import ConfigurationPage from "./pages/admin/ConfigurationPage.tsx";
 import DeveloperToolsPage from "./pages/admin/DeveloperToolsPage.tsx";
 import InsurerPortalPage from "./pages/admin/InsurerPortalPage.tsx";
+import SearchUserDataPage from "./pages/admin/SearchUserDataPage.tsx";
 import DocumentationPage from "./pages/admin/DocumentationPage.tsx";
 import DriverScorePage from "./pages/admin/DriverScorePage.tsx";
 import AdminHomePage from "./pages/admin/AdminHomePage.tsx";
@@ -53,6 +54,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin/insights" element={<RequireAdmin><InsightsPage /></RequireAdmin>} />
+            <Route path="/admin/insurer/search" element={<RequireAdmin><SearchUserDataPage /></RequireAdmin>} />
             <Route path="/admin/developer/apps" element={<RequireAdmin><AppsPage /></RequireAdmin>} />
             <Route path="/admin/developer/apps/add" element={<RequireAdmin><AppAddPage /></RequireAdmin>} />
             <Route path="/admin/developer/rest-api" element={<RequireAdmin><RestApiOverviewPage /></RequireAdmin>} />
