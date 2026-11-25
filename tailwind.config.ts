@@ -19,6 +19,10 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        chart: {
+          android: "hsl(var(--chart-android))",
+          time: "hsl(var(--chart-unknown))",
+        },
         portal: {
           navy: "hsl(var(--portal-navy))",
           "navy-foreground": "hsl(var(--portal-navy-foreground))",

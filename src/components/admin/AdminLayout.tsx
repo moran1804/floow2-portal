@@ -113,8 +113,10 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
 
   const isInsurerHome = pathname.startsWith("/admin/insurer");
   const isImpactReport = pathname.startsWith("/admin/insurer/impacts/");
+  const isUserAccount = pathname.startsWith("/admin/insurer/users/");
+  const userAccountBase = pathname.split("/").slice(0, 5).join("/");
   const impactReportBase = pathname.split("/").slice(0, 5).join("/");
-  const isUserSearchPage = pathname === "/admin/insurer/search" || pathname.startsWith("/admin/insurer/impacts");
+  const isUserSearchPage = pathname === "/admin/insurer/search" || pathname.startsWith("/admin/insurer/impacts") || isUserAccount;
   const [insurerOpen, setInsurerOpen] = useState<boolean>(isInsurerHome);
 
   const initials = (user?.email ?? "??")
@@ -191,6 +193,14 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                 <NavLink to="/admin/developer/rest-api" className={navLinkClass} end><Network className="h-5 w-5" />REST API</NavLink>
                 <NavLink to="/admin/developer/rest-api/credentials" className={navLinkClass}><KeyRound className="h-5 w-5" />Credentials</NavLink>
                 <NavLink to="/admin/developer/rest-api/docs" className={navLinkClass}><FileText className="h-5 w-5" />Documentation</NavLink>
+              </>
+            ) : isUserAccount ? (
+              <>
+                <Button asChild variant="ghost" className="mb-3 w-full justify-start rounded-none px-6"><NavLink to="/admin/insurer/search"><ArrowLeft />Users</NavLink></Button>
+                <NavLink to={userAccountBase} className={navLinkClass} end><Users className="h-5 w-5" />User overview</NavLink>
+                <NavLink to={`${userAccountBase}/journeys`} className={navLinkClass}><Activity className="h-5 w-5" />Journeys</NavLink>
+                <NavLink to={`${userAccountBase}/files`} className={navLinkClass}><Inbox className="h-5 w-5" />Files</NavLink>
+                <NavLink to={`${userAccountBase}/terms`} className={navLinkClass}><ClipboardList className="h-5 w-5" />Terms Acceptance</NavLink>
               </>
             ) : isImpactReport ? (
               <>

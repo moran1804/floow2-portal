@@ -20,6 +20,7 @@ import ConfigurationPage from "./pages/admin/ConfigurationPage.tsx";
 import DeveloperToolsPage from "./pages/admin/DeveloperToolsPage.tsx";
 import InsurerPortalPage from "./pages/admin/InsurerPortalPage.tsx";
 import SearchUserDataPage from "./pages/admin/SearchUserDataPage.tsx";
+import UserAccountPage from "./pages/admin/UserAccountPage.tsx";
 import ImpactsPage from "./pages/admin/ImpactsPage.tsx";
 import ImpactReportPage from "./pages/admin/ImpactReportPage.tsx";
 import DocumentationPage from "./pages/admin/DocumentationPage.tsx";
@@ -57,6 +58,8 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin/insights" element={<RequireAdmin><InsightsPage /></RequireAdmin>} />
             <Route path="/admin/insurer/search" element={<RequireAdmin><SearchUserDataPage /></RequireAdmin>} />
+            <Route path="/admin/insurer/users/:userId" element={<RequireAdmin><UserAccountPage /></RequireAdmin>} />
+            <Route path="/admin/insurer/users/:userId/:section" element={<RequireAdmin><UserAccountPage /></RequireAdmin>} />
             <Route path="/admin/insurer/impacts" element={<RequireAdmin><ImpactsPage /></RequireAdmin>} />
             <Route path="/admin/insurer/impacts/:impactId/*" element={<RequireAdmin><ImpactReportPage /></RequireAdmin>} />
             <Route path="/admin/developer/apps" element={<RequireAdmin><AppsPage /></RequireAdmin>} />

@@ -344,6 +344,63 @@ export type Database = {
           },
         ]
       }
+      insurer_users: {
+        Row: {
+          created_at: string
+          customer_id: string
+          date_of_birth: string | null
+          display_name: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          policy_client_id: string | null
+          postal_code: string | null
+          product_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          date_of_birth?: string | null
+          display_name?: string
+          email: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          policy_client_id?: string | null
+          postal_code?: string | null
+          product_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          date_of_birth?: string | null
+          display_name?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          policy_client_id?: string | null
+          postal_code?: string | null
+          product_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insurer_users_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insurer_users_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           campaigns_api_key: string | null
@@ -663,6 +720,33 @@ export type Database = {
       schedule_terms: {
         Args: { _id: string; _scheduled_at: string }
         Returns: undefined
+      }
+      search_insurer_users: {
+        Args: {
+          _customer_id: string
+          _field: string
+          _mode: string
+          _query: string
+        }
+        Returns: {
+          created_at: string
+          customer_id: string
+          date_of_birth: string | null
+          display_name: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          policy_client_id: string | null
+          postal_code: string | null
+          product_id: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "insurer_users"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       set_default_customer: { Args: { _id: string }; Returns: undefined }
       set_default_product: { Args: { _id: string }; Returns: undefined }

@@ -23,3 +23,9 @@
 
 - [x] Connect the saved search mode to a single-bar partial-search form with guidance.
 - [x] Test saved mode, partial input, exact-match preservation, and phone layout.
+
+# Searchable user account
+
+- [x] Store Mike's app-user record in both clients and connect customer-scoped exact/partial search.
+- [x] Add screenshot-style user details, labelled example scores, and impact search.
+- [x] Verify search-to-account navigation, client isolation, and phone layout.
