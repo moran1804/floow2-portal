@@ -18,6 +18,8 @@ import {
   Search as SearchIcon,
   PieChart,
   ChevronDown,
+  Inbox,
+  Mail,
   ChevronRight,
   FileText as DocIcon,
   Smartphone,
@@ -65,7 +67,7 @@ const devChildren: NavItem[] = [
   { to: "/admin/developer/apps", icon: Smartphone, label: "Apps" },
   { to: "/admin/developer/campaigns", icon: Send, label: "Campaigns" },
   { to: "/admin/developer/rest-api", icon: Network, label: "REST API" },
-  { to: "#", icon: Webhook, label: "Webhooks", disabled: true },
+  { to: "/admin/developer/webhooks", icon: Webhook, label: "Webhooks" },
 ];
 
 const insurerChildren: NavItem[] = [
@@ -97,6 +99,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
   const isInsightsPage = pathname.startsWith("/admin/insights");
   const isCampaignsPage = pathname.startsWith("/admin/developer/campaigns");
   const isRestApiPage = pathname.startsWith("/admin/developer/rest-api");
+  const isWebhooksPage = pathname.startsWith("/admin/developer/webhooks");
 
   const isAdminChildActive = adminChildren.some((c) => pathname.startsWith(c.to));
   const isAdminHome = pathname === "/admin/home";
@@ -184,6 +187,14 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                 <NavLink to="/admin/developer/rest-api" className={navLinkClass} end><Network className="h-5 w-5" />REST API</NavLink>
                 <NavLink to="/admin/developer/rest-api/credentials" className={navLinkClass}><KeyRound className="h-5 w-5" />Credentials</NavLink>
                 <NavLink to="/admin/developer/rest-api/docs" className={navLinkClass}><FileText className="h-5 w-5" />Documentation</NavLink>
+              </>
+            ) : isWebhooksPage ? (
+              <>
+                <Button asChild variant="ghost" className="mb-3 w-full justify-start rounded-none px-6"><NavLink to="/admin/developer"><ArrowLeft />Developer tools</NavLink></Button>
+                <NavLink to="/admin/developer/webhooks" className={navLinkClass} end><Webhook className="h-5 w-5" />Webhooks</NavLink>
+                <NavLink to="/admin/developer/webhooks/docs" className={navLinkClass}><FileText className="h-5 w-5" />Documentation</NavLink>
+                <div className={disabledClass} aria-disabled="true"><Inbox className="h-5 w-5" />Subscriptions</div>
+                <div className={disabledClass} aria-disabled="true"><Mail className="h-5 w-5" />Events</div>
               </>
             ) : isInsightsPage ? (
               <>
