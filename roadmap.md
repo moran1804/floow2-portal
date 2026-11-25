@@ -30,3 +30,8 @@
 - [x] Store Mike's app-user record in both clients and connect customer-scoped exact/partial search.
 - [x] Add screenshot-style user details, labelled example scores, and impact search.
 - [x] Verify search-to-account navigation, client isolation, and phone layout.
+# Terms acceptance screen
+
+- [x] Rebuild the user Terms Acceptance screen to match the reference: user ID banner, product code / version / accepted at table, items-per-page bars.
+- [x] Verify signed-in rendering for both clients and add a test that only the selected client's acceptances are listed.
+- [ ] Add example T&Cs and acceptances for the "product" client if the user wants that screen populated too.
