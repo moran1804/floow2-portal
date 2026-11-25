@@ -21,6 +21,7 @@ import DeveloperToolsPage from "./pages/admin/DeveloperToolsPage.tsx";
 import InsurerPortalPage from "./pages/admin/InsurerPortalPage.tsx";
 import SearchUserDataPage from "./pages/admin/SearchUserDataPage.tsx";
 import ImpactsPage from "./pages/admin/ImpactsPage.tsx";
+import ImpactReportPage from "./pages/admin/ImpactReportPage.tsx";
 import DocumentationPage from "./pages/admin/DocumentationPage.tsx";
 import DriverScorePage from "./pages/admin/DriverScorePage.tsx";
 import AdminHomePage from "./pages/admin/AdminHomePage.tsx";
@@ -57,6 +58,7 @@ const App = () => (
             <Route path="/admin/insights" element={<RequireAdmin><InsightsPage /></RequireAdmin>} />
             <Route path="/admin/insurer/search" element={<RequireAdmin><SearchUserDataPage /></RequireAdmin>} />
             <Route path="/admin/insurer/impacts" element={<RequireAdmin><ImpactsPage /></RequireAdmin>} />
+            <Route path="/admin/insurer/impacts/:impactId/*" element={<RequireAdmin><ImpactReportPage /></RequireAdmin>} />
             <Route path="/admin/developer/apps" element={<RequireAdmin><AppsPage /></RequireAdmin>} />
             <Route path="/admin/developer/apps/add" element={<RequireAdmin><AppAddPage /></RequireAdmin>} />
             <Route path="/admin/developer/rest-api" element={<RequireAdmin><RestApiOverviewPage /></RequireAdmin>} />

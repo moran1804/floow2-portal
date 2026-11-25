@@ -7,22 +7,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Link } from "react-router-dom";
+import { sampleImpacts, likelihoodLabels } from "@/lib/impactSamples";
 import { useCustomer } from "@/contexts/CustomerContext";
 
-// Presentation-only records, never loaded into or written to client telemetry.
-const sampleImpacts = [
-  { id: "sample-1", date: "2025-10-19T11:05:04", speed: 35, likelihood: 3, archived: false },
-  { id: "sample-2", date: "2025-10-13T04:50:28", speed: 41, likelihood: 3, archived: false },
-  { id: "sample-3", date: "2025-11-03T21:18:43", speed: 43, likelihood: 3, archived: false },
-  { id: "sample-4", date: "2025-11-13T13:01:12", speed: 37, likelihood: 3, archived: false },
-  { id: "sample-5", date: "2025-11-19T11:54:18", speed: 40, likelihood: 3, archived: false },
-  { id: "sample-6", date: "2025-10-10T09:30:00", speed: 28, likelihood: 2, archived: true },
-];
-type Impact = typeof sampleImpacts[number];
 type Filters = { start: string; end: string; likelihood: string; archived: boolean };
 const defaults: Filters = { start: "", end: "", likelihood: "3", archived: false };
-const likelihoodLabels: Record<number, string> = { 1: "Possible", 2: "Likely", 3: "Very Likely" };
 type SortKey = "date" | "speed" | "likelihood" | "archived";
 
 const ImpactsPage = () => {
@@ -30,7 +20,6 @@ const ImpactsPage = () => {
   const [filters, setFilters] = useState(defaults);
   const [applied, setApplied] = useState(defaults);
   const [selected, setSelected] = useState<string[]>([]);
-  const [detail, setDetail] = useState<Impact | null>(null);
   const [error, setError] = useState("");
   const [sort, setSort] = useState<{ key: SortKey; descending: boolean }>({ key: "archived", descending: true });
   const rows = sampleImpacts.filter((row) =>
@@ -76,13 +65,12 @@ const ImpactsPage = () => {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[690px] text-left text-xs">
               <thead className="bg-portal-panel-header"><tr><th className="w-12 px-5 py-3"><Checkbox aria-label="Select all impacts" checked={rows.length > 0 && selectedCount === rows.length ? true : selectedCount > 0 ? "indeterminate" : false} disabled={!rows.length} onCheckedChange={(checked) => setSelected(checked ? rows.map((row) => row.id) : [])} /></th>{([['date', 'Date and time'], ['speed', 'Estimated speed'], ['likelihood', 'Likelihood'], ['archived', 'Status']] as [SortKey, string][]).map(([key, label]) => <th key={key} aria-sort={sort.key === key ? (sort.descending ? "descending" : "ascending") : "none"} className="px-3">{sortColumn(key, label)}</th>)}<th className="relative w-12"><span className="sr-only">Details</span></th></tr></thead>
-              <tbody>{rows.map((row) => <tr key={row.id} className={`border-t border-portal-border ${selected.includes(row.id) ? "bg-portal-surface" : ""}`}><td className="px-5 py-4"><Checkbox aria-label={`Select impact ${row.id}`} checked={selected.includes(row.id)} onCheckedChange={(checked) => setSelected(checked ? [...selected, row.id] : selected.filter((id) => id !== row.id))} /></td><td className="px-3"><Button variant="link" className="h-auto p-0 text-xs font-semibold underline" onClick={() => setDetail(row)}>{format(new Date(row.date), "do MMMM yyyy, hh:mm:ss a")}</Button></td><td className="px-3">{row.speed} mph</td><td className="px-3"><span className="flex items-center gap-2 font-semibold"><AlertTriangle className="h-3 w-3 text-destructive" />{likelihoodLabels[row.likelihood]}</span></td><td className="px-3"><span className={`rounded-sm px-2 py-1 text-[10px] font-semibold ${row.archived ? "bg-muted text-muted-foreground" : "bg-destructive/10 text-destructive"}`}>{row.archived ? "ARCHIVED" : "NEW"}</span></td><td className="pr-5"><Button size="icon" className="h-7 w-7 rounded-sm" aria-label={`View impact ${row.id}`} onClick={() => setDetail(row)}><ChevronRight className="h-4 w-4" /></Button></td></tr>)}{!rows.length && <tr><td colSpan={6} className="p-10 text-center text-portal-muted">No sample impacts match your filters.</td></tr>}</tbody>
+              <tbody>{rows.map((row) => <tr key={row.id} className={`border-t border-portal-border ${selected.includes(row.id) ? "bg-portal-surface" : ""}`}><td className="px-5 py-4"><Checkbox aria-label={`Select impact ${row.id}`} checked={selected.includes(row.id)} onCheckedChange={(checked) => setSelected(checked ? [...selected, row.id] : selected.filter((id) => id !== row.id))} /></td><td className="px-3"><Button asChild variant="link" className="h-auto p-0 text-xs font-semibold underline"><Link to={`/admin/insurer/impacts/${row.id}`}>{format(new Date(row.date), "do MMMM yyyy, hh:mm:ss a")}</Link></Button></td><td className="px-3">{row.speed} mph</td><td className="px-3"><span className="flex items-center gap-2 font-semibold"><AlertTriangle className="h-3 w-3 text-destructive" />{likelihoodLabels[row.likelihood]}</span></td><td className="px-3"><span className={`rounded-sm px-2 py-1 text-[10px] font-semibold ${row.archived ? "bg-muted text-muted-foreground" : "bg-destructive/10 text-destructive"}`}>{row.archived ? "ARCHIVED" : "NEW"}</span></td><td className="pr-5"><Button asChild size="icon" className="h-7 w-7 rounded-sm"><Link to={`/admin/insurer/impacts/${row.id}`} aria-label={`View impact ${row.id}`}><ChevronRight className="h-4 w-4" /></Link></Button></td></tr>)}{!rows.length && <tr><td colSpan={6} className="p-10 text-center text-portal-muted">No sample impacts match your filters.</td></tr>}</tbody>
             </table>
           </div>
           <div className="border-t border-portal-border px-5 py-4 text-xs text-portal-muted">{rows.length ? `Showing 1–${rows.length} of ${rows.length} impacts` : "0 impacts"}</div>
         </section>
       </div>
-      <Dialog open={detail !== null} onOpenChange={(open) => { if (!open) setDetail(null); }}><DialogContent><DialogHeader><DialogTitle>Impact details</DialogTitle></DialogHeader>{detail && <div className="space-y-4 text-sm"><p className="text-portal-muted">Sample impact · Not a live client record</p><dl className="grid grid-cols-2 gap-4"><dt>Date and time</dt><dd>{format(new Date(detail.date), "do MMMM yyyy, HH:mm:ss")}</dd><dt>Estimated speed</dt><dd>{detail.speed} mph</dd><dt>Likelihood</dt><dd>{likelihoodLabels[detail.likelihood]}</dd><dt>Status</dt><dd>{detail.archived ? "Archived" : "New"}</dd></dl></div>}</DialogContent></Dialog>
     </AdminLayout>
   );
 };

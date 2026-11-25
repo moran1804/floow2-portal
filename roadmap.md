@@ -12,3 +12,9 @@
 
 - [x] Add reference-style filters, selectable results, and insurer navigation.
 - [x] Verify signed-in filtering, selection, details, and mobile layout.
+
+# Crash report
+
+- [x] Replace the small impact dialog with a full report and dedicated navigation.
+- [x] Add impact details, journey map, phone-use/speed factors, and before/after timelines.
+- [x] Verify report navigation, sample status changes, charts, maps, and phone layout.

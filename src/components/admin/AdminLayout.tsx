@@ -112,7 +112,9 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
   const [devOpen, setDevOpen] = useState<boolean>(isDevHome);
 
   const isInsurerHome = pathname.startsWith("/admin/insurer");
-  const isUserSearchPage = pathname === "/admin/insurer/search" || pathname === "/admin/insurer/impacts";
+  const isImpactReport = pathname.startsWith("/admin/insurer/impacts/");
+  const impactReportBase = pathname.split("/").slice(0, 5).join("/");
+  const isUserSearchPage = pathname === "/admin/insurer/search" || pathname.startsWith("/admin/insurer/impacts");
   const [insurerOpen, setInsurerOpen] = useState<boolean>(isInsurerHome);
 
   const initials = (user?.email ?? "??")
@@ -189,6 +191,13 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                 <NavLink to="/admin/developer/rest-api" className={navLinkClass} end><Network className="h-5 w-5" />REST API</NavLink>
                 <NavLink to="/admin/developer/rest-api/credentials" className={navLinkClass}><KeyRound className="h-5 w-5" />Credentials</NavLink>
                 <NavLink to="/admin/developer/rest-api/docs" className={navLinkClass}><FileText className="h-5 w-5" />Documentation</NavLink>
+              </>
+            ) : isImpactReport ? (
+              <>
+                <Button asChild variant="ghost" className="mb-3 w-full justify-start rounded-none px-6"><NavLink to="/admin/insurer/impacts"><ArrowLeft />Impacts detected</NavLink></Button>
+                <NavLink to={impactReportBase} className={navLinkClass} end><FileText className="h-5 w-5" />Impact detail</NavLink>
+                <NavLink to={`${impactReportBase}/contributing-factors/phone-use`} className={() => navLinkClass({ isActive: pathname.includes("/contributing-factors/") })}><Activity className="h-5 w-5" />Contributing factors</NavLink>
+                <NavLink to={`${impactReportBase}/timeline-events/before`} className={() => navLinkClass({ isActive: pathname.includes("/timeline-events/") })}><ClipboardList className="h-5 w-5" />Timeline of events</NavLink>
               </>
             ) : isInsurerHome ? (
               <>
@@ -399,7 +408,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
             {crumbs.length > 0 && (
               <div className="text-sm text-portal-muted mb-3">
                 {crumbs.map((c, i) => (
-                  <span key={i}>
+                  <span key={i} className={isImpactReport ? "break-words" : ""}>
                     {c.to ? (
                       <NavLink to={c.to} className="hover:text-portal-accent">
                         {c.label}
