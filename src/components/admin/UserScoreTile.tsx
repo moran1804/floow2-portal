@@ -5,7 +5,7 @@ type UserScoreTileProps = {
   name: string;
   score: number;
   overall?: boolean;
-  onOpen: () => void;
+  onOpen?: () => void;
 };
 
 const tileMotion =
@@ -31,7 +31,7 @@ export default function UserScoreTile({ name, score, overall = false, onOpen }: 
         <text x="40" y="46" textAnchor="middle" fill="currentColor" className="text-xl font-bold">{score}</text>
       </svg>
       {overall && <p className="mb-3 max-w-32 text-center text-[11px] leading-tight text-portal-muted">An overall indication of driving risk based on five key driver score influences.</p>}
-      <Button variant="link" size="sm" className="mt-auto h-auto gap-0 p-0 text-xs font-semibold" onClick={(event) => { event.stopPropagation(); onOpen(); }}>
+      <Button variant="link" size="sm" className="mt-auto h-auto gap-0 p-0 text-xs font-semibold" onClick={(event) => { event.stopPropagation(); onOpen?.(); }}>
         View details
         <ChevronRight className="h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none" />
       </Button>
