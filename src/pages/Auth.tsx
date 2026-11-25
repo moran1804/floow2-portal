@@ -75,17 +75,6 @@ const Auth = () => {
             : "Enter your email and we'll send you a link to reset your password."}
         </p>
 
-        {mode === "login" && (
-          <>
-            <Button type="button" variant="outline" className="w-full gap-2" onClick={signInMicrosoft}>
-              <MicrosoftIcon /> Sign in with Microsoft 365
-            </Button>
-            <div className="flex items-center gap-3 my-5 text-xs text-portal-muted">
-              <div className="h-px flex-1 bg-portal-border" /> or <div className="h-px flex-1 bg-portal-border" />
-            </div>
-          </>
-        )}
-
         <form className="space-y-4" onSubmit={submit}>
           <div>
             <Label htmlFor="email">Email</Label>
@@ -109,6 +98,16 @@ const Auth = () => {
             {busy ? "Please wait…" : mode === "login" ? "Sign in" : "Send reset link"}
           </Button>
         </form>
+        {mode === "login" && (
+          <>
+            <div className="flex items-center gap-3 my-5 text-xs text-portal-muted">
+              <div className="h-px flex-1 bg-portal-border" /> or <div className="h-px flex-1 bg-portal-border" />
+            </div>
+            <Button type="button" variant="outline" className="w-full gap-2" onClick={signInMicrosoft}>
+              <MicrosoftIcon /> Sign in with Microsoft 365
+            </Button>
+          </>
+        )}
         {mode === "reset" && (
           <button type="button" className="mt-4 text-sm text-portal-accent hover:underline w-full text-center"
             onClick={() => { setMode("login"); setError(null); setInfo(null); }}>
