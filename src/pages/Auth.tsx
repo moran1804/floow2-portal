@@ -28,7 +28,7 @@ const Auth = () => {
   const [info, setInfo] = useState<string | null>(null);
 
   useEffect(() => {
-    if (session) navigate("/admin/terms", { replace: true });
+    if (session) navigate("/admin/overview", { replace: true });
   }, [session, navigate]);
 
   const submit = async (e: React.FormEvent) => {

@@ -9,7 +9,7 @@ const Index = () => {
   const { session, isAdmin, loading } = useAuth();
 
   useEffect(() => {
-    if (!loading && session && isAdmin) navigate("/admin/terms", { replace: true });
+    if (!loading && session && isAdmin) navigate("/admin/overview", { replace: true });
   }, [loading, session, isAdmin, navigate]);
 
   return (
@@ -27,7 +27,7 @@ const Index = () => {
         </p>
         <div className="flex gap-3 justify-center">
           <Button asChild>
-            <Link to={session ? "/admin/terms" : "/auth"}>
+            <Link to={session ? "/admin/overview" : "/auth"}>
               {session ? "Open admin" : "Sign in"} <ArrowRight className="w-4 h-4 ml-2" />
             </Link>
           </Button>

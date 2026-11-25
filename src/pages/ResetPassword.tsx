@@ -21,7 +21,7 @@ const ResetPassword = () => {
     const { error } = await supabase.auth.updateUser({ password });
     setBusy(false);
     if (error) return setError(error.message);
-    navigate("/admin/terms", { replace: true });
+    navigate("/admin/overview", { replace: true });
   };
 
   return (
