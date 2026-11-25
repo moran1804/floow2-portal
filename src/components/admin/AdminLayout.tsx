@@ -194,8 +194,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                 <Button asChild variant="ghost" className="mb-3 w-full justify-start rounded-none px-6"><NavLink to="/admin/overview"><ArrowLeft />Back to home</NavLink></Button>
                 <NavLink to="/admin/insurer" className={navLinkClass} end><AlertCircle className="h-5 w-5" />Overview</NavLink>
                 <div className={disabledClass} aria-disabled="true"><AlertTriangle className="h-5 w-5" />Impacts</div>
-                <div className={disabledClass} aria-disabled="true"><FileText className="h-5 w-5" />Policies</div>
-                <div className={disabledClass} aria-disabled="true"><Users className="h-5 w-5" />Users</div>
+                <div className={disabledClass} aria-disabled="true"><SearchIcon className="h-5 w-5" />Search User Data</div>
               </>
             ) : isWebhooksPage ? (
               <>
