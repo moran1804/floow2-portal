@@ -78,6 +78,7 @@ All colors MUST be HSL.
     --score-caution: 35 100% 35%;
     --score-caution-track: 40 65% 94%;
     --score-tile-shadow: 0 2px 8px hsl(var(--portal-text) / 0.22);
+    --score-tile-shadow-hover: 0 12px 26px hsl(var(--portal-navy) / 0.26);
 
     --status-active-bg: 145 60% 90%;
     --status-active-fg: 145 70% 24%;
@@ -91,6 +92,7 @@ All colors MUST be HSL.
 
   .dark {
     --score-surface: 216 15% 18%;
+    --score-tile-shadow-hover: 0 12px 26px hsl(0 0% 0% / 0.6);
     --score-good: 103 42% 62%;
     --score-good-track: 103 20% 22%;
     --score-caution: 38 85% 65%;

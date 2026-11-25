@@ -89,6 +89,7 @@ export default {
       },
       boxShadow: {
         "score-tile": "var(--score-tile-shadow)",
+        "score-tile-hover": "var(--score-tile-shadow-hover)",
       },
       keyframes: {
         "accordion-down": {
