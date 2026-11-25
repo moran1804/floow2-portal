@@ -2,7 +2,7 @@ import { format } from "date-fns";
 
 export type Journey = {
   id: string;
-  /** Local date-time, e.g. "2026-11-03T20:00" — matches datetime-local inputs. */
+  /** Local date-time, e.g. "2026-11-03T20:00". */
   startedAt: string;
   score: number | null;
   duration: string;
@@ -65,12 +65,13 @@ export const EVENT_STATES: Record<string, string> = { any: "Any", with: "With dr
 
 export const SORTS: Record<string, string> = { newest: "Newest first", oldest: "Oldest first", highest: "Highest score first", lowest: "Lowest score first" };
 
+/** from / to are inclusive day bounds in "yyyy-MM-dd" form; empty means unbounded. */
 export type JourneyFilters = { from: string; to: string; score: string; mode: string; events: string; tags: string[]; sort: string };
 
-export const defaultJourneyFilters: JourneyFilters = { from: "", to: "2026-11-25T23:59", score: "any", mode: "any", events: "any", tags: [], sort: "newest" };
+export const defaultJourneyFilters: JourneyFilters = { from: "", to: "", score: "any", mode: "any", events: "any", tags: [], sort: "newest" };
 
 export const isDefaultFilters = (f: JourneyFilters) =>
-  !f.from && f.to === defaultJourneyFilters.to && f.score === "any" && f.mode === "any" && f.events === "any" && f.tags.length === 0 && f.sort === "newest";
+  !f.from && !f.to && f.score === "any" && f.mode === "any" && f.events === "any" && f.tags.length === 0 && f.sort === "newest";
 
 export function scoreMatches(score: number | null, band: string): boolean {
   if (band === "any") return true;
@@ -85,8 +86,8 @@ export function scoreMatches(score: number | null, band: string): boolean {
 
 /** Journeys matching every filter. Selected tags match any one of them. */
 export function filterJourneys(journeys: Journey[], f: JourneyFilters): Journey[] {
-  const from = f.from ? new Date(f.from).getTime() : null;
-  const to = f.to ? new Date(f.to).getTime() : null;
+  const from = f.from ? new Date(`${f.from}T00:00:00`).getTime() : null;
+  const to = f.to ? new Date(`${f.to}T23:59:59`).getTime() : null;
   const rows = journeys.filter((j) => {
     const t = new Date(j.startedAt).getTime();
     if (from !== null && t < from) return false;
@@ -105,25 +106,17 @@ export function filterJourneys(journeys: Journey[], f: JourneyFilters): Journey[
   return [...rows].sort(byDate);
 }
 
-/** Move a datetime-local value by whole days, keeping the same clock time. */
-export function shiftDate(iso: string, days: number): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  d.setDate(d.getDate() + days);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+/** "yyyy-MM-dd" for a calendar selection. */
+export const dayString = (d: Date) => format(d, "yyyy-MM-dd");
+
+const dayLabel = (iso: string) => format(new Date(`${iso}T00:00:00`), "d MMM yyyy");
+
+/** Text shown on the date-range filter, e.g. "3 Sep 2026 – 25 Nov 2026". */
+export function formatDateRange(from: string, to: string): string {
+  if (!from && !to) return "All dates";
+  if (from && to) return from === to ? dayLabel(from) : `${dayLabel(from)} – ${dayLabel(to)}`;
+  if (from) return `From ${dayLabel(from)}`;
+  return `Until ${dayLabel(to)}`;
 }
 
-const stamp = (iso: string) => new Date(iso).toLocaleString("en-GB", { hour: "numeric", minute: "2-digit", day: "numeric", month: "long", year: "numeric" });
-
-/** The "Showing N journeys …" sentence above the list. */
-export function journeyWindowLabel(count: number, f: JourneyFilters): string {
-  const head = `Showing ${count} ${count === 1 ? "journey" : "journeys"}`;
-  if (f.from && f.to) return `${head} started between ${stamp(f.from)} and ${stamp(f.to)}`;
-  if (f.to) return `${head} started before ${stamp(f.to)}`;
-  if (f.from) return `${head} started after ${stamp(f.from)}`;
-  return head;
-}
-
-export const journeyDateLabel = (startedAt: string) => format(new Date(startedAt), "EEEE dd MMMM");
 export const journeyFullDateLabel = (startedAt: string) => format(new Date(startedAt), "EEEE do MMMM yyyy");

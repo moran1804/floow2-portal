@@ -48,3 +48,9 @@
 
 - [x] Add score, tag, date, mode, events and sort filters to the journeys list.
 - [x] Verify signed-in filtering, empty state, window controls and journey details.
+
+# Journeys table
+
+- [x] Rebuild the journeys list as a table with a single-row filter bar and page-size control.
+- [x] Replace the two date-time boxes with one date-range picker (calendar, presets, All dates).
+- [x] Verify signed-in range picking, one-day range, presets, reset, and journey opening.

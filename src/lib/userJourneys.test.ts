@@ -2,9 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   defaultJourneyFilters,
   filterJourneys,
-  journeyWindowLabel,
+  formatDateRange,
   sampleJourneys,
-  shiftDate,
 } from "./userJourneys";
 
 const ids = (f: Parameters<typeof filterJourneys>[1]) => filterJourneys(sampleJourneys, f).map((j) => j.id);
@@ -38,23 +37,29 @@ describe("journey filters", () => {
     expect(ids({ ...defaultJourneyFilters, events: "with" })).toEqual(["j1", "j2", "j3", "j5", "j6", "j7", "j8", "j9", "j11", "j12"]);
   });
 
-  it("applies the date window", () => {
-    expect(ids({ ...defaultJourneyFilters, from: "2026-11-01T00:00" })).toEqual(["j1", "j2", "j3", "j4", "j5", "j6"]);
-    expect(ids({ ...defaultJourneyFilters, to: "2026-10-28T23:59" })).toEqual(["j7", "j8", "j9", "j10", "j11", "j12"]);
+  it("includes both ends of the selected date range", () => {
+    expect(ids({ ...defaultJourneyFilters, from: "2026-11-01", to: "2026-11-03" })).toEqual(["j1", "j2", "j3", "j4", "j5", "j6"]);
+    expect(ids({ ...defaultJourneyFilters, from: "2026-10-19", to: "2026-10-28" })).toEqual(["j7", "j8", "j9"]);
+  });
+
+  it("shows one day when the range starts and ends the same day", () => {
+    expect(ids({ ...defaultJourneyFilters, from: "2026-11-03", to: "2026-11-03" })).toEqual(["j1", "j2", "j3", "j4"]);
+  });
+
+  it("leaves the window open when only one end is set", () => {
+    expect(ids({ ...defaultJourneyFilters, from: "2026-11-01" })).toEqual(["j1", "j2", "j3", "j4", "j5", "j6"]);
+    expect(ids({ ...defaultJourneyFilters, to: "2026-10-28" })).toEqual(["j7", "j8", "j9", "j10", "j11", "j12"]);
   });
 
   it("sorts by score, highest first", () => {
     expect(ids({ ...defaultJourneyFilters, sort: "highest" }).slice(0, 3)).toEqual(["j7", "j5", "j12"]);
   });
 
-  it("moves the date window by whole days", () => {
-    expect(shiftDate("2026-11-03T20:00", -7)).toBe("2026-10-27T20:00");
-    expect(shiftDate("2026-11-01T00:00", 7)).toBe("2026-11-08T00:00");
-  });
-
-  it("describes the window being shown", () => {
-    expect(journeyWindowLabel(3, { ...defaultJourneyFilters, to: "2026-11-03T20:00" })).toContain("Showing 3 journeys started before");
-    expect(journeyWindowLabel(1, { ...defaultJourneyFilters, to: "2026-11-03T20:00", from: "2026-11-01T00:00" })).toContain("between");
-    expect(journeyWindowLabel(2, { ...defaultJourneyFilters, to: "" })).toBe("Showing 2 journeys");
+  it("labels the date-range filter", () => {
+    expect(formatDateRange("", "")).toBe("All dates");
+    expect(formatDateRange("2026-09-03", "2026-11-25")).toBe("3 Sep 2026 – 25 Nov 2026");
+    expect(formatDateRange("2026-11-03", "2026-11-03")).toBe("3 Nov 2026");
+    expect(formatDateRange("2026-11-01", "")).toBe("From 1 Nov 2026");
+    expect(formatDateRange("", "2026-11-25")).toBe("Until 25 Nov 2026");
   });
 });

@@ -1,22 +1,25 @@
 import { useUnits } from "@/hooks/useUnits";
 import { useMemo, useState } from "react";
-import { format } from "date-fns";
+import { format, parseISO, startOfMonth, subMonths } from "date-fns";
 import { useNavigate, useParams } from "react-router-dom";
-import { Bike, Calendar, Car, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
+import { Bike, Calendar as CalendarIcon, Car, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
 import { MapContainer, TileLayer, Polyline, CircleMarker } from "react-leaflet";
 import type { LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   EVENT_STATES,
   MODES,
   SCORE_BANDS,
   SORTS,
+  dayString,
   defaultJourneyFilters,
   filterJourneys,
+  formatDateRange,
   isDefaultFilters,
   sampleJourneys,
   journeyInfluences,
@@ -61,6 +64,62 @@ function endAt(startedAt: string, duration: string) {
 }
 const fmt = (d: Date) => format(d, "MMMM d yyyy, h:mm a");
 
+const PRESETS: [number, string][] = [[7, "Last 7 days"], [30, "Last 30 days"], [90, "Last 90 days"]];
+
+/** One filter for the whole date window: a calendar where you pick a start and an end day. */
+function DateRangeFilter({ from, to, onChange }: { from: string; to: string; onChange: (next: { from: string; to: string }) => void }) {
+  const [open, setOpen] = useState(false);
+  const today = new Date();
+  const selected = from || to ? { from: from ? parseISO(from) : undefined, to: to ? parseISO(to) : undefined } : undefined;
+
+  const pickPreset = (days: number) => {
+    const start = new Date(today);
+    start.setDate(start.getDate() - (days - 1));
+    onChange({ from: dayString(start), to: dayString(today) });
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          aria-label="Filter journeys by date range"
+          aria-expanded={open}
+          className="min-w-0 rounded-lg border border-portal-border bg-portal-surface px-3 pb-1.5 pt-2 text-left transition-colors hover:border-portal-accent focus-visible:border-portal-accent focus-visible:outline-none"
+        >
+          <span className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-portal-muted">
+            <CalendarIcon className="h-3 w-3" />Date range
+          </span>
+          <span className={`block truncate text-sm ${from || to ? "font-medium text-portal-navy" : "text-portal-muted"}`}>{formatDateRange(from, to)}</span>
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0" align="start">
+        <Calendar
+          mode="range"
+          numberOfMonths={2}
+          selected={selected}
+          defaultMonth={to ? startOfMonth(parseISO(to)) : subMonths(startOfMonth(today), 1)}
+          fromMonth={subMonths(startOfMonth(today), 24)}
+          toMonth={today}
+          disabled={(d) => d > today}
+          onSelect={(range) => {
+            if (!range?.from) { onChange({ from: "", to: "" }); return; }
+            const start = dayString(range.from);
+            onChange({ from: start, to: range.to ? dayString(range.to) : start });
+          }}
+          className="pointer-events-auto p-3"
+        />
+        <div className="flex flex-wrap items-center gap-2 border-t border-portal-border px-3 py-2">
+          {PRESETS.map(([days, label]) => (
+            <Button key={label} type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={() => pickPreset(days)}>{label}</Button>
+          ))}
+          <Button type="button" variant="ghost" size="sm" className="ml-auto h-7 text-xs underline underline-offset-4" onClick={() => { onChange({ from: "", to: "" }); setOpen(false); }}>All dates</Button>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export default function UserJourneysSection() {
   const { distance } = useUnits();
   const navigate = useNavigate();
@@ -73,7 +132,7 @@ export default function UserJourneysSection() {
   const reset = () => { setPage(0); setFilters(defaultJourneyFilters); };
   const pages = Math.max(1, Math.ceil(rows.length / pageSize));
   const shown = rows.slice(page * pageSize, page * pageSize + pageSize);
-  const active = [filters.from, filters.score !== "any", filters.mode !== "any", filters.events !== "any", filters.to !== defaultJourneyFilters.to].filter(Boolean).length;
+  const active = [Boolean(filters.from || filters.to), filters.score !== "any", filters.mode !== "any", filters.events !== "any", filters.sort !== "newest"].filter(Boolean).length;
 
   const selects: [keyof JourneyFilters, string, Record<string, string>][] = [
     ["score", "Score", SCORE_BANDS], ["mode", "Mode", MODES], ["events", "Driving events", EVENT_STATES], ["sort", "Sort by", SORTS],
@@ -91,13 +150,8 @@ export default function UserJourneysSection() {
           </h3>
           <Button type="button" variant="ghost" size="sm" onClick={reset} disabled={isDefaultFilters({ ...filters, tags: [] })} className="text-xs">Reset all</Button>
         </header>
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
-          {([["from", "Start date and time"], ["to", "End date and time"]] as const).map(([k, label]) => (
-            <div key={k} className="relative min-w-0 rounded-lg border border-portal-border bg-portal-surface px-3 pb-1.5 pt-2 focus-within:border-portal-accent xl:col-span-1">
-              <Label htmlFor={`journey-${k}`} className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-portal-muted"><Calendar className="h-3 w-3" />{label}</Label>
-              <Input id={`journey-${k}`} type="datetime-local" value={filters[k]} onChange={(e) => set({ [k]: e.target.value })} className="h-7 min-w-0 border-0 bg-transparent p-0 text-sm shadow-none focus-visible:ring-0" />
-            </div>
-          ))}
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+          <DateRangeFilter from={filters.from} to={filters.to} onChange={set} />
           {selects.map(([k, label, opts]) => (
             <div key={k} className="rounded-lg border border-portal-border bg-portal-surface px-3 pb-1.5 pt-2 focus-within:border-portal-accent">
               <Label htmlFor={`journey-${k}`} className="text-[11px] font-semibold uppercase tracking-wide text-portal-muted">{label}</Label>
