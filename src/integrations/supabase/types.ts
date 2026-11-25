@@ -67,6 +67,41 @@ export type Database = {
           },
         ]
       }
+      braze_configs: {
+        Row: {
+          api_key: string
+          created_at: string
+          customer_id: string
+          rest_endpoint: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          api_key?: string
+          created_at?: string
+          customer_id: string
+          rest_endpoint?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          api_key?: string
+          created_at?: string
+          customer_id?: string
+          rest_endpoint?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "braze_configs_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: true
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customers: {
         Row: {
           archived_at: string | null
@@ -436,6 +471,44 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tracking_failures: {
+        Row: {
+          customer_id: string
+          error: string | null
+          failed_at: string
+          id: string
+          status_code: number | null
+          update_type: string
+          user_id: string
+        }
+        Insert: {
+          customer_id: string
+          error?: string | null
+          failed_at?: string
+          id?: string
+          status_code?: number | null
+          update_type: string
+          user_id: string
+        }
+        Update: {
+          customer_id?: string
+          error?: string | null
+          failed_at?: string
+          id?: string
+          status_code?: number | null
+          update_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tracking_failures_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
             referencedColumns: ["id"]
           },
         ]

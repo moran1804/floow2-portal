@@ -25,6 +25,9 @@ import AdminHomePage from "./pages/admin/AdminHomePage.tsx";
 import InsightsPage from "./pages/admin/InsightsPage.tsx";
 import AppsPage from "./pages/admin/AppsPage.tsx";
 import AppAddPage from "./pages/admin/AppAddPage.tsx";
+import CampaignsOverviewPage from "./pages/admin/campaigns/CampaignsOverviewPage.tsx";
+import CampaignsConfigPage from "./pages/admin/campaigns/CampaignsConfigPage.tsx";
+import TrackingFailuresPage from "./pages/admin/campaigns/TrackingFailuresPage.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import RequireAdmin from "@/components/admin/RequireAdmin";
 import { CustomerProvider } from "@/contexts/CustomerContext";
@@ -43,6 +46,9 @@ const App = () => (
             <Route path="/admin/insights" element={<RequireAdmin><InsightsPage /></RequireAdmin>} />
             <Route path="/admin/developer/apps" element={<RequireAdmin><AppsPage /></RequireAdmin>} />
             <Route path="/admin/developer/apps/add" element={<RequireAdmin><AppAddPage /></RequireAdmin>} />
+            <Route path="/admin/developer/campaigns" element={<RequireAdmin><CampaignsOverviewPage /></RequireAdmin>} />
+            <Route path="/admin/developer/campaigns/config" element={<RequireAdmin><CampaignsConfigPage /></RequireAdmin>} />
+            <Route path="/admin/developer/campaigns/tracking-failures" element={<RequireAdmin><TrackingFailuresPage /></RequireAdmin>} />
             <Route
               path="/admin/overview"
               element={

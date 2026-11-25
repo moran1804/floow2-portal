@@ -63,7 +63,7 @@ const otherTopItems: NavItem[] = [
 
 const devChildren: NavItem[] = [
   { to: "/admin/developer/apps", icon: Smartphone, label: "Apps" },
-  { to: "#", icon: Send, label: "Campaigns", disabled: true },
+  { to: "/admin/developer/campaigns", icon: Send, label: "Campaigns" },
   { to: "#", icon: Network, label: "REST API", disabled: true },
   { to: "#", icon: Webhook, label: "Webhooks", disabled: true },
 ];
@@ -95,6 +95,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
   const { pathname } = useLocation();
   const isClientsPage = pathname === "/admin/clients";
   const isInsightsPage = pathname.startsWith("/admin/insights");
+  const isCampaignsPage = pathname.startsWith("/admin/developer/campaigns");
 
   const isAdminChildActive = adminChildren.some((c) => pathname.startsWith(c.to));
   const isAdminHome = pathname === "/admin/home";
@@ -169,7 +170,14 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
         {!hideSidebar && (
         <aside className={`${isInsightsPage ? "hidden md:block w-52 shrink-0" : "w-64"} min-h-[calc(100vh-4rem)] bg-portal-sidebar border-r border-portal-border py-4`}>
           <nav className="mt-2">
-            {isInsightsPage ? (
+            {isCampaignsPage ? (
+              <>
+                <Button asChild variant="ghost" className="mb-3 w-full justify-start rounded-none px-6"><NavLink to="/admin/developer"><ArrowLeft />Developer tools</NavLink></Button>
+                <NavLink to="/admin/developer/campaigns" className={navLinkClass} end><LayoutGrid className="h-5 w-5" />Overview</NavLink>
+                <NavLink to="/admin/developer/campaigns/config" className={navLinkClass}><SlidersHorizontal className="h-5 w-5" />Configuration</NavLink>
+                <NavLink to="/admin/developer/campaigns/tracking-failures" className={navLinkClass}><AlertTriangle className="h-5 w-5" />Tracking Failures</NavLink>
+              </>
+            ) : isInsightsPage ? (
               <>
                 <Button asChild variant="ghost" className="mb-3 w-full justify-start rounded-none px-6"><NavLink to="/admin/overview"><ArrowLeft />Back to home</NavLink></Button>
                 <NavLink to="/admin/insights" className={navLinkClass} end><PieChart className="h-5 w-5" />Overview</NavLink>
