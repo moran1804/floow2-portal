@@ -9,3 +9,4 @@
 - Keep the Impacts screen's presentation-only sample records visibly labelled and separate from client telemetry until a real impact source is connected, so examples cannot be mistaken for live cases.
 - Share synthetic impact records between the list and protected report routes; use Leaflet/OpenStreetMap for sample journeys and show embedded Street View as unavailable until connected, so navigation stays consistent without fabricating live geographic evidence.
 - Share customer-keyed browser search-matching preferences between Configuration and insurer search until server settings are connected; use parameterized exact/partial database searches for saved identities, while clearly labelling unconnected score, journey, file, impact, and acceptance sources.
+- Debounce Smart match user searches and discard superseded responses on query, mode, or customer changes; keep Exact match submission-only to avoid stale or cross-client results.

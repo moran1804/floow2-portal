@@ -23,6 +23,7 @@
 
 - [x] Connect the saved search mode to a single-bar partial-search form with guidance.
 - [x] Test saved mode, partial input, exact-match preservation, and phone layout.
+- [x] Add search-as-you-type results and verify live partial matching and stale-result protection.
 
 # Searchable user account
 
