@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 
 type Mode = { key: string; label: string; icon: LucideIcon };
 
@@ -34,15 +33,18 @@ const MODES: Mode[] = [
 ];
 
 const ConfigurationPage = () => {
+  const [searchMode, setSearchMode] = useState<"exact" | "smart">("exact");
+  const [initialSearchMode, setInitialSearchMode] = useState(searchMode);
   const [selected, setSelected] = useState<Record<string, boolean>>(
     Object.fromEntries(MODES.map((m) => [m.key, true]))
   );
-  const [initial] = useState(selected);
+  const [initial, setInitial] = useState(selected);
 
   const toggle = (k: string) =>
     setSelected((s) => ({ ...s, [k]: !s[k] }));
 
-  const dirty = MODES.some((m) => selected[m.key] !== initial[m.key]);
+  const dirty =
+    searchMode !== initialSearchMode || MODES.some((m) => selected[m.key] !== initial[m.key]);
 
   return (
     <AdminLayout
@@ -75,10 +77,37 @@ const ConfigurationPage = () => {
         </div>
       </section>
 
+      <section className="bg-portal-panel border border-portal-border rounded-lg p-6 max-w-3xl mt-6">
+        <h2 className="text-lg font-bold text-portal-navy mb-5">Search matching</h2>
+        <div className="flex flex-col gap-3">
+          {[
+            { key: "exact", label: "Exact match", hint: "Only show results that match the search text exactly." },
+            { key: "smart", label: "Smart match", hint: "Also show close results, allowing for typos and partial words." },
+          ].map((o) => (
+            <label key={o.key} className="flex items-start gap-2 text-sm text-portal-text cursor-pointer">
+              <input
+                type="radio"
+                name="search-mode"
+                checked={searchMode === o.key}
+                onChange={() => setSearchMode(o.key as "exact" | "smart")}
+                className="w-4 h-4 mt-0.5 accent-portal-accent"
+              />
+              <span>
+                <span className="font-semibold block">{o.label}</span>
+                <span className="text-portal-muted">{o.hint}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+      </section>
+
       <div className="max-w-3xl mt-6 flex justify-end">
         <Button
           disabled={!dirty}
-          onClick={() => toast.success("Configuration saved")}
+          onClick={() => {
+            setInitial(selected);
+            setInitialSearchMode(searchMode);
+          }}
           className="bg-portal-navy hover:bg-portal-navy/90 text-portal-navy-foreground disabled:opacity-50 px-8"
         >
           Save
