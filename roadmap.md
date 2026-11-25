@@ -42,3 +42,4 @@
 
 # Journey details screen
 - [x] Journey details page opened from Journeys
+- [x] Journey route page with events list and map

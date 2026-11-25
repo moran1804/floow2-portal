@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Car, Bike, ChevronRight, Clock, FileText, Pencil, Route } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import UserScoreTile from "@/components/admin/UserScoreTile";
@@ -25,6 +25,7 @@ function Rows({ rows }: { rows: [string, ReactNode][] }) {
 
 export default function JourneyDetailPage() {
   const { userId, journeyId } = useParams();
+  const navigate = useNavigate();
   const [info, setInfo] = useState<string | null>(null);
   const journey = sampleJourneys.find((j) => j.id === journeyId);
   const base = `/admin/insurer/users/${userId}`;
@@ -46,7 +47,7 @@ export default function JourneyDetailPage() {
           <div className="mb-3 flex justify-end gap-4 text-xs font-semibold"><span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{journey.duration}</span><span className="flex items-center gap-1"><Route className="h-3.5 w-3.5" />{journey.miles}</span></div>
           <div className="lg:[&>div]:h-96"><JourneyMap route={journey.route} /></div>
           {journey.events !== null && <p className="bg-score-caution-track py-1 text-center text-sm">{journey.events} driving events</p>}
-          <div className="mt-auto flex justify-end pt-6"><Button className="gap-1 text-lg font-normal" onClick={() => setInfo("The detailed route view is not connected yet.")}>View route<ChevronRight className="h-4 w-4" /></Button></div>
+          <div className="mt-auto flex justify-end pt-6"><Button className="gap-1 text-lg font-normal" onClick={() => navigate(`${base}/journeys/${journey.id}/route`)}>View route<ChevronRight className="h-4 w-4" /></Button></div>
         </Card>
       </div>
       <Card icon={<FileText className="h-5 w-5" />} title="Journey Scores">
