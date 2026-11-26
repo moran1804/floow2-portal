@@ -38,6 +38,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNotifications } from "@/hooks/useNotifications";
 import { Button } from "@/components/ui/button";
 import { UserProfileMenu } from "@/components/admin/UserProfileMenu";
+import { PortalFeedback } from "@/components/admin/PortalFeedback";
 import { RoleNavLink as NavLink } from "@/components/admin/RoleAccess";
 import { useRolePreview } from "@/contexts/RolePreviewContext";
 import { DEFAULT_PREVIEW_ROLE, FLOOW_PREVIEW_ROLES, CLIENT_PREVIEW_ROLES, type PreviewRole } from "@/lib/rolePreview";
@@ -470,7 +471,8 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
           </div>
           <div className={isInsightsPage || isUserSearchPage ? "p-4 md:p-6" : isNotificationsPage ? "flex min-h-0 flex-1 flex-col overflow-hidden p-4 sm:p-8" : "p-8"}>{children}</div>
           <footer className={`px-8 text-xs text-portal-muted ${isNotificationsPage ? "shrink-0 pb-3" : "pb-8"} ${isUserSearchPage ? "mt-auto pt-8" : ""}`}>
-            Copyright © {new Date().getFullYear()} The Floow Limited - All Rights Reserved
+            <div className="mb-4"><PortalFeedback /></div>
+            <p>Copyright © {new Date().getFullYear()} The Floow Limited - All Rights Reserved</p>
           </footer>
         </main>
       </div>

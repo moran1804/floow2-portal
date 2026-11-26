@@ -90,3 +90,8 @@
 
 - [x] Add reference-style, labelled example speed graphs for every journey with shared speed units.
 - [x] Verify journey-specific times, graph rendering, tooltip and desktop/mobile layouts.
+
+# Portal feedback
+
+- [x] Add footer ratings and screenshot-style feedback form with saved submissions and staff review.
+- [x] Verify signed-in sending, saved read-back, cancellation and mobile layout.

@@ -474,6 +474,44 @@ export type Database = {
           },
         ]
       }
+      portal_feedback: {
+        Row: {
+          comment: string
+          created_at: string
+          customer_id: string | null
+          id: string
+          page_path: string
+          rating: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          page_path: string
+          rating: string
+          user_id: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          page_path?: string
+          rating?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_feedback_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           campaigns_api_key: string | null

@@ -18,3 +18,4 @@
 - Define the role preview context in a separate non-component module so preview refreshes cannot disconnect mounted providers from updated consumers.
 - Share customer-and-user-scoped example transport-tag edits through the query cache and one transport picker for list and detail views; this keeps demo changes consistent without writing synthetic journeys to live telemetry.
 - Generate clearly labelled illustrative journey speed series from each sample journey's start and duration, converting through the shared units hook; this avoids presenting synthetic speeds as recorded GPS data.
+- Keep the feedback widget in the shared portal footer and store authenticated submissions in customer-scoped portal_feedback; restrict review to database-verified staff administrators so role previews cannot expose feedback.
