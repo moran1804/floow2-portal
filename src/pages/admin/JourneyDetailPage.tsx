@@ -2,23 +2,16 @@ import { PermissionGate } from "@/components/admin/RoleAccess";
 import { useUnits } from "@/hooks/useUnits";
 import { useState, type ReactNode } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Car, Bike, Bus, CircleHelp, CircleMinus, PersonStanding, Plane, Ship, TrainFront, TramFront, Footprints, ChevronRight, Clock, FileText, Pencil, Route } from "lucide-react";
+import { Car, ChevronRight, Clock, FileText, Pencil, Route } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import UserScoreTile from "@/components/admin/UserScoreTile";
 import { JourneyMap } from "@/components/admin/UserJourneysSection";
-import { journeyFullDateLabel, journeyInfluences, sampleJourneys } from "@/lib/userJourneys";
+import { journeyFullDateLabel, journeyInfluences } from "@/lib/userJourneys";
+import { TRANSPORT_OPTIONS } from "@/lib/journeyTransport";
+import { useExampleJourneyTags } from "@/hooks/useExampleJourneyTags";
+import JourneyTransportDialog from "@/components/admin/JourneyTransportDialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-
-const TRANSPORT_OPTIONS = [
-  { name: "Car", icon: Car }, { name: "Passenger", icon: PersonStanding },
-  { name: "Train", icon: TrainFront }, { name: "Plane", icon: Plane },
-  { name: "Tram", icon: TramFront }, { name: "Bus", icon: Bus },
-  { name: "Bike", icon: Bike }, { name: "Boat", icon: Ship },
-  { name: "Foot", icon: Footprints }, { name: "Other", icon: CircleHelp },
-  { name: "Excluded", icon: CircleMinus },
-] as const;
-type TransportMode = typeof TRANSPORT_OPTIONS[number]["name"];
 
 function Card({ icon, title, action, children, className = "" }: { icon: ReactNode; title: string; action?: ReactNode; children: ReactNode; className?: string }) {
   return <section className={`rounded-md border border-portal-border/60 bg-background p-6 shadow-sm ${className}`}>
@@ -35,14 +28,13 @@ export default function JourneyDetailPage() {
   const { userId, journeyId } = useParams();
   const navigate = useNavigate();
   const [transportOpen, setTransportOpen] = useState(false);
-  const [selectedMode, setSelectedMode] = useState<TransportMode>("Car");
-  const [exampleModes, setExampleModes] = useState<Record<string, TransportMode>>({});
+  const { journeys, updateTags } = useExampleJourneyTags(userId);
   const [info, setInfo] = useState<string | null>(null);
-  const journey = sampleJourneys.find((j) => j.id === journeyId);
+  const journey = journeys.find((j) => j.id === journeyId);
   const base = `/admin/insurer/users/${userId}`;
   const crumbs = [{ label: "Search", to: "/admin/insurer/search" }, { label: "Users" }, { label: userId ?? "User", to: base }, { label: "Journeys", to: `${base}/journeys` }, { label: `Journey: ${journeyId}` }];
   if (!journey) return <AdminLayout title="Journey details" crumbs={crumbs}><p role="status">This journey was not found.</p></AdminLayout>;
-  const mode = exampleModes[journey.id] ?? journey.mode;
+  const mode = journey.mode;
   const ModeIcon = TRANSPORT_OPTIONS.find((option) => option.name === mode)?.icon ?? Car;
   const influences = journeyInfluences[journey.id];
   return <AdminLayout title="Journey details" subtitle={`Journey ID: ${journey.id}`} crumbs={crumbs}>
@@ -52,7 +44,7 @@ export default function JourneyDetailPage() {
         <div className="space-y-5">
           <Card icon={<FileText className="h-5 w-5" />} title="User information"><Rows rows={[["User ID", <Link key="u" to={base} className="underline underline-offset-2">{userId}</Link>]]} /></Card>
           <Card icon={<Clock className="h-5 w-5" />} title="Time of journey"><Rows rows={[["Date", journeyFullDateLabel(journey.startedAt)], ["Start time", journey.start], ["End time", journey.end], ["Timezone", "Europe/London"]]} /></Card>
-          <Card icon={<ModeIcon className="h-5 w-5" />} title="Mode of transport" action={<PermissionGate permission="journeys/mode_of_transport/write"><Button variant="outline" size="sm" className="gap-1 border-2 border-portal-navy text-portal-navy" onClick={() => { setSelectedMode(mode); setTransportOpen(true); }}><Pencil className="h-3.5 w-3.5" />Edit</Button></PermissionGate>}>
+          <Card icon={<ModeIcon className="h-5 w-5" />} title="Mode of transport" action={<PermissionGate permission="journeys/mode_of_transport/write"><Button variant="outline" size="sm" className="gap-1 border-2 border-portal-navy text-portal-navy" onClick={() => setTransportOpen(true)}><Pencil className="h-3.5 w-3.5" />Edit</Button></PermissionGate>}>
             <Rows rows={[["Mode of transport", <span key="m" className="inline-flex items-center gap-1 text-xs"><ModeIcon className="h-4 w-4" />{mode}</span>], ["Tag set by", journey.tagSetBy], ["Locked for user edits since", "8:10 pm 06 November, 2026"]]} />
           </Card>
         </div>
@@ -72,28 +64,7 @@ export default function JourneyDetailPage() {
         </div>}
       </Card></PermissionGate>
     </div>
-    <Dialog open={transportOpen} onOpenChange={setTransportOpen}>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto p-0 sm:max-w-[480px]" aria-describedby={undefined}>
-        <DialogHeader className="border-b border-portal-border px-5 py-5 pr-12">
-          <DialogTitle className="text-base text-portal-navy">Edit mode of transport</DialogTitle>
-        </DialogHeader>
-        <div className="grid grid-cols-3 gap-3 px-5 pb-1 pt-3 sm:grid-cols-4" role="group" aria-label="Mode of transport options">
-          {TRANSPORT_OPTIONS.map(({ name, icon: Icon }) => (
-            <Button key={name} type="button" variant="outline" aria-pressed={selectedMode === name}
-              onClick={() => setSelectedMode(name)}
-              className={`h-[88px] min-w-0 flex-col gap-2 rounded-none px-1 text-sm font-semibold [&_svg]:h-8 [&_svg]:w-8 ${selectedMode === name ? "border-portal-accent bg-portal-surface text-portal-navy" : "border-portal-border bg-background text-foreground"}`}>
-              <Icon aria-hidden="true" />{name}
-            </Button>
-          ))}
-        </div>
-        <div className="flex items-center justify-between px-5 pb-5 pt-1">
-          <Button variant="outline" onClick={() => setTransportOpen(false)}>Cancel</Button>
-          <PermissionGate permission="journeys/mode_of_transport/write">
-            <Button onClick={() => { setExampleModes((current) => ({ ...current, [journey.id]: selectedMode })); setTransportOpen(false); }}>Confirm</Button>
-          </PermissionGate>
-        </div>
-      </DialogContent>
-    </Dialog>
+    <PermissionGate permission="journeys/mode_of_transport/write"><JourneyTransportDialog open={transportOpen} onOpenChange={setTransportOpen} initialMode={mode} onConfirm={(next) => updateTags([journey.id], next)} /></PermissionGate>
     <Dialog open={info !== null} onOpenChange={(o) => !o && setInfo(null)}><DialogContent><DialogHeader><DialogTitle>Not connected yet</DialogTitle><DialogDescription>{info}</DialogDescription></DialogHeader></DialogContent></Dialog>
   </AdminLayout>;
 }

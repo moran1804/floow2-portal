@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { TRANSPORT_OPTIONS, type TransportMode } from "./journeyTransport";
 
 export type Journey = {
   id: string;
@@ -7,7 +8,7 @@ export type Journey = {
   score: number | null;
   duration: string;
   miles: string;
-  mode: "Car" | "Bike";
+  mode: TransportMode;
   start: string;
   end: string;
   events: number | null;
@@ -60,7 +61,7 @@ export const SCORE_BANDS: Record<string, string> = {
   none: "Not scored",
 };
 
-export const MODES: Record<string, string> = { any: "Any mode", Car: "Car", Bike: "Bike" };
+export const MODES: Record<string, string> = { any: "Any mode", ...Object.fromEntries(TRANSPORT_OPTIONS.map(({ name }) => [name, name])) };
 
 export const EVENT_STATES: Record<string, string> = { any: "Any", with: "With driving events", without: "Without driving events" };
 

@@ -1,12 +1,16 @@
 import { useUnits } from "@/hooks/useUnits";
 import { useRolePreview } from "@/contexts/RolePreviewContext";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { format, parseISO, startOfMonth, subMonths } from "date-fns";
 import { useNavigate, useParams } from "react-router-dom";
-import { Bike, Calendar as CalendarIcon, Car, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
+import { Bike, Calendar as CalendarIcon, Car, ChevronLeft, ChevronRight, Pencil, SlidersHorizontal } from "lucide-react";
 import { MapContainer, TileLayer, Polyline, CircleMarker } from "react-leaflet";
 import type { LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useExampleJourneyTags } from "@/hooks/useExampleJourneyTags";
+import { TRANSPORT_OPTIONS } from "@/lib/journeyTransport";
+import JourneyTransportDialog from "@/components/admin/JourneyTransportDialog";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
@@ -127,12 +131,18 @@ export default function UserJourneysSection() {
   const { distance } = useUnits();
   const navigate = useNavigate();
   const { userId } = useParams();
+  const { journeys, updateTags, scope } = useExampleJourneyTags(userId);
+  const canEdit = allows("journeys/mode_of_transport/write");
+  const [selected, setSelected] = useState<string[]>([]);
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [saved, setSaved] = useState("");
+  useEffect(() => { setSelected([]); setBulkOpen(false); setSaved(""); }, [scope, canEdit]);
   const [filters, setFilters] = useState<JourneyFilters>(defaultJourneyFilters);
   const [pageSize, setPageSize] = useState(25);
   const [page, setPage] = useState(0);
-  const rows = useMemo(() => filterJourneys(sampleJourneys, { ...filters, tags: [] }), [filters]);
-  const set = (patch: Partial<JourneyFilters>) => { setPage(0); setFilters((f) => ({ ...f, ...patch })); };
-  const reset = () => { setPage(0); setFilters(defaultJourneyFilters); };
+  const rows = useMemo(() => filterJourneys(journeys, { ...filters, tags: [] }), [filters, journeys]);
+  const set = (patch: Partial<JourneyFilters>) => { setSelected([]); setSaved(""); setPage(0); setFilters((f) => ({ ...f, ...patch })); };
+  const reset = () => { setSelected([]); setSaved(""); setPage(0); setFilters(defaultJourneyFilters); };
   const pages = Math.max(1, Math.ceil(rows.length / pageSize));
   const shown = rows.slice(page * pageSize, page * pageSize + pageSize);
   const active = [Boolean(filters.from || filters.to), filters.score !== "any", filters.mode !== "any", filters.events !== "any", filters.tagSetBy !== "any", filters.sort !== "newest"].filter(Boolean).length;
@@ -180,22 +190,38 @@ export default function UserJourneysSection() {
         <p className="text-sm font-semibold text-portal-navy" aria-live="polite">{rows.length} journey{rows.length === 1 ? "" : "s"}</p>
       </section>
 
+      {canEdit && <div className="flex flex-wrap items-center justify-between gap-3">
+        <span className="text-sm text-portal-navy" aria-live="polite">{selected.length} selected</span>
+        <div className="flex items-center gap-2">
+          {selected.length > 0 && <Button variant="ghost" size="sm" onClick={() => setSelected([])}>Clear selection</Button>}
+          <Button size="sm" disabled={!selected.length} onClick={() => setBulkOpen(true)}><Pencil className="mr-2 h-4 w-4" />Edit tags</Button>
+        </div>
+      </div>}
+      {saved && <p role="status" className="text-sm text-portal-navy">{saved}</p>}
+      {canEdit && <JourneyTransportDialog open={bulkOpen} onOpenChange={setBulkOpen} count={selected.length} onConfirm={(mode) => {
+        updateTags(selected, mode); setSaved(`Updated transport tags for ${selected.length} example journeys to ${mode}.`); setSelected([]); setPage(0);
+      }} />}
+
       <div className="overflow-x-auto rounded-xl border border-portal-border bg-portal-panel shadow-sm">
         <table className="w-full min-w-[900px] text-sm">
           <thead className="bg-portal-panel-header text-left text-portal-navy">
-            <tr>{["Start date and time", "End date and time", "Distance", "Duration", "Type", "Tag set by", "Scores", ""].map((h) => <th key={h} className="px-5 py-4 font-semibold">{h}</th>)}</tr>
+            <tr>{canEdit && <th className="w-12 px-4 py-4"><Checkbox aria-label="Select all journeys on this page" disabled={!shown.length}
+              checked={shown.length > 0 && shown.every((j) => selected.includes(j.id)) ? true : shown.some((j) => selected.includes(j.id)) ? "indeterminate" : false}
+              onCheckedChange={(checked) => setSelected((current) => checked === true ? Array.from(new Set([...current, ...shown.map((j) => j.id)])) : current.filter((id) => !shown.some((j) => j.id === id)))} /></th>}{["Start date and time", "End date and time", "Distance", "Duration", "Type", "Tag set by", "Scores", ""].map((h) => <th key={h} className="px-5 py-4 font-semibold">{h}</th>)}</tr>
           </thead>
           <tbody>
             {shown.map((j) => {
               const infl = journeyInfluences[j.id];
+              const ModeIcon = TRANSPORT_OPTIONS.find((option) => option.name === j.mode)?.icon ?? Car;
               const open = () => navigate(`/admin/insurer/users/${userId}/journeys/${j.id}`);
               return (
                 <tr key={j.id} onClick={open} className="cursor-pointer border-t border-portal-border transition-colors even:bg-portal-surface/60 hover:bg-portal-surface">
+                  {canEdit && <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}><Checkbox aria-label={`Select journey ${j.id}`} checked={selected.includes(j.id)} onCheckedChange={(checked) => setSelected((current) => checked === true ? [...current, j.id] : current.filter((id) => id !== j.id))} /></td>}
                   <td className="px-5 py-4">{fmt(new Date(j.startedAt))}</td>
                   <td className="px-5 py-4">{fmt(endAt(j.startedAt, j.duration))}</td>
                   <td className="px-5 py-4">{distance(j.miles)}</td>
                   <td className="px-5 py-4">{j.duration}</td>
-                  <td className="px-5 py-4"><span className="flex items-center gap-2"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-portal-surface">{j.mode === "Car" ? <Car className="h-3.5 w-3.5" /> : <Bike className="h-3.5 w-3.5" />}</span>{j.mode}</span></td>
+                  <td className="px-5 py-4"><span className="flex items-center gap-2"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-portal-surface"><ModeIcon className="h-3.5 w-3.5" /></span>{j.mode}</span></td>
                   <td className="px-5 py-4 text-portal-navy">{j.tagSetBy}</td>
                   <td className="px-5 py-4">
                     {allows("scores/read") && <div className="flex items-center gap-2" title={infl ? infl.map(([n, v]) => `${n}: ${v}`).join(" · ") : undefined}>
@@ -210,7 +236,7 @@ export default function UserJourneysSection() {
               );
             })}
             {!shown.length && (
-              <tr><td colSpan={8} className="p-10 text-center">
+              <tr><td colSpan={canEdit ? 9 : 8} className="p-10 text-center">
                 <p role="status" className="text-portal-muted">No journeys match your filters.</p>
                 <Button variant="ghost" onClick={reset} className="mt-2 text-xs underline underline-offset-4">Reset all filters</Button>
               </td></tr>

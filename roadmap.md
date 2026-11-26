@@ -80,3 +80,8 @@
 
 - [x] Add User/System tag source column and filter to example journeys.
 - [x] Verify filtering, reset and signed-in table display.
+
+# Bulk journey tags
+
+- [x] Add selected-journey transport tag editing with shared list/detail example state.
+- [x] Verify selection, cancel, confirm, filters and detail read-back.

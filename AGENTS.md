@@ -16,3 +16,4 @@
 - Keep profile actions in the shared UserProfileMenu and constrain the inbox through the admin layout's viewport-height flex chain, so header controls stay consistent and notification panes scroll independently.
 - Keep the Floow and client staff role selector as an explicitly labelled presentation preview for database-verified staff administrators; apply the supplied matrices to navigation, route guards and action gates, never to grant backend permissions, scope saved previews to their authenticated account, and hide client switching when client listing is forbidden.
 - Define the role preview context in a separate non-component module so preview refreshes cannot disconnect mounted providers from updated consumers.
+- Share customer-and-user-scoped example transport-tag edits through the query cache and one transport picker for list and detail views; this keeps demo changes consistent without writing synthetic journeys to live telemetry.
