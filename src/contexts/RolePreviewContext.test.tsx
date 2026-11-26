@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { RolePreviewProvider, useRolePreview } from "./RolePreviewContext";
+import { RolePreviewContext } from "./rolePreviewContextValue";
 
 const auth = vi.hoisted(() => ({ user: { id: "staff-user" }, isAdmin: true, isFloowStaff: true }));
 vi.mock("@/hooks/useAuth", () => ({ useAuth: () => auth }));
@@ -24,6 +25,29 @@ afterEach(() => {
 });
 
 describe("safe role previews", () => {
+  it("keeps mounted providers connected to consumers after the role module refreshes", async () => {
+    // Model HMR: the provider/hook module reloads, its unchanged dependency does not.
+    vi.resetModules();
+    vi.doMock("./rolePreviewContextValue", () => ({ RolePreviewContext }));
+    try {
+      const refreshed = await import("./RolePreviewContext");
+      function RefreshedControls() {
+        const { role, setRole, canVisit } = refreshed.useRolePreview();
+        return <>
+          <output data-testid="refreshed-role">{role ?? "account"}</output>
+          <output data-testid="refreshed-products">{String(canVisit("/admin/products"))}</output>
+          <button onClick={() => setRole("Floow Finance")}>Refreshed finance</button>
+        </>;
+      }
+      render(<RolePreviewProvider><RefreshedControls /></RolePreviewProvider>);
+      fireEvent.click(screen.getByText("Refreshed finance"));
+      expect(screen.getByTestId("refreshed-role").textContent).toBe("Floow Finance");
+      expect(screen.getByTestId("refreshed-products").textContent).toBe("false");
+    } finally {
+      vi.doUnmock("./rolePreviewContextValue");
+    }
+  });
+
   it("only database-verified staff administrators can switch preview views", () => {
     auth.isAdmin = false;
     render(<RolePreviewProvider><Controls /></RolePreviewProvider>);

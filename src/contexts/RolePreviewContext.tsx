@@ -1,15 +1,7 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { useContext, useState, type ReactNode } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { PREVIEW_ROLES, roleAllows, roleCanVisit, type PortalPermission, type PreviewRole } from "@/lib/rolePreview";
-
-type RolePreviewValue = {
-  role: PreviewRole | null;
-  canPreview: boolean;
-  setRole: (role: PreviewRole | null) => void;
-  allows: (permission: PortalPermission) => boolean;
-  canVisit: (path: string) => boolean;
-};
-const RolePreviewContext = createContext<RolePreviewValue | null>(null);
+import { PREVIEW_ROLES, roleAllows, roleCanVisit, type PreviewRole } from "@/lib/rolePreview";
+import { RolePreviewContext } from "./rolePreviewContextValue";
 
 export function RolePreviewProvider({ children }: { children: ReactNode }) {
   const { user, isAdmin, isFloowStaff } = useAuth();
