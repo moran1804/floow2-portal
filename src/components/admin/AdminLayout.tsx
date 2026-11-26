@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   LayoutGrid,
@@ -33,6 +33,8 @@ import {
   ArrowLeft,
   Route as RouteIcon,
   Pencil,
+  Menu,
+  X,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNotifications } from "@/hooks/useNotifications";
@@ -108,6 +110,27 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
   const { role, canPreview, setRole, canVisit } = useRolePreview();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const [navigationOpen, setNavigationOpen] = useState(false);
+
+  useEffect(() => {
+    setNavigationOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!navigationOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const closeAtDesktop = () => {
+      if (desktop.matches) setNavigationOpen(false);
+    };
+    document.body.style.overflow = "hidden";
+    desktop.addEventListener("change", closeAtDesktop);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      desktop.removeEventListener("change", closeAtDesktop);
+    };
+  }, [navigationOpen]);
+
   const isClientsPage = pathname === "/admin/clients";
   const isInsightsPage = pathname.startsWith("/admin/insights");
   const isNotificationsPage = pathname === "/admin/notifications";
@@ -151,8 +174,18 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
   return (
     <div className={`${isNotificationsPage ? "flex h-dvh flex-col overflow-hidden" : "min-h-screen"} bg-portal-surface text-portal-text`}>
       {/* Top bar */}
-      <header className={`flex shrink-0 flex-wrap items-center justify-between gap-y-2 bg-portal-panel border-b border-portal-border ${isInsightsPage || isUserSearchPage || isNotificationsPage ? "px-3 sm:px-6" : "px-6"} min-h-16 py-2 sm:h-16 sm:py-0`}>
-        <div className={`flex items-center ${isInsightsPage || isUserSearchPage || isNotificationsPage ? "gap-3 sm:gap-6" : "gap-6"}`}>
+      <header className="flex min-h-16 shrink-0 flex-wrap items-center justify-between gap-2 border-b border-portal-border bg-portal-panel px-3 py-2 sm:px-6 lg:h-16 lg:py-0">
+        <div className="flex min-w-0 items-center gap-3 sm:gap-6">
+          {!hideSidebar && <Button
+            variant="outline"
+            size="icon"
+            className="h-9 w-9 shrink-0 border-portal-border lg:hidden"
+            onClick={() => setNavigationOpen(true)}
+            aria-label="Open navigation"
+            aria-expanded={navigationOpen}
+          >
+            <Menu className="h-5 w-5" />
+          </Button>}
           <Button
             variant="ghost"
             onClick={() => navigate(canVisit("/admin/clients") ? "/admin/clients" : "/admin/overview")}
@@ -201,10 +234,23 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
       </header>
 
       <div className={`flex ${isNotificationsPage ? "min-h-0 flex-1 overflow-hidden" : ""}`}>
-        {/* Sidebar */}
+        {/* Sidebar: fixed drawer below laptop width, narrower column on laptops. */}
+        {!hideSidebar && navigationOpen && <button
+          type="button"
+          aria-label="Close navigation"
+          className="fixed inset-0 z-40 bg-portal-text/40 lg:hidden"
+          onClick={() => setNavigationOpen(false)}
+        />}
         {!hideSidebar && (
-        <aside className={`${isInsightsPage || isUserSearchPage ? "hidden md:block w-52 shrink-0" : isNotificationsPage ? "hidden md:block w-64 shrink-0 overflow-y-auto" : "w-64"} ${isNotificationsPage ? "min-h-0" : "min-h-[calc(100vh-4rem)]"} bg-portal-sidebar border-r border-portal-border py-4`}>
-          <nav className="mt-2">
+        <aside className={`${navigationOpen ? "fixed inset-y-0 left-0 z-50 block w-64 shadow-xl" : "hidden"} shrink-0 overflow-y-auto border-r border-portal-border bg-portal-sidebar py-4 lg:static lg:z-auto lg:block lg:w-56 lg:shadow-none xl:w-64 ${isNotificationsPage ? "lg:min-h-0" : "lg:min-h-[calc(100dvh-4rem)]"}`}>
+          <div className="mb-2 flex justify-end px-4 lg:hidden">
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setNavigationOpen(false)} aria-label="Close navigation">
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+          <nav className="mt-2" onClick={(event) => {
+            if ((event.target as HTMLElement).closest("a")) setNavigationOpen(false);
+          }}>
             {isCampaignsPage ? (
               <>
                 <Button asChild variant="ghost" className="mb-3 w-full justify-start rounded-none px-6"><NavLink to="/admin/developer"><ArrowLeft />Developer tools</NavLink></Button>
@@ -446,9 +492,9 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
 
         {/* Main */}
         <main className={`flex-1 min-w-0 ${isNotificationsPage ? "flex min-h-0 flex-col overflow-hidden" : isUserSearchPage ? "flex flex-col min-h-[calc(100vh-4rem)]" : ""}`}>
-          <div className={`${isInsightsPage || isUserSearchPage ? "bg-portal-panel-header px-5 md:px-8" : isNotificationsPage ? "shrink-0 bg-portal-panel px-4 sm:px-8" : "bg-portal-panel px-8"} border-b border-portal-border ${isNotificationsPage ? "py-4 sm:pt-6 sm:pb-8" : "pt-6 pb-8"}`}>
+          <div className={`${isInsightsPage || isUserSearchPage ? "bg-portal-panel-header" : "shrink-0 bg-portal-panel"} border-b border-portal-border px-4 py-5 sm:px-6 sm:py-6 xl:px-8 xl:pb-8`}>
             {crumbs.length > 0 && (
-              <div className="text-sm text-portal-muted mb-3">
+              <div className="mb-3 flex flex-wrap items-center text-sm leading-6 text-portal-muted">
                 {crumbs.map((c, i) => (
                   <span key={i} className={isImpactReport ? "break-words" : ""}>
                     {c.to ? (
@@ -464,13 +510,13 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
               </div>
             )}
             {subtitle && <p className="mb-2 break-all text-sm font-semibold text-portal-navy">{subtitle}</p>}
-            <div className={`flex gap-4 ${isNotificationsPage ? "flex-col sm:flex-row sm:items-center sm:justify-between" : "items-center justify-between"}`}>
-              <h1 className="text-4xl font-bold text-portal-navy">{title}</h1>
-              {actions}
+            <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <h1 className="min-w-0 break-words text-3xl font-bold text-portal-navy sm:text-4xl">{title}</h1>
+              {actions && <div className="shrink-0">{actions}</div>}
             </div>
           </div>
-          <div className={isInsightsPage || isUserSearchPage ? "p-4 md:p-6" : isNotificationsPage ? "flex min-h-0 flex-1 flex-col overflow-hidden p-4 sm:p-8" : "p-8"}>{children}</div>
-          <footer className={`px-8 text-xs text-portal-muted ${isNotificationsPage ? "shrink-0 pb-20" : "pb-24"} ${isUserSearchPage ? "mt-auto pt-8" : ""}`}>
+          <div className={`${isNotificationsPage ? "flex min-h-0 flex-1 flex-col overflow-hidden" : ""} mx-auto w-full max-w-[1600px] p-4 sm:p-6 xl:p-8`}>{children}</div>
+          <footer className={`px-4 text-xs text-portal-muted sm:px-6 xl:px-8 ${isNotificationsPage ? "shrink-0 pb-20" : "pb-24"} ${isUserSearchPage ? "mt-auto pt-8" : ""}`}>
             <p>Copyright © {new Date().getFullYear()} The Floow Limited - All Rights Reserved</p>
           </footer>
         </main>

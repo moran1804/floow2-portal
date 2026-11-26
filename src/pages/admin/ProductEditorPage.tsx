@@ -53,7 +53,7 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
 );
 
 const Card = ({ children }: { children: React.ReactNode }) => (
-  <div className="bg-portal-panel border border-portal-border rounded-md p-6">
+  <div className="rounded-md border border-portal-border bg-portal-panel p-4 sm:p-6">
     {children}
   </div>
 );
@@ -67,7 +67,7 @@ const Row = ({
   hint?: React.ReactNode;
   children: React.ReactNode;
 }) => (
-  <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-6 py-2">
+  <div className="grid grid-cols-1 gap-3 py-2 md:grid-cols-[240px_minmax(0,1fr)] md:gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
     <div>
       <div className="font-semibold text-portal-navy">{label}</div>
       {hint && <div className="text-sm text-portal-muted mt-1">{hint}</div>}
@@ -283,7 +283,7 @@ const ProductEditorPage = () => {
                     })
                   }
                 >
-                  <SelectTrigger className="w-[260px]">
+                  <SelectTrigger className="w-full max-w-[260px]">
                     <SelectValue placeholder="Select period" />
                   </SelectTrigger>
                   <SelectContent>
@@ -369,7 +369,7 @@ const ProductEditorPage = () => {
                     }
                   />
                 </Row>
-                <div className="flex items-center justify-end gap-3 pt-2">
+                <div className="flex flex-wrap items-center justify-end gap-3 pt-2">
                   <span className="text-sm text-portal-text">Copy config from:</span>
                   <Select
                     onValueChange={(value) => {
@@ -385,7 +385,7 @@ const ProductEditorPage = () => {
                         });
                     }}
                   >
-                    <SelectTrigger className="w-[260px]">
+                    <SelectTrigger className="w-full max-w-[260px]">
                       <SelectValue placeholder="Select config to copy" />
                     </SelectTrigger>
                     <SelectContent>
@@ -562,11 +562,11 @@ const ProductEditorPage = () => {
                       return (
                         <div
                           key={c.key}
-                          className="grid grid-cols-1 md:grid-cols-[260px_1fr_220px] gap-4 p-4 items-start"
+                          className="grid grid-cols-1 items-start gap-4 p-4 md:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)_220px]"
                         >
                           <div className="font-semibold text-portal-navy">{c.name}</div>
                           <div className="text-sm text-portal-text">{c.useCase}</div>
-                          <div className="flex items-center gap-4 justify-self-end">
+                          <div className="flex flex-wrap items-center gap-4 md:justify-self-end">
                             {alwaysOn ? (
                               <span className="text-sm text-portal-navy font-medium">
                                 Always enabled

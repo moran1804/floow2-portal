@@ -15,8 +15,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 function Card({ icon, title, action, children, className = "" }: { icon: ReactNode; title: string; action?: ReactNode; children: ReactNode; className?: string }) {
-  return <section className={`rounded-md border border-portal-border/60 bg-background p-6 shadow-sm ${className}`}>
-    <header className="mb-6 flex items-center justify-between gap-3"><h2 className="flex items-center gap-3 text-lg font-semibold"><span className="flex h-10 w-10 items-center justify-center rounded-md bg-portal-accent text-primary-foreground">{icon}</span>{title}</h2>{action}</header>
+  return <section className={`rounded-md border border-portal-border/60 bg-background p-4 shadow-sm sm:p-6 ${className}`}>
+    <header className="mb-6 flex flex-wrap items-center justify-between gap-3"><h2 className="flex items-center gap-3 text-lg font-semibold"><span className="flex h-10 w-10 items-center justify-center rounded-md bg-portal-accent text-primary-foreground">{icon}</span>{title}</h2>{action}</header>
     {children}
   </section>;
 }

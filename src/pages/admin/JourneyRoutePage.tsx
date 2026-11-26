@@ -57,7 +57,7 @@ export default function JourneyRoutePage() {
   return <AdminLayout title="Journey route" subtitle={`Journey ID: ${journey.id}`} crumbs={crumbs}>
     <div className="mx-auto max-w-6xl space-y-4">
       <p className="text-xs text-portal-muted">Example route and events only · No live journey data is connected for this user.</p>
-      <section className="rounded-md border border-portal-border/60 bg-background p-6 shadow-sm">
+      <section className="rounded-md border border-portal-border/60 bg-background p-4 shadow-sm sm:p-6">
         <h2 className="mb-4 flex items-center gap-3 text-lg font-semibold"><span className="flex h-10 w-10 items-center justify-center rounded-md bg-portal-accent text-primary-foreground"><RouteIcon className="h-5 w-5" /></span>Route detail</h2>
         <div className={`grid border border-portal-border ${canReadEvents ? "md:grid-cols-[256px_minmax(0,1fr)]" : ""}`}>
           {canReadEvents && <aside className="flex max-h-[600px] flex-col border-r border-portal-border">
@@ -67,7 +67,7 @@ export default function JourneyRoutePage() {
                 <Icon className={`h-6 w-6 shrink-0 ${i === 0 ? "fill-foreground" : ""}`} /><span><span className="block">{e.label}</span><span className="block text-sm">{e.time}</span></span>
               </button></li>; })}</ul>
           </aside>}
-          <div className="relative z-0 h-[600px]">
+          <div className="relative z-0 h-[420px] sm:h-[500px] lg:h-[600px]">
             <div className="absolute left-2 top-2 z-[500] flex overflow-hidden rounded-sm bg-background text-lg shadow">
               {(["Map", "Satellite"] as const).map((m) => <button key={m} type="button" onClick={() => setSatellite(m === "Satellite")} className={`px-4 py-2 ${(m === "Satellite") === satellite ? "font-semibold" : "text-portal-muted"}`}>{m}</button>)}
             </div>

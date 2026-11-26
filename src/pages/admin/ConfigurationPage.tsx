@@ -66,7 +66,7 @@ const ConfigurationPage = () => {
     >
       <fieldset disabled={!canWrite} className="min-w-0">
       <PermissionGate permission="floow_clients/modes_of_transport/read">
-      <section className="bg-portal-panel border border-portal-border rounded-lg p-6 max-w-3xl">
+      <section className="max-w-3xl rounded-lg border border-portal-border bg-portal-panel p-4 sm:p-6">
         <h2 className="text-lg font-bold text-portal-navy mb-5">
           Available modes of transport
         </h2>
@@ -92,7 +92,7 @@ const ConfigurationPage = () => {
         </div>
       </section></PermissionGate>
 
-      <PermissionGate permission="floow_clients/config/read"><section className="bg-portal-panel border border-portal-border rounded-lg p-6 max-w-3xl mt-6">
+      <PermissionGate permission="floow_clients/config/read"><section className="max-w-3xl rounded-lg border border-portal-border bg-portal-panel p-4 sm:p-6 mt-6">
         <h2 className="text-lg font-bold text-portal-navy mb-5">Search matching</h2>
         <div className="flex flex-col gap-3">
           {[
@@ -116,7 +116,7 @@ const ConfigurationPage = () => {
         </div>
       </section>
 
-      <section className="bg-portal-panel border border-portal-border rounded-lg p-6 max-w-3xl mt-6">
+      <section className="max-w-3xl rounded-lg border border-portal-border bg-portal-panel p-4 sm:p-6 mt-6">
         <h2 className="text-lg font-bold text-portal-navy mb-5">Units of measure</h2>
         <div className="flex flex-col gap-3">
           {[

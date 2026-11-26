@@ -156,7 +156,7 @@ export default function UserJourneysSection() {
     <div className="space-y-5">
       <p className="text-xs text-portal-muted">Example journeys only · No live journey data is connected for this user.</p>
 
-      <section aria-label="Filter journeys" className="rounded-xl border border-portal-border bg-portal-panel p-5 shadow-sm">
+      <section aria-label="Filter journeys" className="rounded-xl border border-portal-border bg-portal-panel p-4 shadow-sm sm:p-5">
         <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h3 className="flex items-center gap-2 text-base font-semibold text-portal-navy">
             <SlidersHorizontal className="h-4 w-4" /> Filter

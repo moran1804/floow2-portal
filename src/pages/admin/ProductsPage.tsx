@@ -49,7 +49,7 @@ const ProductsPage = () => {
   const rangeLabel = total === 0 ? "0 items" : `${start + 1} - ${end} of ${total} items`;
 
   const Pager = () => (
-    <div className="flex items-center gap-4 px-4 py-3">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
       <label className="text-sm text-portal-text">Items per page:</label>
       <select
         className="text-sm border border-portal-border rounded px-2 py-1 bg-portal-panel"
@@ -93,7 +93,7 @@ const ProductsPage = () => {
           <Pager />
 
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full min-w-[480px] text-sm">
               <thead>
                 <tr className="text-left bg-portal-panel-header text-portal-navy">
                   <th className="px-4 py-3 font-semibold">Product code</th>

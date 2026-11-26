@@ -51,8 +51,8 @@ const StaffPage = () => {
       title="Staff"
       crumbs={[{ label: "Home", to: "/" }, { label: "Admin" }, { label: "Staff" }]}
     >
-      <section className="bg-portal-panel border border-portal-border rounded-lg p-6">
-        <div className="flex items-center justify-between mb-6">
+      <section className="rounded-lg border border-portal-border bg-portal-panel p-4 sm:p-6">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-xl font-bold text-portal-navy">Staff members</h2>
           {canWrite && <Button
             variant="outline"
@@ -70,7 +70,7 @@ const StaffPage = () => {
         )}
 
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[600px] text-sm">
             <thead>
               <tr className="bg-portal-panel-header text-portal-navy text-left">
                 <th className="px-4 py-3 font-semibold">Email</th>

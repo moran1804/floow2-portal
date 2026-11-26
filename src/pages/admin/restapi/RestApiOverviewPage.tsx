@@ -10,7 +10,7 @@ const tiles = [
 
 const RestApiOverviewPage = () => (
   <AdminLayout title="REST API" crumbs={[{ label: "Home", to: "/admin/overview" }, { label: "Developer tools", to: "/admin/developer" }, { label: "REST API" }]}>
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
       {tiles.map((t) => (
         <div key={t.title} className="bg-portal-panel border border-portal-border rounded-lg p-6 flex flex-col">
           <div className="w-10 h-10 rounded-md bg-portal-surface border border-portal-border flex items-center justify-center text-portal-navy mb-4"><t.icon className="w-5 h-5" /></div>

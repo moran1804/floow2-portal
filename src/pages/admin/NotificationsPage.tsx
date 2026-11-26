@@ -186,8 +186,8 @@ const NotificationsPage = () => {
             })}
           </div>
 
-          <div className="grid min-h-0 flex-1 grid-rows-[1fr_1fr] lg:grid-cols-[390px_1fr] lg:grid-rows-1">
-            <div className="flex min-h-0 flex-col overflow-hidden border-b border-portal-border lg:border-b-0 lg:border-r">
+          <div className="grid min-h-0 flex-1 grid-rows-[1fr_1fr] xl:grid-cols-[360px_minmax(0,1fr)] xl:grid-rows-1">
+            <div className="flex min-h-0 flex-col overflow-hidden border-b border-portal-border xl:border-b-0 xl:border-r">
               <div className="flex shrink-0 items-center justify-between border-b border-portal-border px-5 py-3 text-xs font-semibold uppercase tracking-wide text-portal-muted">
                 <span>{visibleNotifications.length} {visibleNotifications.length === 1 ? "notification" : "notifications"}</span>
                 <span>{unreadCount} unread</span>

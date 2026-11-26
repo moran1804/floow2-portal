@@ -183,7 +183,7 @@ const ClientsPage = () => {
           </Button> : undefined
         }
       >
-        <div className="flex items-center justify-between pb-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-4">
           <div className="font-semibold">
             {isLoading ? "Loading…" : `${rows.length} results found`}
           </div>
@@ -212,7 +212,7 @@ const ClientsPage = () => {
         </div>
 
         <div>
-          <div className="grid grid-cols-[1fr_1fr_auto] gap-4 px-4 py-3 text-sm font-semibold border-b border-portal-border">
+          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-4 px-4 py-3 text-sm font-semibold border-b border-portal-border">
             <div>Client ID</div>
             <div>Name</div>
             <div className="w-32 text-right">Actions</div>
@@ -231,12 +231,12 @@ const ClientsPage = () => {
                     navigate("/admin/overview");
                   }
                 }}
-                className={`grid grid-cols-[1fr_1fr_auto] gap-4 items-center px-4 py-4 text-sm cursor-pointer hover:bg-portal-accent/30 transition-colors ${
+                className={`grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-4 items-center px-4 py-4 text-sm cursor-pointer hover:bg-portal-accent/30 transition-colors ${
                   i % 2 === 0 ? "bg-portal-surface" : ""
                 } ${c.archived_at ? "cursor-default hover:bg-transparent opacity-70" : ""}`}
               >
-                <div className="font-mono text-xs">{c.id}</div>
-                <div className="font-semibold">{c.name}</div>
+                <div className="break-all font-mono text-xs">{c.id}</div>
+                <div className="break-words font-semibold">{c.name}</div>
                 <div className="w-32 text-right">
                   {allows("floow_clients/delete") && (c.archived_at ? (
                     <Button

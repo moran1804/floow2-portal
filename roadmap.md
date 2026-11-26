@@ -96,3 +96,9 @@
 - [x] Add footer ratings and screenshot-style feedback form with saved submissions and staff review.
 - [x] Float the ratings control at the bottom of the screen and remove the staff review screen.
 - [x] Verify signed-in sending, saved read-back, cancellation and mobile layout.
+
+# Responsive portal layouts
+
+- [x] Adapt the shared navigation, header, content spacing and page headers for extra-large, large, laptop and tablet screens.
+- [x] Reflow crowded cards, filters and detail grids; keep wide tables usable without page overflow.
+- [x] Verify representative dashboard, product, journey, insights and inbox pages at each breakpoint.

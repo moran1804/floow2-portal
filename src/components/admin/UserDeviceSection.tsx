@@ -5,7 +5,7 @@ import type { DeviceInfo } from "@/lib/sampleDeviceInfo";
 function Rows({ rows }: { rows: [string, React.ReactNode][] }) {
   return <dl className="space-y-4 text-xs">{rows.map(([l, v]) => <div key={l} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] gap-3"><dt className="text-portal-muted">{l}</dt><dd className="break-words text-right font-semibold">{v}</dd></div>)}</dl>;
 }
-const Panel = ({ title, children }: { title: string; children: React.ReactNode }) => <div className="rounded-md border border-portal-border bg-portal-panel p-5"><h3 className="mb-4 text-sm font-semibold text-portal-navy">{title}</h3>{children}</div>;
+const Panel = ({ title, children }: { title: string; children: React.ReactNode }) => <div className="rounded-md border border-portal-border bg-portal-panel p-4 sm:p-5"><h3 className="mb-4 text-sm font-semibold text-portal-navy">{title}</h3>{children}</div>;
 
 export default function UserDeviceSection({ info, createdAt, active = true }: { info: DeviceInfo; createdAt: string; active?: boolean }) {
   const issues = info.permissions.filter((p) => !p.ok).length;
