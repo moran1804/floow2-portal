@@ -516,7 +516,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
             </div>
           </div>
           <div className={`${isNotificationsPage ? "flex min-h-0 flex-1 flex-col overflow-hidden" : ""} mx-auto w-full max-w-[1600px] p-4 sm:p-6 xl:p-8`}>{children}</div>
-          <footer className={`mx-auto mt-auto w-full max-w-[1600px] px-4 text-xs text-portal-muted sm:px-6 xl:px-8 ${isNotificationsPage ? "shrink-0 pb-20" : "pb-24"} ${isUserSearchPage ? "pt-8" : ""}`}>
+          <footer className={`mx-auto mt-auto w-full max-w-[1600px] px-4 text-xs text-portal-muted sm:px-6 xl:px-8 ${isNotificationsPage ? "shrink-0 pb-20 xl:pb-8" : "pb-20 xl:pb-8"} ${isUserSearchPage ? "pt-8" : ""}`}>
             <p className="text-right">Copyright © {new Date().getFullYear()} The Floow Limited - All Rights Reserved</p>
           </footer>
         </main>
