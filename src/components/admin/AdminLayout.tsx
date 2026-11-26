@@ -491,7 +491,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
         )}
 
         {/* Main */}
-        <main className={`flex-1 min-w-0 ${isNotificationsPage ? "flex min-h-0 flex-col overflow-hidden" : isUserSearchPage ? "flex flex-col min-h-[calc(100vh-4rem)]" : ""}`}>
+        <main className={`flex flex-1 flex-col min-w-0 ${isNotificationsPage ? "min-h-0 overflow-hidden" : isUserSearchPage ? "min-h-[calc(100vh-4rem)]" : "min-h-[calc(100dvh-4rem)]"}`}>
           <div className={`${isInsightsPage || isUserSearchPage ? "bg-portal-panel-header" : "shrink-0 bg-portal-panel"} border-b border-portal-border px-4 py-5 sm:px-6 sm:py-6 xl:px-8 xl:pb-8`}>
             {crumbs.length > 0 && (
               <div className="mb-3 flex flex-wrap items-center text-sm leading-6 text-portal-muted">
@@ -516,8 +516,8 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
             </div>
           </div>
           <div className={`${isNotificationsPage ? "flex min-h-0 flex-1 flex-col overflow-hidden" : ""} mx-auto w-full max-w-[1600px] p-4 sm:p-6 xl:p-8`}>{children}</div>
-          <footer className={`px-4 text-xs text-portal-muted sm:px-6 xl:px-8 ${isNotificationsPage ? "shrink-0 pb-20" : "pb-24"} ${isUserSearchPage ? "mt-auto pt-8" : ""}`}>
-            <p>Copyright © {new Date().getFullYear()} The Floow Limited - All Rights Reserved</p>
+          <footer className={`mx-auto mt-auto w-full max-w-[1600px] px-4 text-xs text-portal-muted sm:px-6 xl:px-8 ${isNotificationsPage ? "shrink-0 pb-20" : "pb-24"} ${isUserSearchPage ? "pt-8" : ""}`}>
+            <p className="text-right">Copyright © {new Date().getFullYear()} The Floow Limited - All Rights Reserved</p>
           </footer>
         </main>
       </div>
