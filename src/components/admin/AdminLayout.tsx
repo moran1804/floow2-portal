@@ -184,7 +184,6 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectGroup><SelectLabel>Role preview — permissions unchanged</SelectLabel></SelectGroup>
               <SelectGroup><SelectLabel>Floow staff</SelectLabel>{FLOOW_PREVIEW_ROLES.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectGroup>
               <SelectGroup><SelectLabel>Client staff</SelectLabel>{CLIENT_PREVIEW_ROLES.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectGroup>
             </SelectContent>
