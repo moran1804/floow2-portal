@@ -24,6 +24,7 @@ import UserAccountPage from "./pages/admin/UserAccountPage.tsx";
 import PolicyOverviewPage from "./pages/admin/PolicyOverviewPage.tsx";
 import JourneyRoutePage from "./pages/admin/JourneyRoutePage.tsx";
 import JourneyDetailPage from "./pages/admin/JourneyDetailPage.tsx";
+import JourneyRevisionsPage from "./pages/admin/JourneyRevisionsPage.tsx";
 import ImpactsPage from "./pages/admin/ImpactsPage.tsx";
 import ImpactReportPage from "./pages/admin/ImpactReportPage.tsx";
 import DocumentationPage from "./pages/admin/DocumentationPage.tsx";
@@ -77,6 +78,7 @@ const App = () => (
             <Route path="/admin/insurer/policies/:policyId" element={<RequireAdmin><PolicyOverviewPage /></RequireAdmin>} />
             <Route path="/admin/insurer/users/:userId" element={<RequireAdmin><UserAccountPage /></RequireAdmin>} />
             <Route path="/admin/insurer/users/:userId/journeys/:journeyId/route" element={<RequireAdmin><JourneyRoutePage /></RequireAdmin>} />
+            <Route path="/admin/insurer/users/:userId/journeys/:journeyId/revisions" element={<RequireAdmin><JourneyRevisionsPage /></RequireAdmin>} />
             <Route path="/admin/insurer/users/:userId/journeys/:journeyId" element={<RequireAdmin><JourneyDetailPage /></RequireAdmin>} />
             <Route path="/admin/insurer/users/:userId/:section" element={<RequireAdmin><UserAccountPage /></RequireAdmin>} />
             <Route path="/admin/insurer/impacts" element={<RequireAdmin><ImpactsPage /></RequireAdmin>} />

@@ -310,6 +310,24 @@ describe("role-preview pages", () => {
     expect(roleCanVisit("Floow Mobile Support", "/admin/insurer/impacts")).toBe(false);
     expect(roleCanVisit("Floow Mobile Support", "/admin/insights")).toBe(false);
   });
+  it("allows journey revisions only for the roles granted revision access", () => {
+    const allowed = [
+      "Floow Admin",
+      "Floow Reporter",
+      "Floow Mobile Support",
+      "Floow Support Advisor",
+      "Floow Platform Support",
+      "Client Account Manager",
+      "Client Team Manager",
+      "Client Claims Advisor",
+      "Client Customer Service Advisor",
+    ];
+    for (const role of PREVIEW_ROLES) {
+      expect(roleCanVisit(role, "/admin/insurer/users/mike/journeys/j1/revisions")).toBe(allowed.includes(role));
+    }
+    expect(roleCanVisit("Floow Finance", "/admin/insurer/users/mike/journeys/j1/revisions")).toBe(false);
+    expect(roleCanVisit("Client Developer", "/admin/insurer/users/mike/journeys/j1/revisions")).toBe(false);
+  });
   it("all roles keep their inbox and hide unlisted pages", () => {
     for (const role of PREVIEW_ROLES) {
       expect(roleCanVisit(role, "/admin/notifications")).toBe(true);

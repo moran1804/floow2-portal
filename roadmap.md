@@ -102,3 +102,9 @@
 - [x] Adapt the shared navigation, header, content spacing and page headers for extra-large, large, laptop and tablet screens.
 - [x] Reflow crowded cards, filters and detail grids; keep wide tables usable without page overflow.
 - [x] Verify representative dashboard, product, journey, insights and inbox pages at each breakpoint.
+
+# Journey revisions
+
+- [x] Add a labelled example revision list and two-revision comparison to open journeys.
+- [x] Show and permit the revisions page only for roles with journey-revisions access.
+- [x] Verify selection, comparison, navigation and allowed/denied role views.

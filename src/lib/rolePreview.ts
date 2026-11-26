@@ -319,6 +319,7 @@ export function roleCanVisit(role: PreviewRole | null, path: string): boolean {
   if (pathname.startsWith("/admin/insurer/impacts")) return allows("impacts/read");
   if (pathname.startsWith("/admin/insurer/users/")) {
     if (!allows("users/read")) return false;
+    if (/\/journeys\/[^/]+\/revisions$/.test(pathname)) return allows("journeys/revisions/read");
     if (/\/journeys\/[^/]+\/route$/.test(pathname)) return allows("journeys/read");
     if (/\/journeys\/[^/]+$/.test(pathname)) return allows("journeys/read");
     if (pathname.endsWith("/journeys")) return allows("journeys/list");

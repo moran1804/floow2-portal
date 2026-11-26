@@ -270,7 +270,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                 <Button asChild variant="ghost" className="mb-3 w-full justify-start rounded-none px-6"><NavLink to={userAccountBase} end><ArrowLeft />User overview</NavLink></Button>
                 <NavLink to={pathname.split("/").slice(0, 7).join("/")} className={navLinkClass} end><FileText className="h-5 w-5" />Journey detail</NavLink>
                 <NavLink to={`${pathname.split("/").slice(0, 7).join("/")}/route`} className={navLinkClass}><RouteIcon className="h-5 w-5" />Journey route</NavLink>
-                <span className="flex cursor-default items-center gap-3 px-6 py-3 text-sm text-portal-muted" title="Not connected yet"><Pencil className="h-5 w-5" />Journey revisions</span>
+                <NavLink to={`${pathname.split("/").slice(0, 7).join("/")}/revisions`} className={navLinkClass}><Pencil className="h-5 w-5" />Journey revisions</NavLink>
               </>
             ) : isUserAccount ? (
               <>
