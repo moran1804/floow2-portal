@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { CheckCircle2, Frown, Meh, Smile, Loader2, MessageSquare } from "lucide-react";
+import { CheckCircle2, Frown, Meh, Smile, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useCustomer } from "@/contexts/CustomerContext";
 import { supabase } from "@/integrations/supabase/client";
-import { canReviewFeedback, feedbackSchema, type FeedbackRating } from "@/lib/feedback";
+import { feedbackSchema, type FeedbackRating } from "@/lib/feedback";
 
 const ratings = [
   { value: "unhappy", label: "Unhappy", Icon: Frown, color: "text-destructive" },
@@ -18,7 +16,7 @@ const ratings = [
 ] as const;
 
 export function PortalFeedback() {
-  const { user, isAdmin, isFloowStaff } = useAuth();
+  const { user } = useAuth();
   const { selectedCustomerId } = useCustomer();
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
@@ -27,19 +25,6 @@ export function PortalFeedback() {
   const [pending, setPending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
-  const [reviewOpen, setReviewOpen] = useState(false);
-  const canReview = canReviewFeedback(isAdmin, isFloowStaff);
-  const reviews = useQuery({
-    queryKey: ["portal-feedback", selectedCustomerId, user?.id],
-    enabled: reviewOpen && canReview,
-    queryFn: async () => {
-      let query = supabase.from("portal_feedback").select("id,rating,comment,page_path,created_at").order("created_at", { ascending: false }).limit(100);
-      query = selectedCustomerId ? query.eq("customer_id", selectedCustomerId) : query.is("customer_id", null);
-      const { data, error: readError } = await query;
-      if (readError) throw readError;
-      return data;
-    },
-  });
 
   useEffect(() => {
     setOpen(false);
@@ -57,6 +42,7 @@ export function PortalFeedback() {
     setError("");
     setOpen(true);
   };
+
   const send = async (event: React.FormEvent) => {
     event.preventDefault();
     if (pending || !rating) return;
@@ -69,7 +55,6 @@ export function PortalFeedback() {
       if (saveError) throw saveError;
       setSent(true);
       setComment("");
-      void reviews.refetch();
     } catch {
       setError("Your feedback could not be sent. Please try again.");
     } finally { setPending(false); }
@@ -82,9 +67,9 @@ export function PortalFeedback() {
   ));
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-2">
+    <div className="pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center px-4">
       <Popover open={open} onOpenChange={(value) => { if (!pending) setOpen(value); }}>
-        <div className="flex items-center gap-1 rounded-lg border border-portal-border bg-portal-panel px-3 py-2 text-portal-text">
+        <div className="pointer-events-auto flex max-w-[calc(100vw-2rem)] flex-wrap items-center justify-center gap-1 rounded-full border border-portal-border bg-portal-panel px-3 py-1.5 text-portal-text shadow-lg">
           <PopoverTrigger asChild><Button variant="ghost" className="h-8 px-1 text-sm font-normal" onClick={() => setSent(false)}>Rate your experience</Button></PopoverTrigger>
           {faces(false)}
         </div>
@@ -106,17 +91,6 @@ export function PortalFeedback() {
           </form>}
         </PopoverContent>
       </Popover>
-      {canReview && <Button variant="ghost" size="sm" onClick={() => setReviewOpen(true)} className="gap-2"><MessageSquare className="h-4 w-4" />View feedback</Button>}
-      <Dialog open={reviewOpen && canReview} onOpenChange={setReviewOpen}>
-        <DialogContent className="max-h-[80dvh] max-w-xl overflow-y-auto">
-          <DialogHeader><DialogTitle>Client feedback</DialogTitle></DialogHeader>
-          {reviews.isLoading ? <p className="text-sm text-muted-foreground">Loading feedback…</p> : reviews.isError ? <p role="alert" className="text-sm text-destructive">Feedback could not be loaded.</p> : !reviews.data?.length ? <p className="text-sm text-muted-foreground">No feedback received yet.</p> : <div className="divide-y divide-border">{reviews.data.map((item) => <article key={item.id} className="space-y-2 py-4">
-            <div className="flex justify-between gap-3"><h3 className="text-sm font-semibold capitalize">{item.rating}</h3><time className="text-xs text-muted-foreground">{new Date(item.created_at).toLocaleString()}</time></div>
-            <p className="whitespace-pre-wrap break-words text-sm">{item.comment || "Rating only"}</p>
-            <p className="break-all text-xs text-muted-foreground">{item.page_path}</p>
-          </article>)}</div>}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

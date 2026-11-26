@@ -94,4 +94,5 @@
 # Portal feedback
 
 - [x] Add footer ratings and screenshot-style feedback form with saved submissions and staff review.
+- [x] Float the ratings control at the bottom of the screen and remove the staff review screen.
 - [x] Verify signed-in sending, saved read-back, cancellation and mobile layout.

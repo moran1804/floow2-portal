@@ -6,4 +6,3 @@ export const feedbackSchema = z.object({
   page_path: z.string().startsWith("/").max(1000),
 });
 export type FeedbackRating = z.infer<typeof feedbackSchema>["rating"];
-export const canReviewFeedback = (isAdmin: boolean, isFloowStaff: boolean) => isAdmin && isFloowStaff;

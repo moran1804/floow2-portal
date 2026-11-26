@@ -470,12 +470,12 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
             </div>
           </div>
           <div className={isInsightsPage || isUserSearchPage ? "p-4 md:p-6" : isNotificationsPage ? "flex min-h-0 flex-1 flex-col overflow-hidden p-4 sm:p-8" : "p-8"}>{children}</div>
-          <footer className={`px-8 text-xs text-portal-muted ${isNotificationsPage ? "shrink-0 pb-3" : "pb-8"} ${isUserSearchPage ? "mt-auto pt-8" : ""}`}>
-            <div className="mb-4"><PortalFeedback /></div>
+          <footer className={`px-8 text-xs text-portal-muted ${isNotificationsPage ? "shrink-0 pb-20" : "pb-24"} ${isUserSearchPage ? "mt-auto pt-8" : ""}`}>
             <p>Copyright © {new Date().getFullYear()} The Floow Limited - All Rights Reserved</p>
           </footer>
         </main>
       </div>
+      <PortalFeedback />
     </div>
   );
 };
