@@ -57,7 +57,7 @@
 
 # Notifications
 
-- [ ] Add customer-scoped release and feature notifications with example messages.
-- [ ] Build an inbox with unread counts, filters, reading and personal read receipts.
-- [ ] Make inbox access and notification sending available to every signed-in portal user.
-- [ ] Verify the complete inbox flow for the selected client.
+- [x] Add customer-scoped release and feature notifications with example messages.
+- [x] Build an inbox with unread counts, filters, reading and personal read receipts.
+- [x] Make inbox access and notification sending available to every signed-in portal user.
+- [x] Verify sending, reading, filters, non-administrator access, client data and phone layout.
