@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { FLOOW_PREVIEW_ROLES, PREVIEW_ROLES, ROLE_PERMISSIONS, roleAllows, roleCanVisit, type PortalPermission } from "./rolePreview";
+import { DEFAULT_PREVIEW_ROLE, FLOOW_PREVIEW_ROLES, PREVIEW_ROLES, ROLE_PERMISSIONS, roleAllows, roleCanVisit, type PortalPermission } from "./rolePreview";
 // Expected permissions transcribed from the user-supplied role matrix, independent of implementation.
 const expected = {
   "audits/logs/read": [
@@ -319,7 +319,12 @@ describe("role-preview pages", () => {
       expect(roleCanVisit(role, "/admin/developer/webhooks/subscriptions/add")).toBe(["Floow Admin", "Client Account Manager", "Client Developer"].includes(role));
     }
   });
-  it("returning to the account view does not restrict existing pages", () => {
+  it("the default preview is the Floow Admin view", () => {
+    expect(DEFAULT_PREVIEW_ROLE).toBe("Floow Admin");
+    expect(PREVIEW_ROLES).toContain(DEFAULT_PREVIEW_ROLE);
+    expect(roleCanVisit(DEFAULT_PREVIEW_ROLE, "/admin/faqs")).toBe(false);
+  });
+  it("accounts without a preview keep their existing pages", () => {
     expect(roleCanVisit(null, "/admin/faqs")).toBe(true);
   });
 });

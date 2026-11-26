@@ -9,9 +9,10 @@ vi.mock("@/hooks/useAuth", () => ({ useAuth: () => auth }));
 function Controls() {
   const { role, canPreview, setRole, canVisit } = useRolePreview();
   return <>
-    <output data-testid="role">{role ?? "account"}</output>
+    <output data-testid="role">{role ?? "none"}</output>
     <output data-testid="preview">{String(canPreview)}</output>
     <output data-testid="products">{String(canVisit("/admin/products"))}</output>
+    <output data-testid="terms">{String(canVisit("/admin/terms"))}</output>
     <button onClick={() => setRole("Floow Finance")}>Finance</button>
   </>;
 }
@@ -34,12 +35,13 @@ describe("safe role previews", () => {
       function RefreshedControls() {
         const { role, setRole, canVisit } = refreshed.useRolePreview();
         return <>
-          <output data-testid="refreshed-role">{role ?? "account"}</output>
+          <output data-testid="refreshed-role">{role ?? "none"}</output>
           <output data-testid="refreshed-products">{String(canVisit("/admin/products"))}</output>
           <button onClick={() => setRole("Floow Finance")}>Refreshed finance</button>
         </>;
       }
       render(<RolePreviewProvider><RefreshedControls /></RolePreviewProvider>);
+      expect(screen.getByTestId("refreshed-role").textContent).toBe("Floow Admin");
       fireEvent.click(screen.getByText("Refreshed finance"));
       expect(screen.getByTestId("refreshed-role").textContent).toBe("Floow Finance");
       expect(screen.getByTestId("refreshed-products").textContent).toBe("false");
@@ -48,12 +50,19 @@ describe("safe role previews", () => {
     }
   });
 
+  it("staff administrators open on the Floow Admin view without choosing a role", () => {
+    render(<RolePreviewProvider><Controls /></RolePreviewProvider>);
+    expect(screen.getByTestId("role").textContent).toBe("Floow Admin");
+    expect(screen.getByTestId("products").textContent).toBe("true");
+    expect(screen.getByTestId("terms").textContent).toBe("false");
+  });
+
   it("only database-verified staff administrators can switch preview views", () => {
     auth.isAdmin = false;
     render(<RolePreviewProvider><Controls /></RolePreviewProvider>);
     fireEvent.click(screen.getByText("Finance"));
     expect(screen.getByTestId("preview").textContent).toBe("false");
-    expect(screen.getByTestId("role").textContent).toBe("account");
+    expect(screen.getByTestId("role").textContent).toBe("none");
   });
 
   it("switching presentation never changes the authenticated account grants", () => {
@@ -66,10 +75,16 @@ describe("safe role previews", () => {
     expect(auth.isFloowStaff).toBe(true);
   });
 
+  it("a saved preview selection is restored for the same signed-in account", () => {
+    sessionStorage.setItem("portal-role-preview", JSON.stringify({ userId: "staff-user", role: "Floow Finance" }));
+    render(<RolePreviewProvider><Controls /></RolePreviewProvider>);
+    expect(screen.getByTestId("role").textContent).toBe("Floow Finance");
+  });
+
   it("a saved preview selection never transfers to a different signed-in account", () => {
     sessionStorage.setItem("portal-role-preview", JSON.stringify({ userId: "another-user", role: "Floow Finance" }));
     render(<RolePreviewProvider><Controls /></RolePreviewProvider>);
-    expect(screen.getByTestId("role").textContent).toBe("account");
+    expect(screen.getByTestId("role").textContent).toBe("Floow Admin");
     expect(screen.getByTestId("products").textContent).toBe("true");
   });
 });

@@ -40,7 +40,7 @@ import { Button } from "@/components/ui/button";
 import { UserProfileMenu } from "@/components/admin/UserProfileMenu";
 import { RoleNavLink as NavLink } from "@/components/admin/RoleAccess";
 import { useRolePreview } from "@/contexts/RolePreviewContext";
-import { FLOOW_PREVIEW_ROLES, CLIENT_PREVIEW_ROLES, type PreviewRole } from "@/lib/rolePreview";
+import { DEFAULT_PREVIEW_ROLE, FLOOW_PREVIEW_ROLES, CLIENT_PREVIEW_ROLES, type PreviewRole } from "@/lib/rolePreview";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import floowLogo from "@/assets/the-floow-logo.svg.asset.json";
 
@@ -176,7 +176,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
 
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
-          {canPreview && <Select value={role ?? "account"} onValueChange={(value) => setRole(value === "account" ? null : value as PreviewRole)}>
+          {canPreview && <Select value={role ?? DEFAULT_PREVIEW_ROLE} onValueChange={(value) => setRole(value as PreviewRole)}>
             <SelectTrigger aria-label="Preview role" title="Role preview — your account permissions remain unchanged" className="h-9 w-auto min-w-[10.5rem] max-w-[18rem] gap-2 border-portal-border bg-background px-3 text-sm font-medium hover:bg-accent">
               <div className="flex min-w-0 items-center gap-2">
                 <UserCog className="h-4 w-4 shrink-0" />
@@ -184,7 +184,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectGroup><SelectLabel>Role preview — permissions unchanged</SelectLabel><SelectItem value="account">My account</SelectItem></SelectGroup>
+              <SelectGroup><SelectLabel>Role preview — permissions unchanged</SelectLabel></SelectGroup>
               <SelectGroup><SelectLabel>Floow staff</SelectLabel>{FLOOW_PREVIEW_ROLES.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectGroup>
               <SelectGroup><SelectLabel>Client staff</SelectLabel>{CLIENT_PREVIEW_ROLES.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectGroup>
             </SelectContent>

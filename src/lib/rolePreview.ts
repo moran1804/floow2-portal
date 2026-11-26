@@ -4,6 +4,8 @@ export { CLIENT_PREVIEW_ROLES } from "./clientRolePermissions";
 export const FLOOW_PREVIEW_ROLES = ["Floow Admin", "Floow Reporter", "Floow Finance", "Floow Mobile Support", "Floow Support Advisor", "Floow Platform Support"] as const;
 export const PREVIEW_ROLES = [...FLOOW_PREVIEW_ROLES, ...CLIENT_PREVIEW_ROLES] as const;
 export type PreviewRole = (typeof PREVIEW_ROLES)[number];
+// Staff administrators always see a role view; this is the one shown until they choose another.
+export const DEFAULT_PREVIEW_ROLE: PreviewRole = "Floow Admin";
 export const ROLE_PERMISSIONS = {
   "audits/logs/read": [
     "Floow Mobile Support",
