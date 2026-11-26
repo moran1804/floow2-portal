@@ -280,7 +280,7 @@ describe("Floow staff role matrix", () => {
   for (const [permission, allowed] of Object.entries(expected)) {
     it(permission, () => {
       for (const role of FLOOW_PREVIEW_ROLES) {
-        expect(roleAllows(role, permission as PortalPermission)).toBe(allowed.includes(role as never));
+        expect(roleAllows(role, permission as PortalPermission)).toBe(role === "Floow Admin" || allowed.includes(role as never));
       }
     });
   }
@@ -301,9 +301,10 @@ describe("role-preview pages", () => {
     expect(roleCanVisit("Floow Reporter", "/admin/insurer/users/mike/files")).toBe(false);
     expect(roleCanVisit("Floow Reporter", "/admin/insurer/users/mike/terms")).toBe(true);
   });
-  it("support advisor alone can create terms, while admin cannot read them", () => {
+  it("support advisor can create terms and Floow Admin can do everything", () => {
     expect(roleCanVisit("Floow Support Advisor", "/admin/terms/new")).toBe(true);
-    expect(roleCanVisit("Floow Admin", "/admin/terms")).toBe(false);
+    expect(roleCanVisit("Floow Admin", "/admin/terms")).toBe(true);
+    expect(roleCanVisit("Floow Admin", "/admin/documentation")).toBe(true);
   });
   it("mobile support sees journeys and apps but not impacts or insights", () => {
     expect(roleCanVisit("Floow Mobile Support", "/admin/insurer/users/mike/journeys/j1/route")).toBe(true);
@@ -330,7 +331,7 @@ describe("role-preview pages", () => {
     expect(roleCanVisit("Client Developer", "/admin/insurer/users/mike/journeys/j1/revisions")).toBe(false);
   });
   it("all roles keep their inbox and hide unlisted pages", () => {
-    for (const role of PREVIEW_ROLES) {
+    for (const role of PREVIEW_ROLES.filter((r) => r !== "Floow Admin")) {
       expect(roleCanVisit(role, "/admin/notifications")).toBe(true);
       expect(roleCanVisit(role, "/admin/faqs")).toBe(false);
       expect(roleCanVisit(role, "/admin/documentation")).toBe(false);
@@ -341,7 +342,7 @@ describe("role-preview pages", () => {
   it("the default preview is the Floow Admin view", () => {
     expect(DEFAULT_PREVIEW_ROLE).toBe("Floow Admin");
     expect(PREVIEW_ROLES).toContain(DEFAULT_PREVIEW_ROLE);
-    expect(roleCanVisit(DEFAULT_PREVIEW_ROLE, "/admin/faqs")).toBe(false);
+    expect(roleCanVisit(DEFAULT_PREVIEW_ROLE, "/admin/faqs")).toBe(true);
   });
   it("accounts without a preview keep their existing pages", () => {
     expect(roleCanVisit(null, "/admin/faqs")).toBe(true);

@@ -283,7 +283,7 @@ export const ROLE_PERMISSIONS = {
 } as const;
 export type PortalPermission = keyof typeof ROLE_PERMISSIONS;
 export function roleAllows(role: PreviewRole | null, permission: PortalPermission): boolean {
-  return role === null || (ROLE_PERMISSIONS[permission] as readonly string[]).includes(role) || (CLIENT_ROLE_PERMISSIONS[permission] as readonly string[]).includes(role);
+  return role === null || role === "Floow Admin" || (ROLE_PERMISSIONS[permission] as readonly string[]).includes(role) || (CLIENT_ROLE_PERMISSIONS[permission] as readonly string[]).includes(role);
 }
 
 const adminPages = ["/admin/audit", "/admin/features", "/admin/terms", "/admin/products", "/admin/staff", "/admin/configuration"];
@@ -292,7 +292,7 @@ const insurerPages = ["/admin/insurer/search", "/admin/insurer/impacts"];
 
 // Routes without a policy in the supplied matrix are intentionally unavailable in previews.
 export function roleCanVisit(role: PreviewRole | null, path: string): boolean {
-  if (role === null) return true;
+  if (role === null || role === "Floow Admin") return true;
   const pathname = path.split(/[?#]/)[0];
   const allows = (permission: PortalPermission) => roleAllows(role, permission);
   if (["/", "/admin/overview", "/admin/notifications"].includes(pathname)) return true;

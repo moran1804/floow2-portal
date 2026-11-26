@@ -54,7 +54,7 @@ describe("safe role previews", () => {
     render(<RolePreviewProvider><Controls /></RolePreviewProvider>);
     expect(screen.getByTestId("role").textContent).toBe("Floow Admin");
     expect(screen.getByTestId("products").textContent).toBe("true");
-    expect(screen.getByTestId("terms").textContent).toBe("false");
+    expect(screen.getByTestId("terms").textContent).toBe("true");
   });
 
   it("only database-verified staff administrators can switch preview views", () => {
