@@ -75,3 +75,8 @@
 
 - [x] Add the five client role previews and apply the supplied matrix to navigation and actions.
 - [x] Verify all client permission rows, restricted client switching, and signed-in role changes.
+
+# Journey tag source
+
+- [x] Add User/System tag source column and filter to example journeys.
+- [x] Verify filtering, reset and signed-in table display.

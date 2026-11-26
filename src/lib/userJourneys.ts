@@ -11,6 +11,7 @@ export type Journey = {
   start: string;
   end: string;
   events: number | null;
+  tagSetBy: "User" | "System";
   tags: string[];
   route: [number, number][];
 };
@@ -21,18 +22,18 @@ const brighouseC: [number, number][] = [[53.7102, -1.7901], [53.7088, -1.7885], 
 
 /** Example journeys only — no live journey feed is connected for this user. */
 export const sampleJourneys: Journey[] = [
-  { id: "j1", startedAt: "2026-11-03T20:00", score: 75, duration: "5m 34s", miles: "1.14 miles", mode: "Car", start: "8:00 pm", end: "8:05 pm", events: 16, tags: ["Phone use", "Hard braking"], route: brighouseA },
-  { id: "j2", startedAt: "2026-11-03T19:35", score: 77, duration: "5m 17s", miles: "1.15 miles", mode: "Car", start: "7:35 pm", end: "7:41 pm", events: 9, tags: ["Phone use"], route: brighouseB },
-  { id: "j3", startedAt: "2026-11-03T17:38", score: 79, duration: "7m 42s", miles: "1.18 miles", mode: "Car", start: "5:38 pm", end: "5:46 pm", events: 11, tags: ["Harsh cornering"], route: brighouseA },
-  { id: "j4", startedAt: "2026-11-03T17:25", score: null, duration: "9m 40s", miles: "0.91 miles", mode: "Bike", start: "5:25 pm", end: "5:34 pm", events: null, tags: ["Bike ride"], route: brighouseB },
-  { id: "j5", startedAt: "2026-11-02T08:12", score: 88, duration: "12m 05s", miles: "3.42 miles", mode: "Car", start: "8:12 am", end: "8:24 am", events: 6, tags: ["Rapid acceleration"], route: brighouseC },
-  { id: "j6", startedAt: "2026-11-01T22:40", score: 61, duration: "18m 22s", miles: "5.87 miles", mode: "Car", start: "10:40 pm", end: "10:58 pm", events: 23, tags: ["Night drive", "Hard braking", "Phone use"], route: brighouseA },
-  { id: "j7", startedAt: "2026-10-28T07:55", score: 92, duration: "9m 12s", miles: "2.31 miles", mode: "Car", start: "7:55 am", end: "8:04 am", events: 3, tags: [], route: brighouseB },
-  { id: "j8", startedAt: "2026-10-24T13:20", score: 54, duration: "24m 47s", miles: "6.95 miles", mode: "Car", start: "1:20 pm", end: "1:45 pm", events: 31, tags: ["Speeding", "Harsh cornering", "Rapid acceleration"], route: brighouseC },
-  { id: "j9", startedAt: "2026-10-19T18:05", score: 71, duration: "6m 58s", miles: "1.62 miles", mode: "Car", start: "6:05 pm", end: "6:12 pm", events: 12, tags: ["Phone use", "Night drive"], route: brighouseA },
-  { id: "j10", startedAt: "2026-10-12T09:30", score: null, duration: "15m 30s", miles: "2.88 miles", mode: "Bike", start: "9:30 am", end: "9:45 am", events: null, tags: ["Bike ride"], route: brighouseB },
-  { id: "j11", startedAt: "2026-09-30T21:15", score: 45, duration: "31m 08s", miles: "8.74 miles", mode: "Car", start: "9:15 pm", end: "9:46 pm", events: 42, tags: ["Speeding", "Hard braking", "Handheld phone use", "Night drive"], route: brighouseC },
-  { id: "j12", startedAt: "2026-09-21T12:45", score: 83, duration: "4m 26s", miles: "0.98 miles", mode: "Car", start: "12:45 pm", end: "12:49 pm", events: 7, tags: ["Handheld phone use"], route: brighouseA },
+  { id: "j1", tagSetBy: "System", startedAt: "2026-11-03T20:00", score: 75, duration: "5m 34s", miles: "1.14 miles", mode: "Car", start: "8:00 pm", end: "8:05 pm", events: 16, tags: ["Phone use", "Hard braking"], route: brighouseA },
+  { id: "j2", tagSetBy: "User", startedAt: "2026-11-03T19:35", score: 77, duration: "5m 17s", miles: "1.15 miles", mode: "Car", start: "7:35 pm", end: "7:41 pm", events: 9, tags: ["Phone use"], route: brighouseB },
+  { id: "j3", tagSetBy: "System", startedAt: "2026-11-03T17:38", score: 79, duration: "7m 42s", miles: "1.18 miles", mode: "Car", start: "5:38 pm", end: "5:46 pm", events: 11, tags: ["Harsh cornering"], route: brighouseA },
+  { id: "j4", tagSetBy: "User", startedAt: "2026-11-03T17:25", score: null, duration: "9m 40s", miles: "0.91 miles", mode: "Bike", start: "5:25 pm", end: "5:34 pm", events: null, tags: ["Bike ride"], route: brighouseB },
+  { id: "j5", tagSetBy: "System", startedAt: "2026-11-02T08:12", score: 88, duration: "12m 05s", miles: "3.42 miles", mode: "Car", start: "8:12 am", end: "8:24 am", events: 6, tags: ["Rapid acceleration"], route: brighouseC },
+  { id: "j6", tagSetBy: "System", startedAt: "2026-11-01T22:40", score: 61, duration: "18m 22s", miles: "5.87 miles", mode: "Car", start: "10:40 pm", end: "10:58 pm", events: 23, tags: ["Night drive", "Hard braking", "Phone use"], route: brighouseA },
+  { id: "j7", tagSetBy: "System", startedAt: "2026-10-28T07:55", score: 92, duration: "9m 12s", miles: "2.31 miles", mode: "Car", start: "7:55 am", end: "8:04 am", events: 3, tags: [], route: brighouseB },
+  { id: "j8", tagSetBy: "System", startedAt: "2026-10-24T13:20", score: 54, duration: "24m 47s", miles: "6.95 miles", mode: "Car", start: "1:20 pm", end: "1:45 pm", events: 31, tags: ["Speeding", "Harsh cornering", "Rapid acceleration"], route: brighouseC },
+  { id: "j9", tagSetBy: "User", startedAt: "2026-10-19T18:05", score: 71, duration: "6m 58s", miles: "1.62 miles", mode: "Car", start: "6:05 pm", end: "6:12 pm", events: 12, tags: ["Phone use", "Night drive"], route: brighouseA },
+  { id: "j10", tagSetBy: "User", startedAt: "2026-10-12T09:30", score: null, duration: "15m 30s", miles: "2.88 miles", mode: "Bike", start: "9:30 am", end: "9:45 am", events: null, tags: ["Bike ride"], route: brighouseB },
+  { id: "j11", tagSetBy: "System", startedAt: "2026-09-30T21:15", score: 45, duration: "31m 08s", miles: "8.74 miles", mode: "Car", start: "9:15 pm", end: "9:46 pm", events: 42, tags: ["Speeding", "Hard braking", "Handheld phone use", "Night drive"], route: brighouseC },
+  { id: "j12", tagSetBy: "System", startedAt: "2026-09-21T12:45", score: 83, duration: "4m 26s", miles: "0.98 miles", mode: "Car", start: "12:45 pm", end: "12:49 pm", events: 7, tags: ["Handheld phone use"], route: brighouseA },
 ];
 
 export const journeyInfluences: Record<string, [string, number][]> = {
@@ -63,15 +64,17 @@ export const MODES: Record<string, string> = { any: "Any mode", Car: "Car", Bike
 
 export const EVENT_STATES: Record<string, string> = { any: "Any", with: "With driving events", without: "Without driving events" };
 
+export const TAG_SOURCES: Record<string, string> = { any: "User or System", User: "User", System: "System" };
+
 export const SORTS: Record<string, string> = { newest: "Newest first", oldest: "Oldest first", highest: "Highest score first", lowest: "Lowest score first" };
 
 /** from / to are inclusive day bounds in "yyyy-MM-dd" form; empty means unbounded. */
-export type JourneyFilters = { from: string; to: string; score: string; mode: string; events: string; tags: string[]; sort: string };
+export type JourneyFilters = { from: string; to: string; score: string; mode: string; events: string; tagSetBy: string; tags: string[]; sort: string };
 
-export const defaultJourneyFilters: JourneyFilters = { from: "", to: "", score: "any", mode: "any", events: "any", tags: [], sort: "newest" };
+export const defaultJourneyFilters: JourneyFilters = { from: "", to: "", score: "any", mode: "any", events: "any", tagSetBy: "any", tags: [], sort: "newest" };
 
 export const isDefaultFilters = (f: JourneyFilters) =>
-  !f.from && !f.to && f.score === "any" && f.mode === "any" && f.events === "any" && f.tags.length === 0 && f.sort === "newest";
+  !f.from && !f.to && f.score === "any" && f.mode === "any" && f.events === "any" && f.tagSetBy === "any" && f.tags.length === 0 && f.sort === "newest";
 
 export function scoreMatches(score: number | null, band: string): boolean {
   if (band === "any") return true;
@@ -95,6 +98,7 @@ export function filterJourneys(journeys: Journey[], f: JourneyFilters): Journey[
     if (f.mode !== "any" && j.mode !== f.mode) return false;
     if (f.events === "with" && !(j.events && j.events > 0)) return false;
     if (f.events === "without" && j.events && j.events > 0) return false;
+    if (f.tagSetBy !== "any" && j.tagSetBy !== f.tagSetBy) return false;
     if (f.tags.length && !f.tags.some((tag) => j.tags.includes(tag))) return false;
     return scoreMatches(j.score, f.score);
   });

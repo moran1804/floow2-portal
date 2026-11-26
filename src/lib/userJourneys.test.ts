@@ -3,6 +3,7 @@ import {
   defaultJourneyFilters,
   filterJourneys,
   formatDateRange,
+  isDefaultFilters,
   sampleJourneys,
 } from "./userJourneys";
 
@@ -27,6 +28,24 @@ describe("journey filters", () => {
 
   it("keeps journeys carrying any of the selected tags", () => {
     expect(ids({ ...defaultJourneyFilters, tags: ["Phone use", "Speeding"] })).toEqual(["j1", "j2", "j6", "j8", "j9", "j11"]);
+  });
+
+  it("filters tags set by User", () => {
+    expect(ids({ ...defaultJourneyFilters, tagSetBy: "User" })).toEqual(["j2", "j4", "j9", "j10"]);
+  });
+
+  it("filters tags set by System", () => {
+    expect(ids({ ...defaultJourneyFilters, tagSetBy: "System" })).toEqual(["j1", "j3", "j5", "j6", "j7", "j8", "j11", "j12"]);
+  });
+
+  it("combines tag source with the other filters", () => {
+    expect(ids({ ...defaultJourneyFilters, tagSetBy: "User", mode: "Car" })).toEqual(["j2", "j9"]);
+  });
+
+  it("resets the tag source to include User and System", () => {
+    expect(isDefaultFilters({ ...defaultJourneyFilters, tagSetBy: "User" })).toBe(false);
+    expect(defaultJourneyFilters.tagSetBy).toBe("any");
+    expect(filterJourneys(sampleJourneys, defaultJourneyFilters)).toHaveLength(12);
   });
 
   it("filters by mode of transport", () => {

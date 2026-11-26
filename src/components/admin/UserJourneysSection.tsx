@@ -17,6 +17,7 @@ import {
   MODES,
   SCORE_BANDS,
   SORTS,
+  TAG_SOURCES,
   dayString,
   defaultJourneyFilters,
   filterJourneys,
@@ -134,10 +135,10 @@ export default function UserJourneysSection() {
   const reset = () => { setPage(0); setFilters(defaultJourneyFilters); };
   const pages = Math.max(1, Math.ceil(rows.length / pageSize));
   const shown = rows.slice(page * pageSize, page * pageSize + pageSize);
-  const active = [Boolean(filters.from || filters.to), filters.score !== "any", filters.mode !== "any", filters.events !== "any", filters.sort !== "newest"].filter(Boolean).length;
+  const active = [Boolean(filters.from || filters.to), filters.score !== "any", filters.mode !== "any", filters.events !== "any", filters.tagSetBy !== "any", filters.sort !== "newest"].filter(Boolean).length;
 
   const selects: [keyof JourneyFilters, string, Record<string, string>][] = [
-    ["score", "Score", SCORE_BANDS], ["mode", "Mode", MODES], ["events", "Driving events", EVENT_STATES], ["sort", "Sort by", SORTS],
+    ["score", "Score", SCORE_BANDS], ["mode", "Mode", MODES], ["events", "Driving events", EVENT_STATES], ["tagSetBy", "Tag set by", TAG_SOURCES], ["sort", "Sort by", SORTS],
   ];
 
   return (
@@ -152,7 +153,7 @@ export default function UserJourneysSection() {
           </h3>
           <Button type="button" variant="ghost" size="sm" onClick={reset} disabled={isDefaultFilters({ ...filters, tags: [] })} className="text-xs">Reset all</Button>
         </header>
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
           <DateRangeFilter from={filters.from} to={filters.to} onChange={set} />
           {selects.filter(([key]) => key === "events" ? allows("journeys/events/read") : key === "score" ? allows("scores/read") : true).map(([k, label, opts]) => (
             <div key={k} className="rounded-lg border border-portal-border bg-portal-surface px-3 pb-1.5 pt-2 focus-within:border-portal-accent">
@@ -182,7 +183,7 @@ export default function UserJourneysSection() {
       <div className="overflow-x-auto rounded-xl border border-portal-border bg-portal-panel shadow-sm">
         <table className="w-full min-w-[900px] text-sm">
           <thead className="bg-portal-panel-header text-left text-portal-navy">
-            <tr>{["Start date and time", "End date and time", "Distance", "Duration", "Type", "Scores", ""].map((h) => <th key={h} className="px-5 py-4 font-semibold">{h}</th>)}</tr>
+            <tr>{["Start date and time", "End date and time", "Distance", "Duration", "Type", "Tag set by", "Scores", ""].map((h) => <th key={h} className="px-5 py-4 font-semibold">{h}</th>)}</tr>
           </thead>
           <tbody>
             {shown.map((j) => {
@@ -195,6 +196,7 @@ export default function UserJourneysSection() {
                   <td className="px-5 py-4">{distance(j.miles)}</td>
                   <td className="px-5 py-4">{j.duration}</td>
                   <td className="px-5 py-4"><span className="flex items-center gap-2"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-portal-surface">{j.mode === "Car" ? <Car className="h-3.5 w-3.5" /> : <Bike className="h-3.5 w-3.5" />}</span>{j.mode}</span></td>
+                  <td className="px-5 py-4 text-portal-navy">{j.tagSetBy}</td>
                   <td className="px-5 py-4">
                     {allows("scores/read") && <div className="flex items-center gap-2" title={infl ? infl.map(([n, v]) => `${n}: ${v}`).join(" · ") : undefined}>
                       <MiniRing score={j.score} size={48} />
@@ -208,7 +210,7 @@ export default function UserJourneysSection() {
               );
             })}
             {!shown.length && (
-              <tr><td colSpan={7} className="p-10 text-center">
+              <tr><td colSpan={8} className="p-10 text-center">
                 <p role="status" className="text-portal-muted">No journeys match your filters.</p>
                 <Button variant="ghost" onClick={reset} className="mt-2 text-xs underline underline-offset-4">Reset all filters</Button>
               </td></tr>
