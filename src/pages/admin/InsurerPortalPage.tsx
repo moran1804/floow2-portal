@@ -1,4 +1,5 @@
 import { AlertTriangle, Search, LucideIcon } from "lucide-react";
+import { useRolePreview } from "@/contexts/RolePreviewContext";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -10,13 +11,15 @@ const tiles: Tile[] = [
   { icon: Search, title: "Search User Data", description: "Search users, their policies and journeys." },
 ];
 
-const InsurerPortalPage = () => (
+const InsurerPortalPage = () => {
+  const { canVisit } = useRolePreview();
+  return (
   <AdminLayout
     title="Overview"
     crumbs={[{ label: "Home", to: "/admin/overview" }, { label: "Insurer Portal" }]}
   >
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {tiles.map((tile) => (
+      {tiles.filter((tile) => canVisit(tile.title === "Search User Data" ? "/admin/insurer/search" : "/admin/insurer/impacts")).map((tile) => (
         <div key={tile.title} className="bg-portal-panel border border-portal-border rounded-lg p-6 flex flex-col">
           <div className="w-10 h-10 rounded-md bg-portal-surface border border-portal-border flex items-center justify-center text-portal-navy mb-4">
             <tile.icon className="w-5 h-5" />
@@ -33,5 +36,6 @@ const InsurerPortalPage = () => (
     </div>
   </AdminLayout>
 );
+};
 
 export default InsurerPortalPage;

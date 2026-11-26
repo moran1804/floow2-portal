@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { useRolePreview } from "@/contexts/RolePreviewContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -54,6 +55,7 @@ const formatDateInput = (d: Date) => {
 };
 
 const AuditPage = () => {
+  const { allows } = useRolePreview();
   const defaultStart = useMemo(() => {
     const d = new Date();
     d.setDate(d.getDate() - 14);
@@ -221,9 +223,9 @@ const AuditPage = () => {
               {rows.map((r) => (
                 <tr key={r.id} className="border-t border-portal-border align-top">
                   <td className="px-4 py-4">
-                    <a href="#" className="text-portal-accent underline">
+                    {allows("audits/logs/read") ? <a href="#" className="text-portal-accent underline">
                       {r.timestamp}
-                    </a>
+                    </a> : <span>{r.timestamp}</span>}
                   </td>
                   <td className="px-4 py-4">{r.action}</td>
                   <td className="px-4 py-4">{r.actor}</td>
@@ -232,7 +234,7 @@ const AuditPage = () => {
                     <div className="text-portal-muted">{r.subjectId}</div>
                   </td>
                   <td className="px-4 py-4">
-                    <span className="inline-flex items-center px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-semibold">
+                    <span className="inline-flex items-center px-2 py-1 rounded bg-status-active-bg text-status-active-fg text-xs font-semibold">
                       {r.status}
                     </span>
                   </td>

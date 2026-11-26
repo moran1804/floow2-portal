@@ -1,3 +1,4 @@
+import { useRolePreview } from "@/contexts/RolePreviewContext";
 import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -8,6 +9,7 @@ import { useCustomer } from "@/contexts/CustomerContext";
 const crumbs = [{ label: "Home", to: "/admin/overview" }, { label: "Developer tools", to: "/admin/developer" }, { label: "Webhooks", to: "/admin/developer/webhooks" }, { label: "Subscriptions" }];
 
 const SubscriptionsPage = () => {
+  const { allows } = useRolePreview();
   const { selectedCustomerId } = useCustomer();
   const qc = useQueryClient();
   const { data: subs = [], isLoading, error } = useQuery({
@@ -34,7 +36,7 @@ const SubscriptionsPage = () => {
       <div className="max-w-6xl">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-3xl font-bold text-portal-navy">Webhook subscriptions</h2>
-          <Button asChild variant="outline" className="border-portal-navy text-portal-navy"><Link to="/admin/developer/webhooks/subscriptions/add">Add webhook +</Link></Button>
+          {allows("webhooks/write") && <Button asChild variant="outline" className="border-portal-navy text-portal-navy"><Link to="/admin/developer/webhooks/subscriptions/add">Add webhook +</Link></Button>}
         </div>
         <div className="bg-portal-panel border border-portal-border rounded-md overflow-hidden">
           <div className={`${cols} bg-portal-panel-header py-3 font-semibold`}><span>Description</span><span>Target</span><span>Event Types</span><span>State</span><span>Actions</span></div>
@@ -47,10 +49,10 @@ const SubscriptionsPage = () => {
               <span className="break-all">{s.url}</span>
               <span className="space-y-0.5">{s.event_types.map((t) => <div key={t} className="font-mono text-xs">{t}</div>)}</span>
               <span>{s.is_active ? "Active" : "Inactive"}</span>
-              <span className="flex flex-col gap-1 items-start">
+              {allows("webhooks/write") && <span className="flex flex-col gap-1 items-start">
                 <button type="button" className="text-portal-navy underline" disabled={toggle.isPending} onClick={() => toggle.mutate({ id: s.id, is_active: !s.is_active })}>{s.is_active ? "Deactivate" : "Activate"}</button>
                 <button type="button" className="text-destructive underline" disabled={del.isPending} onClick={() => { if (confirm(`Delete subscription "${s.description}"?`)) del.mutate(s.id); }}>Delete</button>
-              </span>
+              </span>}
             </div>
           ))}
         </div>

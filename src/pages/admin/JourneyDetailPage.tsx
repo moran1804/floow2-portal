@@ -1,3 +1,4 @@
+import { PermissionGate } from "@/components/admin/RoleAccess";
 import { useUnits } from "@/hooks/useUnits";
 import { useState, type ReactNode } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -36,25 +37,25 @@ export default function JourneyDetailPage() {
         <div className="space-y-5">
           <Card icon={<FileText className="h-5 w-5" />} title="User information"><Rows rows={[["User ID", <Link key="u" to={base} className="underline underline-offset-2">{userId}</Link>]]} /></Card>
           <Card icon={<Clock className="h-5 w-5" />} title="Time of journey"><Rows rows={[["Date", journeyFullDateLabel(journey.startedAt)], ["Start time", journey.start], ["End time", journey.end], ["Timezone", "Europe/London"]]} /></Card>
-          <Card icon={journey.mode === "Car" ? <Car className="h-5 w-5" /> : <Bike className="h-5 w-5" />} title="Mode of transport" action={<Button variant="outline" size="sm" className="gap-1 border-2 border-portal-navy text-portal-navy" onClick={() => setInfo("Editing the mode of transport is not connected yet.")}><Pencil className="h-3.5 w-3.5" />Edit</Button>}>
+          <Card icon={journey.mode === "Car" ? <Car className="h-5 w-5" /> : <Bike className="h-5 w-5" />} title="Mode of transport" action={<PermissionGate permission="journeys/mode_of_transport/write"><Button variant="outline" size="sm" className="gap-1 border-2 border-portal-navy text-portal-navy" onClick={() => setInfo("Editing the mode of transport is not connected yet.")}><Pencil className="h-3.5 w-3.5" />Edit</Button></PermissionGate>}>
             <Rows rows={[["Mode of transport", <span key="m" className="inline-flex items-center gap-1 text-xs">{journey.mode === "Car" ? <Car className="h-4 w-4" /> : <Bike className="h-4 w-4" />}{journey.mode}</span>], ["Locked for user edits since", "8:10 pm 06 November, 2026"]]} />
           </Card>
         </div>
         <Card icon={<Route className="h-5 w-5" />} title="Route overview" className="flex flex-col">
           <div className="mb-3 flex justify-end gap-4 text-xs font-semibold"><span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{journey.duration}</span><span className="flex items-center gap-1"><Route className="h-3.5 w-3.5" />{distance(journey.miles)}</span></div>
           <div className="lg:[&>div]:h-96"><JourneyMap route={journey.route} /></div>
-          {journey.events !== null && <p className="bg-score-caution-track py-1 text-center text-sm">{journey.events} driving events</p>}
+          {journey.events !== null && <PermissionGate permission="journeys/events/read"><p className="bg-score-caution-track py-1 text-center text-sm">{journey.events} driving events</p></PermissionGate>}
           <div className="mt-auto flex justify-end pt-6"><Button className="gap-1 text-lg font-normal" onClick={() => navigate(`${base}/journeys/${journey.id}/route`)}>View route<ChevronRight className="h-4 w-4" /></Button></div>
         </Card>
       </div>
-      <Card icon={<FileText className="h-5 w-5" />} title="Journey Scores">
+      <PermissionGate permission="scores/read"><Card icon={<FileText className="h-5 w-5" />} title="Journey Scores">
         {journey.score === null || !influences ? <p className="text-sm text-portal-muted">This journey was not scored.</p> :
         <div className="grid gap-2 xl:grid-cols-[250px_minmax(0,1fr)]">
           <div className="flex items-center justify-center bg-score-surface p-6"><div className="w-full max-w-[190px]"><UserScoreTile name="Driver score" score={journey.score} overall onOpen={() => setInfo("Driver score details are example content only.")} /></div></div>
           <div className="min-w-0 bg-score-surface p-6"><h3 className="text-2xl font-semibold">Driver Score Influences</h3><p className="mb-6 mt-3 text-xs">Select an influence to understand what affects the score.</p>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">{influences.map(([name, score]) => <UserScoreTile key={name} name={name} score={score} onOpen={() => setInfo(`${name} details are example content only.`)} />)}</div></div>
         </div>}
-      </Card>
+      </Card></PermissionGate>
     </div>
     <Dialog open={info !== null} onOpenChange={(o) => !o && setInfo(null)}><DialogContent><DialogHeader><DialogTitle>Not connected yet</DialogTitle><DialogDescription>{info}</DialogDescription></DialogHeader></DialogContent></Dialog>
   </AdminLayout>;

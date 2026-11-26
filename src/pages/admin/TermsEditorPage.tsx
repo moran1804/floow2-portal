@@ -1,3 +1,4 @@
+import { useRolePreview } from "@/contexts/RolePreviewContext";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -34,6 +35,7 @@ import AcceptanceStats from "@/components/admin/AcceptanceStats";
 import { useCustomer } from "@/contexts/CustomerContext";
 
 const TermsEditorPage = () => {
+  const { allows } = useRolePreview();
   const { id } = useParams();
   const isNew = !id;
   const navigate = useNavigate();
@@ -206,18 +208,19 @@ const TermsEditorPage = () => {
   });
 
   const isReadOnly =
+    !allows("products/terms/write") ||
     existing?.state === "active" ||
     existing?.state === "inactive" ||
     existing?.state === "archived";
 
   return (
     <AdminLayout
-      title={isNew ? "New T&Cs version" : `Edit ${existing?.version ?? ""}`}
+      title={isNew ? "New T&Cs version" : `${isReadOnly ? "View" : "Edit"} ${existing?.version ?? ""}`}
       crumbs={[
         { label: "Home", to: "/" },
         { label: "Admin" },
         { label: "Terms & Conditions", to: "/admin/terms" },
-        { label: isNew ? "New version" : "Edit" },
+        { label: isNew ? "New version" : isReadOnly ? "View" : "Edit" },
       ]}
       actions={
         <Button variant="outline" onClick={() => navigate("/admin/terms")}>
@@ -226,7 +229,7 @@ const TermsEditorPage = () => {
       }
     >
       <div className="space-y-6 pb-28">
-        {existing?.state === "active" && (
+        {existing?.state === "active" && allows("products/terms_acceptance/read") && (
           <AcceptanceStats termsId={existing.id} version={existing.version} />
         )}
         <PortalPanel icon={FileText} title="Details">
@@ -270,9 +273,9 @@ const TermsEditorPage = () => {
         </PortalPanel>
 
         <PortalPanel icon={Pencil} title="Content">
-          <Tabs defaultValue="edit">
+          <Tabs defaultValue={isReadOnly ? "preview" : "edit"}>
             <TabsList>
-              <TabsTrigger value="edit">
+              <TabsTrigger value="edit" disabled={isReadOnly}>
                 <Pencil className="w-3.5 h-3.5 mr-1" /> Edit
               </TabsTrigger>
               <TabsTrigger value="preview">

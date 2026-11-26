@@ -1,9 +1,12 @@
 import { ReactNode } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useRolePreview } from "@/contexts/RolePreviewContext";
 
 const RequireAdmin = ({ children }: { children: ReactNode }) => {
   const { loading, session, isAdmin } = useAuth();
+  const { pathname } = useLocation();
+  const { canVisit } = useRolePreview();
 
   if (loading) {
     return (
@@ -23,6 +26,7 @@ const RequireAdmin = ({ children }: { children: ReactNode }) => {
       </div>
     );
   }
+  if (!canVisit(pathname)) return <Navigate to="/admin/overview" replace />;
   return <>{children}</>;
 };
 

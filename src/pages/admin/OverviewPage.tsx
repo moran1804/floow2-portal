@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { UserCog, Code2, Search, PieChart, FileText, LucideIcon } from "lucide-react";
+import { useRolePreview } from "@/contexts/RolePreviewContext";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -57,6 +58,7 @@ const tiles: Tile[] = [
 ];
 
 const OverviewPage = () => {
+  const { canVisit } = useRolePreview();
   const { user } = useAuth();
   return (
     <AdminLayout
@@ -64,7 +66,7 @@ const OverviewPage = () => {
       crumbs={[{ label: "Home" }]}
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {tiles.map((tile) => (
+        {tiles.filter((tile) => canVisit(tile.to)).map((tile) => (
           <div
             key={tile.title}
             className="bg-portal-panel border border-portal-border rounded-lg p-6 flex flex-col"

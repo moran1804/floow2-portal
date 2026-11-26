@@ -1,3 +1,4 @@
+import { useRolePreview } from "@/contexts/RolePreviewContext";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -15,6 +16,7 @@ const Row = ({ label, value }: { label: string; value: string }) => (
 );
 
 const AppsPage = () => {
+  const { allows } = useRolePreview();
   const { selectedCustomerId } = useCustomer();
   const [open, setOpen] = useState<string | null>(null);
   const [perPage, setPerPage] = useState(10);
@@ -36,9 +38,9 @@ const AppsPage = () => {
       <div className="max-w-5xl">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold text-portal-navy">Your apps</h2>
-          <Button asChild variant="outline" className="border-portal-navy text-portal-navy">
+          {allows("floow_clients/apps/create") && <Button asChild variant="outline" className="border-portal-navy text-portal-navy">
             <Link to="/admin/developer/apps/add">Add App <Plus className="w-4 h-4" /></Link>
-          </Button>
+          </Button>}
         </div>
         {isLoading && <p className="text-portal-muted">Loading…</p>}
         {error && <p role="alert" className="text-destructive">Apps could not be loaded.</p>}

@@ -1,4 +1,5 @@
 import { useUnits } from "@/hooks/useUnits";
+import { useRolePreview } from "@/contexts/RolePreviewContext";
 import { useMemo, useState } from "react";
 import { format, parseISO, startOfMonth, subMonths } from "date-fns";
 import { useNavigate, useParams } from "react-router-dom";
@@ -121,6 +122,7 @@ function DateRangeFilter({ from, to, onChange }: { from: string; to: string; onC
 }
 
 export default function UserJourneysSection() {
+  const { allows } = useRolePreview();
   const { distance } = useUnits();
   const navigate = useNavigate();
   const { userId } = useParams();
@@ -152,7 +154,7 @@ export default function UserJourneysSection() {
         </header>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
           <DateRangeFilter from={filters.from} to={filters.to} onChange={set} />
-          {selects.map(([k, label, opts]) => (
+          {selects.filter(([key]) => key === "events" ? allows("journeys/events/read") : key === "score" ? allows("scores/read") : true).map(([k, label, opts]) => (
             <div key={k} className="rounded-lg border border-portal-border bg-portal-surface px-3 pb-1.5 pt-2 focus-within:border-portal-accent">
               <Label htmlFor={`journey-${k}`} className="text-[11px] font-semibold uppercase tracking-wide text-portal-muted">{label}</Label>
               <Select value={filters[k] as string} onValueChange={(v) => set({ [k]: v })}>
@@ -194,10 +196,10 @@ export default function UserJourneysSection() {
                   <td className="px-5 py-4">{j.duration}</td>
                   <td className="px-5 py-4"><span className="flex items-center gap-2"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-portal-surface">{j.mode === "Car" ? <Car className="h-3.5 w-3.5" /> : <Bike className="h-3.5 w-3.5" />}</span>{j.mode}</span></td>
                   <td className="px-5 py-4">
-                    <div className="flex items-center gap-2" title={infl ? infl.map(([n, v]) => `${n}: ${v}`).join(" · ") : undefined}>
+                    {allows("scores/read") && <div className="flex items-center gap-2" title={infl ? infl.map(([n, v]) => `${n}: ${v}`).join(" · ") : undefined}>
                       <MiniRing score={j.score} size={48} />
                       {infl ? infl.map(([n, v]) => <MiniRing key={n} score={v} />) : <span className="text-xs text-portal-muted">{j.score === null ? "Not scored" : ""}</span>}
-                    </div>
+                    </div>}
                   </td>
                   <td className="px-5 py-4 text-right">
                     <Button size="icon" className="h-8 w-8" aria-label="View journey details" onClick={(e) => { e.stopPropagation(); open(); }}><ChevronRight className="h-4 w-4" /></Button>

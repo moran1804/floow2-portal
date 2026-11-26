@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { MoreHorizontal, CalendarCheck2, Info } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
+import { useRolePreview } from "@/contexts/RolePreviewContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useCustomer } from "@/contexts/CustomerContext";
 
@@ -52,6 +53,8 @@ const initialsFromEmail = (email?: string | null) =>
 
 const FeaturesPage = () => {
   const { user, isFloowStaff } = useAuth();
+  const { allows } = useRolePreview();
+  const canWrite = isFloowStaff && allows("feature_subscriptions/write");
   const { selectedCustomerId } = useCustomer();
   const [features, setFeatures] = useState<Feature[]>([]);
   const [loading, setLoading] = useState(true);
@@ -81,16 +84,16 @@ const FeaturesPage = () => {
     const map = new Map<string, Feature[]>();
     for (const f of features) {
       if (!map.has(f.category)) map.set(f.category, []);
-      map.get(f.category)!.push(f);
+      map.get(f.category)?.push(f);
     }
     return CATEGORY_ORDER.filter((c) => map.has(c)).map((c) => ({
       category: c,
-      items: map.get(c)!,
+      items: map.get(c) ?? [],
     }));
   }, [features]);
 
   const toggle = async (f: Feature, next: "active" | "inactive") => {
-    if (!isFloowStaff) {
+    if (!canWrite) {
       return;
     }
     const rpc = next === "active" ? "activate_feature" : "deactivate_feature";
@@ -117,7 +120,7 @@ const FeaturesPage = () => {
             </div>
             <h3 className="text-lg font-bold text-portal-navy">Feature subscriptions</h3>
           </div>
-          {isFloowStaff && (
+          {canWrite && (
             <button
               onClick={async () => {
                 const { error } = await supabase.rpc("activate_all_features");
@@ -217,9 +220,9 @@ const FeaturesPage = () => {
                           <DropdownMenu>
                             <DropdownMenuTrigger
                               className="inline-flex items-center justify-center w-8 h-8 rounded-md text-portal-muted hover:bg-portal-surface disabled:opacity-50 disabled:cursor-not-allowed"
-                              disabled={!isFloowStaff}
+                              disabled={!canWrite}
                               title={
-                                isFloowStaff
+                                canWrite
                                   ? "Actions"
                                   : "Only Floow staff can change features"
                               }
@@ -249,7 +252,7 @@ const FeaturesPage = () => {
         )}
       </div>
 
-      {!isFloowStaff && (
+      {!canWrite && (
         <p className="text-sm text-portal-muted mt-4">
           You can view features, but only Floow staff can activate or deactivate them.
         </p>

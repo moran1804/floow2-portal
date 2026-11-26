@@ -1,3 +1,4 @@
+import { useRolePreview } from "@/contexts/RolePreviewContext";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Eye, EyeOff } from "lucide-react";
@@ -12,6 +13,8 @@ import { CAMPAIGNS, ALWAYS_ENABLED_CAMPAIGNS } from "@/lib/campaigns";
 const isUrl = (s: string) => { try { return new URL(s).protocol === "https:"; } catch { return false; } };
 
 const CampaignsConfigPage = () => {
+  const { allows } = useRolePreview();
+  const canWrite = allows("braze/configuration/write");
   const { selectedCustomerId } = useCustomer();
   const { user } = useAuth();
   const qc = useQueryClient();
@@ -90,16 +93,16 @@ const CampaignsConfigPage = () => {
           <div className="grid md:grid-cols-[1fr_2fr] gap-3 items-center">
             <label htmlFor="braze-key" className="text-sm font-semibold">API Key</label>
             <div className="flex items-center gap-2">
-              <Input id="braze-key" type={showKey ? "text" : "password"} value={apiKey} onChange={(e) => setApiKey(e.target.value)} autoComplete="off" />
+              <Input readOnly={!canWrite} id="braze-key" type={showKey ? "text" : "password"} value={apiKey} onChange={(e) => setApiKey(e.target.value)} autoComplete="off" />
               <Button type="button" variant="ghost" size="icon" onClick={() => setShowKey(!showKey)} aria-label={showKey ? "Hide API key" : "Show API key"}>{showKey ? <EyeOff /> : <Eye />}</Button>
             </div>
           </div>
           <div className="grid md:grid-cols-[1fr_2fr] gap-3 items-center">
             <label htmlFor="braze-endpoint" className="text-sm font-semibold">REST Endpoint</label>
-            <Input id="braze-endpoint" value={endpoint} placeholder="https://rest.fra-02.braze.eu" onChange={(e) => setEndpoint(e.target.value)} className="md:mr-12 md:w-auto" />
+            <Input readOnly={!canWrite} id="braze-endpoint" value={endpoint} placeholder="https://rest.fra-02.braze.eu" onChange={(e) => setEndpoint(e.target.value)} className="md:mr-12 md:w-auto" />
           </div>
         </section>
-        <div className="flex items-center justify-end gap-4 mt-4"><Msg m={apiMsg} /><Button disabled={!apiDirty || !apiValid} onClick={saveApi}>Save changes</Button></div>
+        <div className="flex items-center justify-end gap-4 mt-4"><Msg m={apiMsg} />{canWrite && <Button disabled={!apiDirty || !apiValid} onClick={saveApi}>Save changes</Button>}</div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 mt-10 mb-4">
           <h2 className="text-2xl font-bold text-portal-navy">Campaigns</h2>
@@ -116,7 +119,7 @@ const CampaignsConfigPage = () => {
         ) : (
           <section className={`bg-portal-panel border border-portal-border rounded-md p-6 ${featureOn === false ? "opacity-60" : ""}`}>
             {featureOn === false && <p className="mb-4 text-sm text-portal-muted">Campaigns is not enabled at client level, contact your account manager to enable.</p>}
-            <fieldset disabled={featureOn === false}>
+            <fieldset disabled={featureOn === false || !canWrite}>
               <div className="flex flex-wrap items-center gap-4 text-sm">
                 <span className="font-semibold">Enable campaigns on this product</span>
                 <label className="flex items-center gap-1.5"><input type="radio" name="camp-on" checked={enabled} onChange={() => setEnabled(true)} className="accent-portal-accent" />Campaigns enabled</label>
@@ -153,7 +156,7 @@ const CampaignsConfigPage = () => {
             </fieldset>
           </section>
         )}
-        {products.length > 0 && <div className="flex items-center justify-end gap-4 mt-4"><Msg m={campMsg} /><Button disabled={!campDirty || featureOn === false} onClick={saveCampaigns}>Save changes</Button></div>}
+        {products.length > 0 && <div className="flex items-center justify-end gap-4 mt-4"><Msg m={campMsg} />{canWrite && <Button disabled={!campDirty || featureOn === false} onClick={saveCampaigns}>Save changes</Button>}</div>}
       </div>
     </AdminLayout>
   );

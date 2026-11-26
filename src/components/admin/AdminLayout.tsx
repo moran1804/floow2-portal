@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   LayoutGrid,
   Fingerprint,
@@ -38,6 +38,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNotifications } from "@/hooks/useNotifications";
 import { Button } from "@/components/ui/button";
 import { UserProfileMenu } from "@/components/admin/UserProfileMenu";
+import { RoleNavLink as NavLink } from "@/components/admin/RoleAccess";
+import { useRolePreview } from "@/contexts/RolePreviewContext";
+import { PREVIEW_ROLES, type PreviewRole } from "@/lib/rolePreview";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import floowLogo from "@/assets/the-floow-logo.svg.asset.json";
 
 type NavItem = {
@@ -100,6 +104,7 @@ interface AdminLayoutProps {
 const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = false, subtitle }: AdminLayoutProps) => {
   const { user, signOut } = useAuth();
   const { unreadCount } = useNotifications();
+  const { role, canPreview, setRole, canVisit } = useRolePreview();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const isClientsPage = pathname === "/admin/clients";
@@ -145,7 +150,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
   return (
     <div className={`${isNotificationsPage ? "flex h-dvh flex-col overflow-hidden" : "min-h-screen"} bg-portal-surface text-portal-text`}>
       {/* Top bar */}
-      <header className={`flex shrink-0 items-center justify-between bg-portal-panel border-b border-portal-border ${isInsightsPage || isUserSearchPage || isNotificationsPage ? "px-3 sm:px-6" : "px-6"} h-16`}>
+      <header className={`flex shrink-0 flex-wrap items-center justify-between gap-y-2 bg-portal-panel border-b border-portal-border ${isInsightsPage || isUserSearchPage || isNotificationsPage ? "px-3 sm:px-6" : "px-6"} min-h-16 py-2 sm:h-16 sm:py-0`}>
         <div className={`flex items-center ${isInsightsPage || isUserSearchPage || isNotificationsPage ? "gap-3 sm:gap-6" : "gap-6"}`}>
           <button
             type="button"
@@ -156,13 +161,13 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
             <img
               src={floowLogo.url}
               alt="The Floow"
-              className={isUserSearchPage ? "h-4 sm:h-6 w-auto" : "h-6 w-auto"}
+              className={isUserSearchPage || canPreview ? "h-4 sm:h-6 w-auto" : "h-6 w-auto"}
             />
           </button>
           <Button
             variant="outline"
             onClick={() => navigate("/admin/clients")}
-            className={`h-9 gap-2 border-portal-border ${isNotificationsPage ? "hidden sm:inline-flex" : ""}`}
+            className={`h-9 gap-2 border-portal-border ${isNotificationsPage || canPreview ? "hidden sm:inline-flex" : ""}`}
             title="Change client"
           >
             <Building2 className="w-4 h-4" />
@@ -170,8 +175,14 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
           </Button>
 
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-portal-muted hidden sm:inline">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {canPreview && <Select value={role ?? "account"} onValueChange={(value) => setRole(value === "account" ? null : value as PreviewRole)}>
+            <SelectTrigger aria-label="Preview role" title="Role preview — your account permissions remain unchanged" className="h-11 w-36 border-portal-border bg-portal-surface text-left sm:w-56">
+              <div className="min-w-0"><span className="block text-[10px] font-semibold text-portal-muted">Role preview</span><span className="block truncate text-[11px] sm:text-sm"><SelectValue /></span></div>
+            </SelectTrigger>
+            <SelectContent><SelectItem value="account">My account</SelectItem>{PREVIEW_ROLES.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent>
+          </Select>}
+          <span className="text-sm text-portal-muted hidden xl:inline">
             {user?.email}
           </span>
           <UserProfileMenu initials={initials} onSignOut={signOut} />
@@ -266,7 +277,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                   {dashboardItem.label}
                 </NavLink>
 
-                <button
+                {canVisit("/admin/home") && <button
                   type="button"
                   onClick={() => {
                     setAdminOpen(true);
@@ -294,8 +305,8 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                       <ChevronRight className="w-4 h-4" />
                     )}
                   </span>
-                </button>
-                {adminOpen && (
+                </button>}
+                {adminOpen && canVisit("/admin/home") && (
                   <div className="bg-portal-sidebar-active/30">
                     {adminChildren.map((item) => (
                       <NavLink
@@ -316,7 +327,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                   </div>
                 )}
 
-                <button
+                {canVisit("/admin/developer") && <button
                   type="button"
                   onClick={() => {
                     setDevOpen(true);
@@ -338,8 +349,8 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                   >
                     {devOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                   </span>
-                </button>
-                {devOpen && (
+                </button>}
+                {devOpen && canVisit("/admin/developer") && (
                   <div className="bg-portal-sidebar-active/30">
                     {devChildren.map((item) =>
                       item.disabled ? (
@@ -370,7 +381,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                   </div>
                 )}
 
-                <button
+                {canVisit("/admin/insurer") && <button
                   type="button"
                   onClick={() => {
                     setInsurerOpen(true);
@@ -392,8 +403,8 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                   >
                     {insurerOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                   </span>
-                </button>
-                {insurerOpen && (
+                </button>}
+                {insurerOpen && canVisit("/admin/insurer") && (
                   <div className="bg-portal-sidebar-active/30">
                     {insurerChildren.map((item) => (
                       item.disabled ? <div

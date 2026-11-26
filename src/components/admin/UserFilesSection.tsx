@@ -1,3 +1,4 @@
+import { PermissionGate } from "@/components/admin/RoleAccess";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -22,7 +23,7 @@ export default function UserFilesSection() {
   return <div className="space-y-10">
     <h1 className="text-4xl font-bold text-portal-navy">User files</h1>
     <FilesTable title="Incoming files" description="Files uploaded by the user's device." />
-    <FilesTable title="Outgoing files" description="Files going out to the user's device." action={<Button onClick={() => setOpen(true)}>Upload outgoing file</Button>} />
+    <FilesTable title="Outgoing files" description="Files going out to the user's device." action={<PermissionGate permission="users/files/write"><Button onClick={() => setOpen(true)}>Upload outgoing file</Button></PermissionGate>} />
     <Dialog open={open} onOpenChange={setOpen}><DialogContent><DialogHeader><DialogTitle>Upload outgoing file</DialogTitle><DialogDescription>File transfer to the user's device is not connected yet. No file has been uploaded.</DialogDescription></DialogHeader></DialogContent></Dialog>
   </div>;
 }

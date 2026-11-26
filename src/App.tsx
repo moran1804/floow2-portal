@@ -49,6 +49,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import RequireAdmin from "@/components/admin/RequireAdmin";
 import RequireAuthenticated from "@/components/admin/RequireAuthenticated";
 import { CustomerProvider } from "@/contexts/CustomerContext";
+import { RolePreviewProvider } from "@/contexts/RolePreviewContext";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +58,7 @@ const App = () => (
     <TooltipProvider>
       <BrowserRouter>
         <AuthProvider>
+          <RolePreviewProvider>
           <CustomerProvider>
           <Routes>
             <Route
@@ -257,6 +259,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           </CustomerProvider>
+          </RolePreviewProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

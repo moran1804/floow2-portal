@@ -1,3 +1,4 @@
+import { useRolePreview } from "@/contexts/RolePreviewContext";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -22,6 +23,7 @@ type Product = {
 };
 
 const ProductsPage = () => {
+  const { allows } = useRolePreview();
   const [perPage, setPerPage] = useState(10);
   const [page, setPage] = useState(1);
   const { selectedCustomerId } = useCustomer();
@@ -33,7 +35,7 @@ const ProductsPage = () => {
       const { data, error } = await supabase
         .from("products")
         .select("id, code, name, is_default")
-        .eq("customer_id", selectedCustomerId!)
+        .eq("customer_id", selectedCustomerId ?? "")
         .order("code", { ascending: true });
       if (error) throw error;
       return data as Product[];
@@ -81,9 +83,10 @@ const ProductsPage = () => {
         title="Your products"
       >
         <div className="flex justify-end mb-4">
-          <Button asChild variant="outline">
+          {allows("products/write") && <>
+          <Button asChild variant="outline" disabled={!allows("products/write")}>
             <Link to="/admin/products/add">Add Product +</Link>
-          </Button>
+          </Button></>}
         </div>
 
         <div className="border border-portal-border rounded-md overflow-hidden">
@@ -147,9 +150,10 @@ const ProductsPage = () => {
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              disabled={p.is_default}
+                              disabled={p.is_default || !allows("products/write")}
                               onSelect={async (e) => {
                                 e.preventDefault();
+                                if (!allows("products/write")) return;
                                 const { error } = await supabase.rpc(
                                   "set_default_product",
                                   { _id: p.id },

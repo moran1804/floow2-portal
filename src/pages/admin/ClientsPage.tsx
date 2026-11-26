@@ -1,3 +1,4 @@
+import { useRolePreview } from "@/contexts/RolePreviewContext";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCustomer } from "@/contexts/CustomerContext";
@@ -69,6 +70,7 @@ const addClientErrorMessage = (error: ClientMutationError) => {
 };
 
 const ClientsPage = () => {
+  const { allows } = useRolePreview();
   const [tab, setTab] = useState<"active" | "archived">("active");
   const [addOpen, setAddOpen] = useState(false);
   const [newName, setNewName] = useState("");
@@ -175,10 +177,10 @@ const ClientsPage = () => {
         icon={Users}
         title="All clients"
         rightContent={
-          <Button size="sm" onClick={() => setAddOpen(true)}>
+          allows("floow_clients/create") ? <Button size="sm" onClick={() => setAddOpen(true)}>
             <Plus className="w-3 h-3 mr-1" />
             Add client
-          </Button>
+          </Button> : undefined
         }
       >
         <div className="flex items-center justify-between pb-4">
@@ -236,7 +238,7 @@ const ClientsPage = () => {
                 <div className="font-mono text-xs">{c.id}</div>
                 <div className="font-semibold">{c.name}</div>
                 <div className="w-32 text-right">
-                  {c.archived_at ? (
+                  {allows("floow_clients/delete") && (c.archived_at ? (
                     <Button
                       size="sm"
                       variant="outline"
@@ -262,7 +264,7 @@ const ClientsPage = () => {
                       <Archive className="w-4 h-4 mr-1" />
                       Archive
                     </Button>
-                  )}
+                  ))}
                 </div>
               </div>
             ))

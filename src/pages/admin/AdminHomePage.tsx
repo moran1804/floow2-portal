@@ -9,6 +9,7 @@ import {
   SlidersHorizontal,
   LucideIcon,
 } from "lucide-react";
+import { useRolePreview } from "@/contexts/RolePreviewContext";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 
@@ -65,13 +66,14 @@ const tiles: Tile[] = [
 ];
 
 const AdminHomePage = () => {
+  const { canVisit } = useRolePreview();
   return (
     <AdminLayout
       title="Admin"
       crumbs={[{ label: "Home", to: "/admin/overview" }, { label: "Admin" }]}
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {tiles.map((tile) => (
+        {tiles.filter((tile) => canVisit(tile.to)).map((tile) => (
           <div
             key={tile.to}
             className="bg-portal-panel border border-portal-border rounded-lg p-6 flex flex-col"

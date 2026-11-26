@@ -1,3 +1,4 @@
+import { useRolePreview } from "@/contexts/RolePreviewContext";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Circle, CornerUpLeft, Filter, Gauge, AlertCircle, Smartphone, Route as RouteIcon, type LucideIcon } from "lucide-react";
@@ -42,6 +43,8 @@ const eventPinIcon = (Icon: LucideIcon) => L.divIcon({
 });
 
 export default function JourneyRoutePage() {
+  const { allows } = useRolePreview();
+  const canReadEvents = allows("journeys/events/read");
   const { userId, journeyId } = useParams();
   const [selected, setSelected] = useState<number | null>(null);
   const [satellite, setSatellite] = useState(false);
@@ -50,20 +53,20 @@ export default function JourneyRoutePage() {
   const crumbs = [{ label: "Search", to: "/admin/insurer/search" }, { label: "Users" }, { label: userId ?? "User", to: base }, { label: "Journeys", to: `${base}/journeys` }, { label: `Journey: ${journeyId}`, to: `${base}/journeys/${journeyId}` }, { label: "Journey route" }];
   if (!journey) return <AdminLayout title="Journey route" crumbs={crumbs}><p role="status">This journey was not found.</p></AdminLayout>;
   const route = journey.route;
-  const sel = selected !== null ? sampleEvents[selected] : null;
+  const sel = canReadEvents && selected !== null ? sampleEvents[selected] : null;
   return <AdminLayout title="Journey route" subtitle={`Journey ID: ${journey.id}`} crumbs={crumbs}>
     <div className="mx-auto max-w-6xl space-y-4">
       <p className="text-xs text-portal-muted">Example route and events only · No live journey data is connected for this user.</p>
       <section className="rounded-md border border-portal-border/60 bg-background p-6 shadow-sm">
         <h2 className="mb-4 flex items-center gap-3 text-lg font-semibold"><span className="flex h-10 w-10 items-center justify-center rounded-md bg-portal-accent text-primary-foreground"><RouteIcon className="h-5 w-5" /></span>Route detail</h2>
-        <div className="grid border border-portal-border md:grid-cols-[256px_minmax(0,1fr)]">
-          <aside className="flex max-h-[600px] flex-col border-r border-portal-border">
+        <div className={`grid border border-portal-border ${canReadEvents ? "md:grid-cols-[256px_minmax(0,1fr)]" : ""}`}>
+          {canReadEvents && <aside className="flex max-h-[600px] flex-col border-r border-portal-border">
             <div className="flex items-center justify-between bg-portal-surface px-3 py-3"><span className="font-semibold text-portal-navy">Events</span><Filter className="h-5 w-5 text-portal-navy" aria-label="Filter (not connected)" /></div>
             <ul className="overflow-y-auto">{sampleEvents.map((e, i) => { const Icon = e.icon; const active = i === selected; return <li key={i}>
               <button type="button" onClick={() => setSelected(active ? null : i)} className={`flex w-full items-center gap-4 border-b border-l-4 border-b-portal-border px-3 py-2.5 text-left transition-colors hover:bg-portal-surface ${active ? "border-l-portal-navy bg-portal-surface" : "border-l-transparent"}`}>
                 <Icon className={`h-6 w-6 shrink-0 ${i === 0 ? "fill-foreground" : ""}`} /><span><span className="block">{e.label}</span><span className="block text-sm">{e.time}</span></span>
               </button></li>; })}</ul>
-          </aside>
+          </aside>}
           <div className="relative z-0 h-[600px]">
             <div className="absolute left-2 top-2 z-[500] flex overflow-hidden rounded-sm bg-background text-lg shadow">
               {(["Map", "Satellite"] as const).map((m) => <button key={m} type="button" onClick={() => setSatellite(m === "Satellite")} className={`px-4 py-2 ${(m === "Satellite") === satellite ? "font-semibold" : "text-portal-muted"}`}>{m}</button>)}

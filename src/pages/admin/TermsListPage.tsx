@@ -1,3 +1,4 @@
+import { useRolePreview } from "@/contexts/RolePreviewContext";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -38,6 +39,8 @@ import AcceptanceStats from "@/components/admin/AcceptanceStats";
 import { useCustomer } from "@/contexts/CustomerContext";
 
 const TermsListPage = () => {
+  const { allows } = useRolePreview();
+  const canWrite = allows("products/terms/write");
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { selectedCustomerId } = useCustomer();
@@ -143,7 +146,7 @@ const TermsListPage = () => {
         { label: "Admin" },
         { label: "Terms & Conditions" },
       ]}
-      actions={
+      actions={canWrite ?
         <Button
           onClick={() =>
             navigate(
@@ -157,10 +160,10 @@ const TermsListPage = () => {
         >
           <Plus className="w-4 h-4" />
           New version
-        </Button>
+        </Button> : undefined
       }
     >
-      {activeVersion && (
+      {activeVersion && allows("products/terms_acceptance/read") && (
         <div className="mb-6">
           <AcceptanceStats
             termsId={activeVersion.id}
@@ -199,7 +202,7 @@ const TermsListPage = () => {
             <p className="text-sm text-portal-muted mt-1">
               Create your first version to get started.
             </p>
-            <Button
+            {canWrite && <Button
               className="mt-4 gap-2"
               onClick={() =>
                 navigate(
@@ -211,7 +214,7 @@ const TermsListPage = () => {
               disabled={!productFilter}
             >
               <Plus className="w-4 h-4" /> New version
-            </Button>
+            </Button>}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -267,21 +270,21 @@ const TermsListPage = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => navigate(`/admin/terms/${r.id}`)}>
-                            {r.state === "draft" || r.state === "scheduled" ? "Edit" : "View"}
+                            {canWrite && (r.state === "draft" || r.state === "scheduled") ? "Edit" : "View"}
                           </DropdownMenuItem>
-                          {(r.state === "draft" || r.state === "scheduled") && (
+                          {canWrite && (r.state === "draft" || r.state === "scheduled") && (
                             <DropdownMenuItem
                               onClick={() => setConfirmPublishId(r.id)}
                             >
                               Publish now
                             </DropdownMenuItem>
                           )}
-                          {r.state === "scheduled" && (
+                          {canWrite && r.state === "scheduled" && (
                             <DropdownMenuItem onClick={() => cancelSchedule.mutate(r.id)}>
                               Cancel schedule
                             </DropdownMenuItem>
                           )}
-                          {r.state !== "active" && r.state !== "archived" && (
+                          {canWrite && r.state !== "active" && r.state !== "archived" && (
                             <>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem

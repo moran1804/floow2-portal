@@ -1,3 +1,4 @@
+import { PermissionGate } from "@/components/admin/RoleAccess";
 import { AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 import type { DeviceInfo } from "@/lib/sampleDeviceInfo";
 
@@ -31,13 +32,13 @@ export default function UserDeviceSection({ info, createdAt, active = true }: { 
         </p>
         <ul className="space-y-3 text-xs">{info.permissions.map((p) => <li key={p.name} className="flex items-center justify-between gap-3"><span className="text-portal-muted">{p.name}</span><span className="flex items-center gap-1.5 font-semibold">{p.detail}{p.ok ? <CheckCircle2 aria-label="Correct" className="h-4 w-4 text-score-good" /> : <XCircle aria-label="Issue" className="h-4 w-4 text-destructive" />}</span></li>)}</ul>
       </Panel>
-      <Panel title="Score reset">{info.reset ? <Rows rows={[
+      <PermissionGate permission="users/usage_reset/read"><Panel title="Score reset">{info.reset ? <Rows rows={[
         ["Last reset", info.reset.lastResetAt],
         ["Score before reset", String(info.reset.scoreBefore)],
         ["Scores counted from", info.reset.visibleFrom],
       ]} /> : <p className="text-xs text-portal-muted">This user's score has never been reset.</p>}
         <p className="mt-4 text-[11px] text-portal-muted">In Floow 2 a reset counts journeys from a date forward; earlier journeys stay visible but don't count towards the score.</p>
-      </Panel>
+      </Panel></PermissionGate>
     </div>
   </section>;
 }

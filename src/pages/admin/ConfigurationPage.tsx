@@ -1,3 +1,5 @@
+import { useRolePreview } from "@/contexts/RolePreviewContext";
+import { PermissionGate } from "@/components/admin/RoleAccess";
 import { useEffect, useState } from "react";
 import {
   Car,
@@ -36,6 +38,8 @@ const MODES: Mode[] = [
 ];
 
 const ConfigurationPage = () => {
+  const { allows } = useRolePreview();
+  const canWrite = allows("floow_clients/config/write");
   const { mode, saveMode } = useSearchMatching();
   const [searchMode, setSearchMode] = useState<SearchMatchingMode>(mode);
   const [initialSearchMode, setInitialSearchMode] = useState(searchMode);
@@ -60,6 +64,8 @@ const ConfigurationPage = () => {
       title="Client Configuration"
       crumbs={[{ label: "Home", to: "/" }, { label: "Admin" }, { label: "Config" }]}
     >
+      <fieldset disabled={!canWrite} className="min-w-0">
+      <PermissionGate permission="floow_clients/modes_of_transport/read">
       <section className="bg-portal-panel border border-portal-border rounded-lg p-6 max-w-3xl">
         <h2 className="text-lg font-bold text-portal-navy mb-5">
           Available modes of transport
@@ -84,7 +90,7 @@ const ConfigurationPage = () => {
             );
           })}
         </div>
-      </section>
+      </section></PermissionGate>
 
       <section className="bg-portal-panel border border-portal-border rounded-lg p-6 max-w-3xl mt-6">
         <h2 className="text-lg font-bold text-portal-navy mb-5">Search matching</h2>
@@ -129,7 +135,7 @@ const ConfigurationPage = () => {
         </div>
       </section>
 
-      <div className="max-w-3xl mt-6 flex justify-end">
+      {canWrite && <div className="max-w-3xl mt-6 flex justify-end">
         <Button
           disabled={!dirty}
           onClick={() => {
@@ -143,7 +149,8 @@ const ConfigurationPage = () => {
         >
           Save
         </Button>
-      </div>
+      </div>}
+      </fieldset>
     </AdminLayout>
   );
 };

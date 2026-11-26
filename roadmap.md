@@ -63,3 +63,10 @@
 - [x] Verify sending, reading, filters, non-administrator access, client data and phone layout.
 - [x] Replace header logout with a notification bell and expose logout through the initials.
 - [x] Keep the inbox page fixed while its list and message panes scroll; verify desktop and phone interactions.
+
+# Role previews
+
+- [x] Add the six Floow role views from the supplied matrix without changing signed-in account grants.
+- [x] Filter navigation, overview cards, routes, user sections and editing actions by the selected role.
+- [x] Keep pages absent from the matrix hidden, as confirmed by the user.
+- [x] Test every supplied permission row and verify role switching with a signed-in account.

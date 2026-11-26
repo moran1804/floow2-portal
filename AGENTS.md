@@ -14,3 +14,4 @@
 - Render overview score gauges through the shared UserScoreTile using semantic score tokens, keeping sample score presentation separate from stored user data.
 - Store portal notifications per customer and read receipts per signed-in user; allow every authenticated user to read and send inbox messages so release and feature updates are available to all portal users.
 - Keep profile actions in the shared UserProfileMenu and constrain the inbox through the admin layout's viewport-height flex chain, so header controls stay consistent and notification panes scroll independently.
+- Keep the Floow role selector as an explicitly labelled presentation preview for database-verified staff administrators; apply one matrix to navigation, route guards and action gates, never to grant backend permissions, and scope any saved preview selection to its authenticated account.

@@ -1,3 +1,4 @@
+import { useRolePreview } from "@/contexts/RolePreviewContext";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -76,6 +77,8 @@ const Row = ({
 );
 
 const ProductEditorPage = () => {
+  const { allows } = useRolePreview();
+  const canWrite = allows("products/write");
   const { id } = useParams<{ id: string }>();
   const isNew = !id || id === "add";
   const navigate = useNavigate();
@@ -225,7 +228,7 @@ const ProductEditorPage = () => {
     onError: (e: Error) => setError(e.message),
   });
 
-  const title = isNew ? "Add a product" : "Edit product";
+  const title = isNew ? "Add a product" : canWrite ? "Edit product" : "View product";
 
   return (
     <AdminLayout
@@ -238,6 +241,7 @@ const ProductEditorPage = () => {
       ]}
     >
       <div className="space-y-8">
+        <fieldset disabled={!canWrite} className="min-w-0 space-y-8">
         {/* Product details */}
         <section>
           <SectionTitle>Product details</SectionTitle>
@@ -620,6 +624,7 @@ const ProductEditorPage = () => {
           </Card>
         </section>
 
+        </fieldset>
         {error && (
           <div className="text-sm text-destructive">{error}</div>
         )}
@@ -631,7 +636,7 @@ const ProductEditorPage = () => {
           >
             Cancel
           </Button>
-          <Button
+          {canWrite && <Button
             className="flex-1"
             onClick={() => {
               setError(null);
@@ -640,7 +645,7 @@ const ProductEditorPage = () => {
             disabled={save.isPending}
           >
             {isNew ? "Create product" : "Save product"}
-          </Button>
+          </Button>}
         </div>
       </div>
     </AdminLayout>
