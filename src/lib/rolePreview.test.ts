@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { PREVIEW_ROLES, ROLE_PERMISSIONS, roleAllows, roleCanVisit, type PortalPermission } from "./rolePreview";
+import { FLOOW_PREVIEW_ROLES, PREVIEW_ROLES, ROLE_PERMISSIONS, roleAllows, roleCanVisit, type PortalPermission } from "./rolePreview";
 // Expected permissions transcribed from the user-supplied role matrix, independent of implementation.
 const expected = {
   "audits/logs/read": [
@@ -278,7 +278,7 @@ const expected = {
 describe("Floow staff role matrix", () => {
   for (const [permission, allowed] of Object.entries(expected)) {
     it(permission, () => {
-      for (const role of PREVIEW_ROLES) {
+      for (const role of FLOOW_PREVIEW_ROLES) {
         expect(roleAllows(role, permission as PortalPermission)).toBe(allowed.includes(role as never));
       }
     });
@@ -316,7 +316,7 @@ describe("role-preview pages", () => {
       expect(roleCanVisit(role, "/admin/faqs")).toBe(false);
       expect(roleCanVisit(role, "/admin/documentation")).toBe(false);
       expect(roleCanVisit(role, "/admin/developer/rest-api/credentials")).toBe(false);
-      expect(roleCanVisit(role, "/admin/developer/webhooks/subscriptions/add")).toBe(role === "Floow Admin");
+      expect(roleCanVisit(role, "/admin/developer/webhooks/subscriptions/add")).toBe(["Floow Admin", "Client Account Manager", "Client Developer"].includes(role));
     }
   });
   it("returning to the account view does not restrict existing pages", () => {

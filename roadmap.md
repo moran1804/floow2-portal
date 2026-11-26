@@ -70,3 +70,8 @@
 - [x] Filter navigation, overview cards, routes, user sections and editing actions by the selected role.
 - [x] Keep pages absent from the matrix hidden, as confirmed by the user.
 - [x] Test every supplied permission row and verify role switching with a signed-in account.
+
+# Client staff role previews
+
+- [x] Add the five client role previews and apply the supplied matrix to navigation and actions.
+- [x] Verify all client permission rows, restricted client switching, and signed-in role changes.

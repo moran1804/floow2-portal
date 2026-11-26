@@ -40,7 +40,7 @@ import { Button } from "@/components/ui/button";
 import { UserProfileMenu } from "@/components/admin/UserProfileMenu";
 import { RoleNavLink as NavLink } from "@/components/admin/RoleAccess";
 import { useRolePreview } from "@/contexts/RolePreviewContext";
-import { PREVIEW_ROLES, type PreviewRole } from "@/lib/rolePreview";
+import { FLOOW_PREVIEW_ROLES, CLIENT_PREVIEW_ROLES, type PreviewRole } from "@/lib/rolePreview";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import floowLogo from "@/assets/the-floow-logo.svg.asset.json";
 
@@ -152,19 +152,19 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
       {/* Top bar */}
       <header className={`flex shrink-0 flex-wrap items-center justify-between gap-y-2 bg-portal-panel border-b border-portal-border ${isInsightsPage || isUserSearchPage || isNotificationsPage ? "px-3 sm:px-6" : "px-6"} min-h-16 py-2 sm:h-16 sm:py-0`}>
         <div className={`flex items-center ${isInsightsPage || isUserSearchPage || isNotificationsPage ? "gap-3 sm:gap-6" : "gap-6"}`}>
-          <button
-            type="button"
-            onClick={() => navigate("/admin/clients")}
-            className="flex items-center"
-            title="View all clients"
+          <Button
+            variant="ghost"
+            onClick={() => navigate(canVisit("/admin/clients") ? "/admin/clients" : "/admin/overview")}
+            className="h-auto p-0 hover:bg-transparent"
+            title={canVisit("/admin/clients") ? "View all clients" : "Dashboard"}
           >
             <img
               src={floowLogo.url}
               alt="The Floow"
               className="h-6 w-auto"
             />
-          </button>
-          <Button
+          </Button>
+          {canVisit("/admin/clients") && <Button
             variant="outline"
             onClick={() => navigate("/admin/clients")}
             className={`h-9 gap-2 border-portal-border ${isNotificationsPage || canPreview ? "hidden sm:inline-flex" : ""}`}
@@ -172,18 +172,22 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
           >
             <Building2 className="w-4 h-4" />
             Change client
-          </Button>
+          </Button>}
 
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
           {canPreview && <Select value={role ?? "account"} onValueChange={(value) => setRole(value === "account" ? null : value as PreviewRole)}>
-            <SelectTrigger aria-label="Preview role" title="Role preview — your account permissions remain unchanged" className="h-9 w-auto min-w-[10.5rem] gap-2 border-portal-border bg-background px-3 text-sm font-medium hover:bg-accent">
+            <SelectTrigger aria-label="Preview role" title="Role preview — your account permissions remain unchanged" className="h-9 w-auto min-w-[10.5rem] max-w-[18rem] gap-2 border-portal-border bg-background px-3 text-sm font-medium hover:bg-accent">
               <div className="flex min-w-0 items-center gap-2">
                 <UserCog className="h-4 w-4 shrink-0" />
                 <span className="truncate"><SelectValue /></span>
               </div>
             </SelectTrigger>
-            <SelectContent><SelectGroup><SelectLabel>Role preview — permissions unchanged</SelectLabel><SelectItem value="account">My account</SelectItem>{PREVIEW_ROLES.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectGroup></SelectContent>
+            <SelectContent>
+              <SelectGroup><SelectLabel>Role preview — permissions unchanged</SelectLabel><SelectItem value="account">My account</SelectItem></SelectGroup>
+              <SelectGroup><SelectLabel>Floow staff</SelectLabel>{FLOOW_PREVIEW_ROLES.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectGroup>
+              <SelectGroup><SelectLabel>Client staff</SelectLabel>{CLIENT_PREVIEW_ROLES.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectGroup>
+            </SelectContent>
           </Select>}
           <span className="text-sm text-portal-muted hidden xl:inline">
             {user?.email}

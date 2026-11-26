@@ -59,13 +59,13 @@ export default function PolicyOverviewPage() {
             <div className="sm:border-l sm:border-portal-border sm:pl-5"><DetailRows rows={[["Drivers on policy", String(drivers.length)], ["Postal code", drivers[0].postal_code ?? "—"]]} /></div>
           </div>
         </section>
-        {policy && <section><h2 className="mb-4 text-2xl font-semibold text-portal-navy">Policy Scores</h2>
+        {policy && <PermissionGate permission="scores/read"><section><h2 className="mb-4 text-2xl font-semibold text-portal-navy">Policy Scores</h2>
           <p className="mb-4 text-xs text-portal-muted">Example scores only · Policy score is the average of its drivers. No live scoring data is connected.</p>
           <div className="grid gap-2 bg-portal-panel p-4 sm:p-5 xl:grid-cols-[190px_minmax(0,1fr)]">
             <div className="flex items-center justify-center bg-score-surface p-5"><div className="w-full max-w-[160px]"><UserScoreTile name="Policy score" score={policy.overall} overall /></div></div>
             <div className="min-w-0 bg-score-surface p-4 sm:p-6"><h3 className="mb-5 mt-2 text-xl font-semibold">Policy Score Influences</h3><div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">{policy.influences.map((i) => <UserScoreTile key={i.name} {...i} />)}</div></div>
           </div>
-        </section>}
+        </section></PermissionGate>}
         <section><h2 className="mb-2 text-2xl font-semibold text-portal-navy">Policy Account</h2>
           <p className="mb-4 text-xs text-portal-muted">Example status, journey, reset and device data · Only the created date comes from saved records.</p>
           <div className="grid gap-4 lg:grid-cols-2">
@@ -83,7 +83,7 @@ export default function PolicyOverviewPage() {
               <div className="min-w-0"><h3 className="truncate text-sm font-semibold text-portal-navy">{d.display_name}</h3><p className="truncate text-[11px] text-portal-muted">{d.email}</p></div>
               <Button asChild size="sm" className="h-7 px-2 text-xs"><Link to={`/admin/insurer/users/${d.id}`}>View driver<ChevronRight /></Link></Button>
             </div>
-            <div className="grid grid-cols-6 gap-1.5 rounded-md bg-score-surface p-1.5"><MiniDial name="Overall" score={s.overall} overall />{s.influences.map((i) => <MiniDial key={i.name} {...i} />)}</div>
+            <PermissionGate permission="scores/read"><div className="grid grid-cols-6 gap-1.5 rounded-md bg-score-surface p-1.5"><MiniDial name="Overall" score={s.overall} overall />{s.influences.map((i) => <MiniDial key={i.name} {...i} />)}</div></PermissionGate>
           </article>)}</div>
         </section>
       </>}

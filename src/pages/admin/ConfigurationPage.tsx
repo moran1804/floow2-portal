@@ -92,7 +92,7 @@ const ConfigurationPage = () => {
         </div>
       </section></PermissionGate>
 
-      <section className="bg-portal-panel border border-portal-border rounded-lg p-6 max-w-3xl mt-6">
+      <PermissionGate permission="floow_clients/config/read"><section className="bg-portal-panel border border-portal-border rounded-lg p-6 max-w-3xl mt-6">
         <h2 className="text-lg font-bold text-portal-navy mb-5">Search matching</h2>
         <div className="flex flex-col gap-3">
           {[
@@ -135,6 +135,7 @@ const ConfigurationPage = () => {
         </div>
       </section>
 
+      </PermissionGate>
       {canWrite && <div className="max-w-3xl mt-6 flex justify-end">
         <Button
           disabled={!dirty}

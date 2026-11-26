@@ -1,5 +1,8 @@
 // Presentation-only role previews. Never use this matrix to grant backend access.
-export const PREVIEW_ROLES = ["Floow Admin", "Floow Reporter", "Floow Finance", "Floow Mobile Support", "Floow Support Advisor", "Floow Platform Support"] as const;
+import { CLIENT_PREVIEW_ROLES, CLIENT_ROLE_PERMISSIONS } from "./clientRolePermissions";
+export { CLIENT_PREVIEW_ROLES } from "./clientRolePermissions";
+export const FLOOW_PREVIEW_ROLES = ["Floow Admin", "Floow Reporter", "Floow Finance", "Floow Mobile Support", "Floow Support Advisor", "Floow Platform Support"] as const;
+export const PREVIEW_ROLES = [...FLOOW_PREVIEW_ROLES, ...CLIENT_PREVIEW_ROLES] as const;
 export type PreviewRole = (typeof PREVIEW_ROLES)[number];
 export const ROLE_PERMISSIONS = {
   "audits/logs/read": [
@@ -277,7 +280,7 @@ export const ROLE_PERMISSIONS = {
 } as const;
 export type PortalPermission = keyof typeof ROLE_PERMISSIONS;
 export function roleAllows(role: PreviewRole | null, permission: PortalPermission): boolean {
-  return role === null || (ROLE_PERMISSIONS[permission] as readonly string[]).includes(role);
+  return role === null || (ROLE_PERMISSIONS[permission] as readonly string[]).includes(role) || (CLIENT_ROLE_PERMISSIONS[permission] as readonly string[]).includes(role);
 }
 
 const adminPages = ["/admin/audit", "/admin/features", "/admin/terms", "/admin/products", "/admin/staff", "/admin/configuration"];
@@ -298,7 +301,7 @@ export function roleCanVisit(role: PreviewRole | null, path: string): boolean {
   if (pathname.startsWith("/admin/audit")) return allows("audits/read");
   if (pathname.startsWith("/admin/features")) return allows("feature_subscriptions/read");
   if (pathname.startsWith("/admin/staff")) return allows("floow_clients/staff/read");
-  if (pathname.startsWith("/admin/configuration")) return allows("floow_clients/config/read");
+  if (pathname.startsWith("/admin/configuration")) return allows("floow_clients/config/read") || allows("floow_clients/modes_of_transport/read");
   if (pathname === "/admin/terms/new") return allows("products/terms/read") && allows("products/terms/write");
   if (pathname.startsWith("/admin/terms")) return allows("products/terms/read");
   if (pathname === "/admin/products/add") return allows("products/read") && allows("products/write");
