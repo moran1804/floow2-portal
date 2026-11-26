@@ -170,6 +170,7 @@ export const ROLE_PERMISSIONS = {
   ],
   "journeys/upload": [],
   "policies/read": [
+    "Floow Admin",
     "Floow Reporter",
     "Floow Support Advisor"
   ],
