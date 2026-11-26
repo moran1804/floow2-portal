@@ -7,7 +7,7 @@ import {
   Tag,
   Users,
   SlidersHorizontal,
-  LogOut,
+  Bell,
   HelpCircle,
   KeyRound,
   Activity,
@@ -37,6 +37,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useNotifications } from "@/hooks/useNotifications";
 import { Button } from "@/components/ui/button";
+import { UserProfileMenu } from "@/components/admin/UserProfileMenu";
 import floowLogo from "@/assets/the-floow-logo.svg.asset.json";
 
 type NavItem = {
@@ -63,7 +64,6 @@ const adminChildren: NavItem[] = [
 ];
 
 const otherTopItems: NavItem[] = [
-  { to: "/admin/notifications", icon: Inbox, label: "Notifications" },
   { to: "/admin/insights", icon: PieChart, label: "Insights" },
   { to: "/admin/documentation", icon: DocIcon, label: "Documentation" },
 ];
@@ -143,9 +143,9 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
     "flex items-center gap-3 px-6 py-3 text-sm font-medium border-l-2 border-transparent text-portal-muted cursor-default";
 
   return (
-    <div className="min-h-screen bg-portal-surface text-portal-text">
+    <div className={`${isNotificationsPage ? "flex h-dvh flex-col overflow-hidden" : "min-h-screen"} bg-portal-surface text-portal-text`}>
       {/* Top bar */}
-      <header className={`flex items-center justify-between bg-portal-panel border-b border-portal-border ${isInsightsPage || isUserSearchPage || isNotificationsPage ? "px-3 sm:px-6" : "px-6"} h-16`}>
+      <header className={`flex shrink-0 items-center justify-between bg-portal-panel border-b border-portal-border ${isInsightsPage || isUserSearchPage || isNotificationsPage ? "px-3 sm:px-6" : "px-6"} h-16`}>
         <div className={`flex items-center ${isInsightsPage || isUserSearchPage || isNotificationsPage ? "gap-3 sm:gap-6" : "gap-6"}`}>
           <button
             type="button"
@@ -174,19 +174,18 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
           <span className="text-sm text-portal-muted hidden sm:inline">
             {user?.email}
           </span>
-          <div className="w-9 h-9 rounded-full bg-portal-navy text-portal-navy-foreground flex items-center justify-center text-xs font-semibold">
-            {initials}
-          </div>
-          <Button variant="ghost" size="icon" onClick={signOut} title="Sign out">
-            <LogOut className="w-4 h-4" />
+          <UserProfileMenu initials={initials} onSignOut={signOut} />
+          <Button variant="ghost" size="icon" className="relative" onClick={() => navigate("/admin/notifications")} title="Notifications" aria-label={unreadCount ? `Notifications, ${unreadCount} unread` : "Notifications"}>
+            <Bell className="w-5 h-5" />
+            {unreadCount > 0 && <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-portal-navy px-1 text-[10px] font-bold text-portal-navy-foreground">{unreadCount > 99 ? "99+" : unreadCount}</span>}
           </Button>
         </div>
       </header>
 
-      <div className="flex">
+      <div className={`flex ${isNotificationsPage ? "min-h-0 flex-1 overflow-hidden" : ""}`}>
         {/* Sidebar */}
         {!hideSidebar && (
-        <aside className={`${isInsightsPage || isUserSearchPage ? "hidden md:block w-52 shrink-0" : isNotificationsPage ? "hidden md:block w-64 shrink-0" : "w-64"} min-h-[calc(100vh-4rem)] bg-portal-sidebar border-r border-portal-border py-4`}>
+        <aside className={`${isInsightsPage || isUserSearchPage ? "hidden md:block w-52 shrink-0" : isNotificationsPage ? "hidden md:block w-64 shrink-0 overflow-y-auto" : "w-64"} ${isNotificationsPage ? "min-h-0" : "min-h-[calc(100vh-4rem)]"} bg-portal-sidebar border-r border-portal-border py-4`}>
           <nav className="mt-2">
             {isCampaignsPage ? (
               <>
@@ -418,11 +417,6 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                     <NavLink key={item.label} to={item.to} className={navLinkClass}>
                       <item.icon className="w-5 h-5" />
                       <span className="flex-1 text-left">{item.label}</span>
-                      {item.to === "/admin/notifications" && unreadCount > 0 && (
-                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-portal-navy px-1.5 text-[10px] font-bold text-portal-navy-foreground">
-                          {unreadCount > 99 ? "99+" : unreadCount}
-                        </span>
-                      )}
                     </NavLink>
                   )
                 )}
@@ -433,8 +427,8 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
         )}
 
         {/* Main */}
-        <main className={`flex-1 min-w-0 ${isUserSearchPage ? "flex flex-col min-h-[calc(100vh-4rem)]" : ""}`}>
-          <div className={`${isInsightsPage || isUserSearchPage ? "bg-portal-panel-header px-5 md:px-8" : isNotificationsPage ? "bg-portal-panel px-4 sm:px-8" : "bg-portal-panel px-8"} border-b border-portal-border pt-6 pb-8`}>
+        <main className={`flex-1 min-w-0 ${isNotificationsPage ? "flex min-h-0 flex-col overflow-hidden" : isUserSearchPage ? "flex flex-col min-h-[calc(100vh-4rem)]" : ""}`}>
+          <div className={`${isInsightsPage || isUserSearchPage ? "bg-portal-panel-header px-5 md:px-8" : isNotificationsPage ? "shrink-0 bg-portal-panel px-4 sm:px-8" : "bg-portal-panel px-8"} border-b border-portal-border ${isNotificationsPage ? "py-4 sm:pt-6 sm:pb-8" : "pt-6 pb-8"}`}>
             {crumbs.length > 0 && (
               <div className="text-sm text-portal-muted mb-3">
                 {crumbs.map((c, i) => (
@@ -457,8 +451,8 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
               {actions}
             </div>
           </div>
-          <div className={isInsightsPage || isUserSearchPage ? "p-4 md:p-6" : isNotificationsPage ? "p-4 sm:p-8" : "p-8"}>{children}</div>
-          <footer className={`px-8 pb-8 text-xs text-portal-muted ${isUserSearchPage ? "mt-auto pt-8" : ""}`}>
+          <div className={isInsightsPage || isUserSearchPage ? "p-4 md:p-6" : isNotificationsPage ? "flex min-h-0 flex-1 flex-col overflow-hidden p-4 sm:p-8" : "p-8"}>{children}</div>
+          <footer className={`px-8 text-xs text-portal-muted ${isNotificationsPage ? "shrink-0 pb-3" : "pb-8"} ${isUserSearchPage ? "mt-auto pt-8" : ""}`}>
             Copyright © {new Date().getFullYear()} The Floow Limited - All Rights Reserved
           </footer>
         </main>

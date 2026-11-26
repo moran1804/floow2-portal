@@ -34,7 +34,7 @@
 
 - [x] Rebuild the user Terms Acceptance screen to match the reference: user ID banner, product code / version / accepted at table, items-per-page bars.
 - [x] Verify signed-in rendering for both clients and add a test that only the selected client's acceptances are listed.
-- [ ] Add example T&Cs and acceptances for the "product" client if the user wants that screen populated too.
+- [x] Add example T&Cs and acceptances for the "product" client.
 
 # Terms acceptance screen
 - [x] Style user Terms Acceptance screen like the reference
@@ -61,3 +61,5 @@
 - [x] Build an inbox with unread counts, filters, reading and personal read receipts.
 - [x] Make inbox access and notification sending available to every signed-in portal user.
 - [x] Verify sending, reading, filters, non-administrator access, client data and phone layout.
+- [x] Replace header logout with a notification bell and expose logout through the initials.
+- [x] Keep the inbox page fixed while its list and message panes scroll; verify desktop and phone interactions.

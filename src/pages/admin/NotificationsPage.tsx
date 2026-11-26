@@ -130,8 +130,8 @@ const NotificationsPage = () => {
         </Button>
       ) : undefined}
     >
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col">
+        <div className="mb-5 flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-2xl font-bold text-portal-navy">Inbox</h2>
             <p className="mt-1 text-sm text-portal-muted">
@@ -160,8 +160,8 @@ const NotificationsPage = () => {
           </p>
         )}
 
-        <section className="overflow-hidden rounded-lg border border-portal-border bg-portal-panel">
-          <div className="flex flex-wrap items-center gap-2 border-b border-portal-border bg-portal-panel-header px-4 py-3">
+        <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-portal-border bg-portal-panel">
+          <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-portal-border bg-portal-panel-header px-4 py-3">
             {filters.map((item) => {
               const count = filterNotifications(notifications, item.value).length;
               const active = filter === item.value;
@@ -186,9 +186,9 @@ const NotificationsPage = () => {
             })}
           </div>
 
-          <div className="grid min-h-[540px] lg:grid-cols-[390px_1fr]">
-            <div className="border-b border-portal-border lg:border-b-0 lg:border-r">
-              <div className="flex items-center justify-between border-b border-portal-border px-5 py-3 text-xs font-semibold uppercase tracking-wide text-portal-muted">
+          <div className="grid min-h-0 flex-1 grid-rows-[1fr_1fr] lg:grid-cols-[390px_1fr] lg:grid-rows-1">
+            <div className="flex min-h-0 flex-col overflow-hidden border-b border-portal-border lg:border-b-0 lg:border-r">
+              <div className="flex shrink-0 items-center justify-between border-b border-portal-border px-5 py-3 text-xs font-semibold uppercase tracking-wide text-portal-muted">
                 <span>{visibleNotifications.length} {visibleNotifications.length === 1 ? "notification" : "notifications"}</span>
                 <span>{unreadCount} unread</span>
               </div>
@@ -201,7 +201,7 @@ const NotificationsPage = () => {
                   <p className="mt-1 text-sm text-portal-muted">Try another inbox filter.</p>
                 </div>
               ) : (
-                <div className="max-h-[650px] overflow-y-auto">
+                <div role="region" aria-label="Notification list" tabIndex={0} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
                   {visibleNotifications.map((notification) => {
                     const Icon = notification.category === "release" ? Rocket : Sparkles;
                     const isSelected = selectedId === notification.id;
@@ -241,7 +241,7 @@ const NotificationsPage = () => {
               )}
             </div>
 
-            <div className="bg-portal-panel">
+            <div role="region" aria-label="Notification message" tabIndex={0} className="min-h-0 overflow-y-auto overscroll-contain bg-portal-panel">
               {selected ? (
                 <article className="p-6 sm:p-8">
                   <div className="flex items-center gap-2">
@@ -264,7 +264,7 @@ const NotificationsPage = () => {
                   </div>
                 </article>
               ) : (
-                <div className="flex h-full min-h-[360px] flex-col items-center justify-center p-8 text-center">
+                <div className="flex min-h-full flex-col items-center justify-center p-6 text-center sm:p-8">
                   <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-portal-panel-header text-portal-navy">
                     <Megaphone className="h-7 w-7" />
                   </span>

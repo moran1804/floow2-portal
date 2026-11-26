@@ -13,3 +13,4 @@
 - Debounce Smart match user searches and discard superseded responses on query, mode, or customer changes; keep Exact match submission-only to avoid stale or cross-client results.
 - Render overview score gauges through the shared UserScoreTile using semantic score tokens, keeping sample score presentation separate from stored user data.
 - Store portal notifications per customer and read receipts per signed-in user; allow every authenticated user to read and send inbox messages so release and feature updates are available to all portal users.
+- Keep profile actions in the shared UserProfileMenu and constrain the inbox through the admin layout's viewport-height flex chain, so header controls stay consistent and notification panes scroll independently.
