@@ -10,6 +10,7 @@ import { journeyFullDateLabel, journeyInfluences } from "@/lib/userJourneys";
 import { TRANSPORT_OPTIONS } from "@/lib/journeyTransport";
 import { useExampleJourneyTags } from "@/hooks/useExampleJourneyTags";
 import JourneyTransportDialog from "@/components/admin/JourneyTransportDialog";
+import JourneySpeedGraph from "@/components/admin/JourneySpeedGraph";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -24,7 +25,7 @@ function Rows({ rows }: { rows: [string, ReactNode][] }) {
 }
 
 export default function JourneyDetailPage() {
-  const { speed, speedValue, speedLabel, distance } = useUnits();
+  const { distance } = useUnits();
   const { userId, journeyId } = useParams();
   const navigate = useNavigate();
   const [transportOpen, setTransportOpen] = useState(false);
@@ -63,6 +64,7 @@ export default function JourneyDetailPage() {
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">{influences.map(([name, score]) => <UserScoreTile key={name} name={name} score={score} onOpen={() => setInfo(`${name} details are example content only.`)} />)}</div></div>
         </div>}
       </Card></PermissionGate>
+      <JourneySpeedGraph journey={journey} />
     </div>
     <PermissionGate permission="journeys/mode_of_transport/write"><JourneyTransportDialog open={transportOpen} onOpenChange={setTransportOpen} initialMode={mode} onConfirm={(next) => updateTags([journey.id], next)} /></PermissionGate>
     <Dialog open={info !== null} onOpenChange={(o) => !o && setInfo(null)}><DialogContent><DialogHeader><DialogTitle>Not connected yet</DialogTitle><DialogDescription>{info}</DialogDescription></DialogHeader></DialogContent></Dialog>

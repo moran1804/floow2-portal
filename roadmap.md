@@ -85,3 +85,8 @@
 
 - [x] Add selected-journey transport tag editing with shared list/detail example state.
 - [x] Verify selection, cancel, confirm, filters and detail read-back.
+
+# Journey speed graphs
+
+- [x] Add reference-style, labelled example speed graphs for every journey with shared speed units.
+- [x] Verify journey-specific times, graph rendering, tooltip and desktop/mobile layouts.
