@@ -33,7 +33,6 @@ import {
   ArrowLeft,
   Route as RouteIcon,
   Pencil,
-  Bell,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNotifications } from "@/hooks/useNotifications";
@@ -172,21 +171,6 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
 
         </div>
         <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative"
-            onClick={() => navigate("/admin/notifications")}
-            aria-label={`Notifications${unreadCount ? `, ${unreadCount} unread` : ""}`}
-            title="Notifications"
-          >
-            <Bell className="h-5 w-5" />
-            {unreadCount > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-portal-panel bg-portal-navy px-1 text-[10px] font-bold text-portal-navy-foreground">
-                {unreadCount > 99 ? "99+" : unreadCount}
-              </span>
-            )}
-          </Button>
           <span className="text-sm text-portal-muted hidden sm:inline">
             {user?.email}
           </span>
@@ -433,7 +417,12 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
                   ) : (
                     <NavLink key={item.label} to={item.to} className={navLinkClass}>
                       <item.icon className="w-5 h-5" />
-                      {item.label}
+                      <span className="flex-1 text-left">{item.label}</span>
+                      {item.to === "/admin/notifications" && unreadCount > 0 && (
+                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-portal-navy px-1.5 text-[10px] font-bold text-portal-navy-foreground">
+                          {unreadCount > 99 ? "99+" : unreadCount}
+                        </span>
+                      )}
                     </NavLink>
                   )
                 )}
