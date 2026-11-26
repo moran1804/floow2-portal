@@ -38,7 +38,7 @@ export default function JourneyDetailPage() {
           <Card icon={<FileText className="h-5 w-5" />} title="User information"><Rows rows={[["User ID", <Link key="u" to={base} className="underline underline-offset-2">{userId}</Link>]]} /></Card>
           <Card icon={<Clock className="h-5 w-5" />} title="Time of journey"><Rows rows={[["Date", journeyFullDateLabel(journey.startedAt)], ["Start time", journey.start], ["End time", journey.end], ["Timezone", "Europe/London"]]} /></Card>
           <Card icon={journey.mode === "Car" ? <Car className="h-5 w-5" /> : <Bike className="h-5 w-5" />} title="Mode of transport" action={<PermissionGate permission="journeys/mode_of_transport/write"><Button variant="outline" size="sm" className="gap-1 border-2 border-portal-navy text-portal-navy" onClick={() => setInfo("Editing the mode of transport is not connected yet.")}><Pencil className="h-3.5 w-3.5" />Edit</Button></PermissionGate>}>
-            <Rows rows={[["Mode of transport", <span key="m" className="inline-flex items-center gap-1 text-xs">{journey.mode === "Car" ? <Car className="h-4 w-4" /> : <Bike className="h-4 w-4" />}{journey.mode}</span>], ["Locked for user edits since", "8:10 pm 06 November, 2026"]]} />
+            <Rows rows={[["Mode of transport", <span key="m" className="inline-flex items-center gap-1 text-xs">{journey.mode === "Car" ? <Car className="h-4 w-4" /> : <Bike className="h-4 w-4" />}{journey.mode}</span>], ["Tag set by", journey.tagSetBy], ["Locked for user edits since", "8:10 pm 06 November, 2026"]]} />
           </Card>
         </div>
         <Card icon={<Route className="h-5 w-5" />} title="Route overview" className="flex flex-col">
