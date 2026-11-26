@@ -30,6 +30,7 @@ import DocumentationPage from "./pages/admin/DocumentationPage.tsx";
 import DriverScorePage from "./pages/admin/DriverScorePage.tsx";
 import AdminHomePage from "./pages/admin/AdminHomePage.tsx";
 import InsightsPage from "./pages/admin/InsightsPage.tsx";
+import NotificationsPage from "./pages/admin/NotificationsPage.tsx";
 import AppsPage from "./pages/admin/AppsPage.tsx";
 import AppAddPage from "./pages/admin/AppAddPage.tsx";
 import CampaignsOverviewPage from "./pages/admin/campaigns/CampaignsOverviewPage.tsx";
@@ -46,6 +47,7 @@ import SubscriptionAddPage from "./pages/admin/webhooks/SubscriptionAddPage.tsx"
 import WebhookEventsPage from "./pages/admin/webhooks/EventsPage.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import RequireAdmin from "@/components/admin/RequireAdmin";
+import RequireAuthenticated from "@/components/admin/RequireAuthenticated";
 import { CustomerProvider } from "@/contexts/CustomerContext";
 
 const queryClient = new QueryClient();
@@ -68,6 +70,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/admin/insights" element={<RequireAdmin><InsightsPage /></RequireAdmin>} />
+            <Route path="/admin/notifications" element={<RequireAuthenticated><NotificationsPage /></RequireAuthenticated>} />
             <Route path="/admin/insurer/search" element={<RequireAdmin><SearchUserDataPage /></RequireAdmin>} />
             <Route path="/admin/insurer/policies/:policyId" element={<RequireAdmin><PolicyOverviewPage /></RequireAdmin>} />
             <Route path="/admin/insurer/users/:userId" element={<RequireAdmin><UserAccountPage /></RequireAdmin>} />

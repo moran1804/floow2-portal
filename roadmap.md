@@ -54,3 +54,10 @@
 - [x] Rebuild the journeys list as a table with a single-row filter bar and page-size control.
 - [x] Replace the two date-time boxes with one date-range picker (calendar, presets, All dates).
 - [x] Verify signed-in range picking, one-day range, presets, reset, and journey opening.
+
+# Notifications
+
+- [ ] Add customer-scoped release and feature notifications with example messages.
+- [ ] Build an inbox with unread counts, filters, reading and personal read receipts.
+- [ ] Make inbox access and notification sending available to every signed-in portal user.
+- [ ] Verify the complete inbox flow for the selected client.
