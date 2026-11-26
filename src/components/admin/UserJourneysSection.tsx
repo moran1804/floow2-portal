@@ -34,7 +34,7 @@ export { sampleJourneys } from "@/lib/userJourneys";
 export function JourneyMap({ route, height = 260 }: { route: LatLngTuple[]; height?: number }) {
   const center = route[Math.floor(route.length / 2)] as LatLngTuple;
   return (
-    <div className="overflow-hidden rounded-md border border-portal-border" style={{ height }}>
+    <div className="isolate overflow-hidden rounded-md border border-portal-border" style={{ height }}>
       <MapContainer center={center} zoom={15} scrollWheelZoom={false} className="h-full w-full">
         <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <Polyline positions={route} pathOptions={{ color: "hsl(var(--portal-navy))", weight: 4 }} />
