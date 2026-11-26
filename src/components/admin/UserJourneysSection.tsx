@@ -133,10 +133,11 @@ export default function UserJourneysSection() {
   const { userId } = useParams();
   const { journeys, updateTags, scope } = useExampleJourneyTags(userId);
   const canEdit = allows("journeys/mode_of_transport/write");
+  const [bulkEditing, setBulkEditing] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [bulkOpen, setBulkOpen] = useState(false);
   const [saved, setSaved] = useState("");
-  useEffect(() => { setSelected([]); setBulkOpen(false); setSaved(""); }, [scope, canEdit]);
+  useEffect(() => { setSelected([]); setBulkOpen(false); setBulkEditing(false); setSaved(""); }, [scope, canEdit]);
   const [filters, setFilters] = useState<JourneyFilters>(defaultJourneyFilters);
   const [pageSize, setPageSize] = useState(25);
   const [page, setPage] = useState(0);
@@ -191,21 +192,24 @@ export default function UserJourneysSection() {
       </section>
 
       {canEdit && <div className="flex flex-wrap items-center justify-between gap-3">
-        <span className="text-sm text-portal-navy" aria-live="polite">{selected.length} selected</span>
+        <span className="text-sm text-portal-navy" aria-live="polite">{bulkEditing ? `${selected.length} selected` : ""}</span>
         <div className="flex items-center gap-2">
-          {selected.length > 0 && <Button variant="ghost" size="sm" onClick={() => setSelected([])}>Clear selection</Button>}
-          <Button size="sm" disabled={!selected.length} onClick={() => setBulkOpen(true)}><Pencil className="mr-2 h-4 w-4" />Edit tags</Button>
+          {bulkEditing && <Button variant="outline" size="sm" onClick={() => { setBulkEditing(false); setBulkOpen(false); setSelected([]); }}>Cancel</Button>}
+          <Button size="sm" disabled={bulkEditing && !selected.length} onClick={() => {
+            if (bulkEditing) setBulkOpen(true);
+            else { setBulkEditing(true); setSaved(""); }
+          }}><Pencil className="mr-2 h-4 w-4" />{bulkEditing ? "Edit tags" : "Bulk edit"}</Button>
         </div>
       </div>}
       {saved && <p role="status" className="text-sm text-portal-navy">{saved}</p>}
       {canEdit && <JourneyTransportDialog open={bulkOpen} onOpenChange={setBulkOpen} count={selected.length} onConfirm={(mode) => {
-        updateTags(selected, mode); setSaved(`Updated transport tags for ${selected.length} example journeys to ${mode}.`); setSelected([]); setPage(0);
+        updateTags(selected, mode); setSaved(`Updated transport tags for ${selected.length} example journeys to ${mode}.`); setSelected([]); setBulkEditing(false); setPage(0);
       }} />}
 
       <div className="overflow-x-auto rounded-xl border border-portal-border bg-portal-panel shadow-sm">
         <table className="w-full min-w-[900px] text-sm">
           <thead className="bg-portal-panel-header text-left text-portal-navy">
-            <tr>{canEdit && <th className="w-12 px-4 py-4"><Checkbox aria-label="Select all journeys on this page" disabled={!shown.length}
+            <tr>{canEdit && bulkEditing && <th className="w-12 px-4 py-4"><Checkbox aria-label="Select all journeys on this page" disabled={!shown.length}
               checked={shown.length > 0 && shown.every((j) => selected.includes(j.id)) ? true : shown.some((j) => selected.includes(j.id)) ? "indeterminate" : false}
               onCheckedChange={(checked) => setSelected((current) => checked === true ? Array.from(new Set([...current, ...shown.map((j) => j.id)])) : current.filter((id) => !shown.some((j) => j.id === id)))} /></th>}{["Start date and time", "End date and time", "Distance", "Duration", "Type", "Tag set by", "Scores", ""].map((h) => <th key={h} className="px-5 py-4 font-semibold">{h}</th>)}</tr>
           </thead>
@@ -216,7 +220,7 @@ export default function UserJourneysSection() {
               const open = () => navigate(`/admin/insurer/users/${userId}/journeys/${j.id}`);
               return (
                 <tr key={j.id} onClick={open} className="cursor-pointer border-t border-portal-border transition-colors even:bg-portal-surface/60 hover:bg-portal-surface">
-                  {canEdit && <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}><Checkbox aria-label={`Select journey ${j.id}`} checked={selected.includes(j.id)} onCheckedChange={(checked) => setSelected((current) => checked === true ? [...current, j.id] : current.filter((id) => id !== j.id))} /></td>}
+                  {canEdit && bulkEditing && <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}><Checkbox aria-label={`Select journey ${j.id}`} checked={selected.includes(j.id)} onCheckedChange={(checked) => setSelected((current) => checked === true ? [...current, j.id] : current.filter((id) => id !== j.id))} /></td>}
                   <td className="px-5 py-4">{fmt(new Date(j.startedAt))}</td>
                   <td className="px-5 py-4">{fmt(endAt(j.startedAt, j.duration))}</td>
                   <td className="px-5 py-4">{distance(j.miles)}</td>
@@ -236,7 +240,7 @@ export default function UserJourneysSection() {
               );
             })}
             {!shown.length && (
-              <tr><td colSpan={canEdit ? 9 : 8} className="p-10 text-center">
+              <tr><td colSpan={canEdit && bulkEditing ? 9 : 8} className="p-10 text-center">
                 <p role="status" className="text-portal-muted">No journeys match your filters.</p>
                 <Button variant="ghost" onClick={reset} className="mt-2 text-xs underline underline-offset-4">Reset all filters</Button>
               </td></tr>
