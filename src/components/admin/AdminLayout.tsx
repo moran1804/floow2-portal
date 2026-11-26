@@ -41,7 +41,7 @@ import { UserProfileMenu } from "@/components/admin/UserProfileMenu";
 import { RoleNavLink as NavLink } from "@/components/admin/RoleAccess";
 import { useRolePreview } from "@/contexts/RolePreviewContext";
 import { PREVIEW_ROLES, type PreviewRole } from "@/lib/rolePreview";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import floowLogo from "@/assets/the-floow-logo.svg.asset.json";
 
 type NavItem = {
@@ -161,7 +161,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
             <img
               src={floowLogo.url}
               alt="The Floow"
-              className={isUserSearchPage || canPreview ? "h-4 sm:h-6 w-auto" : "h-6 w-auto"}
+              className="h-6 w-auto"
             />
           </button>
           <Button
@@ -177,10 +177,13 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
           {canPreview && <Select value={role ?? "account"} onValueChange={(value) => setRole(value === "account" ? null : value as PreviewRole)}>
-            <SelectTrigger aria-label="Preview role" title="Role preview — your account permissions remain unchanged" className="h-11 w-36 border-portal-border bg-portal-surface text-left sm:w-56">
-              <div className="min-w-0"><span className="block text-[10px] font-semibold text-portal-muted">Role preview</span><span className="block truncate text-[11px] sm:text-sm"><SelectValue /></span></div>
+            <SelectTrigger aria-label="Preview role" title="Role preview — your account permissions remain unchanged" className="h-9 w-auto min-w-[10.5rem] gap-2 border-portal-border bg-background px-3 text-sm font-medium hover:bg-accent">
+              <div className="flex min-w-0 items-center gap-2">
+                <UserCog className="h-4 w-4 shrink-0" />
+                <span className="truncate"><SelectValue /></span>
+              </div>
             </SelectTrigger>
-            <SelectContent><SelectItem value="account">My account</SelectItem>{PREVIEW_ROLES.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent>
+            <SelectContent><SelectGroup><SelectLabel>Role preview — permissions unchanged</SelectLabel><SelectItem value="account">My account</SelectItem>{PREVIEW_ROLES.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectGroup></SelectContent>
           </Select>}
           <span className="text-sm text-portal-muted hidden xl:inline">
             {user?.email}
