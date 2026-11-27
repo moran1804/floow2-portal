@@ -56,7 +56,7 @@ export default function PolicyOverviewPage() {
         <section><h2 className="mb-4 text-2xl font-semibold text-portal-navy">Policy Details</h2>
           <div className="grid gap-5 rounded-md border border-portal-border bg-portal-panel p-5 sm:grid-cols-2">
             <DetailRows rows={[["Policy Client ID", policyId], ["Product code", products]]} />
-            <div className="sm:border-l sm:border-portal-border sm:pl-5"><DetailRows rows={[["Drivers on policy", String(drivers.length)], ["Postal code", drivers[0].postal_code ?? "—"]]} /></div>
+            <div className="sm:border-l sm:border-portal-border sm:pl-5"><DetailRows rows={[["Drivers on policy", String(drivers.length)]]} /></div>
           </div>
         </section>
         {policy && <PermissionGate permission="scores/read"><section><h2 className="mb-4 text-2xl font-semibold text-portal-navy">Policy Scores</h2>
