@@ -629,7 +629,7 @@ const ProductEditorPage = () => {
           <div className="text-sm text-destructive">{error}</div>
         )}
 
-        <div className="flex flex-col-reverse gap-3 border-t border-portal-border pt-6 sm:flex-row sm:justify-end">
+        <div className="flex flex-col-reverse gap-3 border-t border-portal-border pt-6 sm:flex-row sm:justify-start">
           <Button
             variant="outline"
             className="h-11 min-w-[140px] border-portal-border text-portal-navy hover:bg-portal-surface"
