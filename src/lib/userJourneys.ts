@@ -125,3 +125,18 @@ export function formatDateRange(from: string, to: string): string {
 }
 
 export const journeyFullDateLabel = (startedAt: string) => format(new Date(startedAt), "EEEE do MMMM yyyy");
+
+const durationSeconds = (d: string) => {
+  const h = /(\d+)h/.exec(d), m = /(\d+)m/.exec(d), s = /(\d+)s/.exec(d);
+  return (h ? +h[1] * 3600 : 0) + (m ? +m[1] * 60 : 0) + (s ? +s[1] : 0);
+};
+
+/** Totals across example journeys: scored count, plus time and miles for car journeys only. */
+export function journeyTotals(journeys: Journey[]) {
+  const driving = journeys.filter((j) => j.mode === "Car");
+  const seconds = driving.reduce((t, j) => t + durationSeconds(j.duration), 0);
+  const miles = driving.reduce((t, j) => t + parseFloat(j.miles), 0);
+  return { scoredJourneys: journeys.filter((j) => j.score !== null).length, drivingSeconds: seconds, drivingMiles: Math.round(miles * 100) / 100 };
+}
+
+export const formatDrivingTime = (seconds: number) => `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;

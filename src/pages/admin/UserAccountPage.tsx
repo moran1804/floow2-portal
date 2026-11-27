@@ -14,6 +14,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { supabase } from "@/integrations/supabase/client";
 import { useCustomer } from "@/contexts/CustomerContext";
 import UserScoreTile from "@/components/admin/UserScoreTile";
+import { formatDrivingTime, journeyTotals, sampleJourneys } from "@/lib/userJourneys";
+import { useUnits } from "@/hooks/useUnits";
 import UserJourneysSection from "@/components/admin/UserJourneysSection";
 import UserFilesSection from "@/components/admin/UserFilesSection";
 import UserDeviceSection from "@/components/admin/UserDeviceSection";
@@ -38,6 +40,8 @@ export default function UserAccountPage() {
   const { allows, canVisit } = useRolePreview();
   const { userId, section } = useParams();
   const { selectedCustomerId, selectedCustomer } = useCustomer();
+  const units = useUnits();
+  const totals = journeyTotals(sampleJourneys);
   const [period, setPeriod] = useState("Lifetime score");
   const [periodOpen, setPeriodOpen] = useState(false);
   const [scoreDetail, setScoreDetail] = useState<string | null>(null);
@@ -69,7 +73,7 @@ export default function UserAccountPage() {
               <div className="flex items-center justify-center bg-score-surface p-5"><div className="w-full max-w-[160px]"><UserScoreTile name="Driver score" score={76} overall onOpen={() => setScoreDetail("Driver score")} /></div></div>
               <div className="min-w-0 bg-score-surface p-4 sm:p-6"><h3 className="mb-5 mt-2 text-xl font-semibold">Driver Score Influences</h3><div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">{influences.map((item) => <UserScoreTile key={item.name} {...item} onOpen={() => setScoreDetail(item.name)} />)}</div></div>
             </div>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2"><dl className="space-y-4 text-xs"><div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] gap-3"><dt className="text-portal-muted">Phone / OS</dt><dd className="text-right font-semibold">{device.model} · {device.os}{!device.compatible && <span className="ml-2 inline-flex items-center gap-1 rounded-sm bg-destructive/10 px-1.5 py-0.5 text-[10px] text-destructive">May not be compatible</span>}</dd></div><div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] gap-3"><dt className="text-portal-muted">Total distance driven</dt><dd className="text-right font-semibold">Not connected</dd></div></dl><div className="sm:border-l sm:border-portal-border sm:pl-5"><DetailRows rows={[["Total scored journeys", "Not connected"], ["Total time spent driving", "Not connected"]]} /></div></div>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2"><dl className="space-y-4 text-xs"><div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] gap-3"><dt className="text-portal-muted">Phone / OS</dt><dd className="text-right font-semibold">{device.model} · {device.os}{!device.compatible && <span className="ml-2 inline-flex items-center gap-1 rounded-sm bg-destructive/10 px-1.5 py-0.5 text-[10px] text-destructive">May not be compatible</span>}</dd></div><div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] gap-3"><dt className="text-portal-muted">Total distance driven <span className="text-[10px]">(example)</span></dt><dd className="text-right font-semibold">{units.distance(totals.drivingMiles, 1)}</dd></div></dl><div className="sm:border-l sm:border-portal-border sm:pl-5"><DetailRows rows={[["Total scored journeys (example)", String(totals.scoredJourneys)], ["Total time spent driving (example)", formatDrivingTime(totals.drivingSeconds)]]} /></div></div>
           </div>
         </section></PermissionGate>
         <UserDeviceSection info={device} createdAt={new Date(user.created_at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })} />
