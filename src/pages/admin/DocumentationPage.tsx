@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Award, Code2, LucideIcon } from "lucide-react";
+import { Award, BookOpen, Code2, LucideIcon } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 
@@ -17,6 +17,12 @@ const tiles: Tile[] = [
     title: "Driver score",
     description: "How scores are calculated for journeys processed by the Floow.",
     to: "/admin/documentation/driver-score",
+  },
+  {
+    icon: BookOpen,
+    title: "Portal documentation",
+    description: "A guide to every area, feature and function of the portal.",
+    to: "/admin/documentation/portal",
   },
   {
     icon: Code2,

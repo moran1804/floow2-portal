@@ -28,6 +28,7 @@ import JourneyRevisionsPage from "./pages/admin/JourneyRevisionsPage.tsx";
 import ImpactsPage from "./pages/admin/ImpactsPage.tsx";
 import ImpactReportPage from "./pages/admin/ImpactReportPage.tsx";
 import DocumentationPage from "./pages/admin/DocumentationPage.tsx";
+import PortalDocumentationPage from "./pages/admin/PortalDocumentationPage";
 import DriverScorePage from "./pages/admin/DriverScorePage.tsx";
 import AdminHomePage from "./pages/admin/AdminHomePage.tsx";
 import InsightsPage from "./pages/admin/InsightsPage.tsx";
@@ -214,6 +215,14 @@ const App = () => (
               element={
                 <RequireAdmin>
                   <DocumentationPage />
+                </RequireAdmin>
+              }
+            />
+            <Route
+              path="/admin/documentation/portal"
+              element={
+                <RequireAdmin>
+                  <PortalDocumentationPage />
                 </RequireAdmin>
               }
             />
