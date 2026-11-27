@@ -1,4 +1,42 @@
+import { Check, Minus } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { CLIENT_PREVIEW_ROLES, FLOOW_PREVIEW_ROLES, ROLE_PERMISSIONS, roleAllows, type PortalPermission, type PreviewRole } from "@/lib/rolePreview";
+
+const PERMISSIONS = Object.keys(ROLE_PERMISSIONS).sort() as PortalPermission[];
+
+const RoleMatrix = ({ title, roles }: { title: string; roles: readonly PreviewRole[] }) => (
+  <div className="mt-6">
+    <h3 className="font-semibold text-portal-navy mb-2">{title}</h3>
+    <div className="overflow-auto max-h-[600px] border border-portal-border rounded-md">
+      <table className="w-full text-xs">
+        <thead className="sticky top-0 bg-portal-surface z-10">
+          <tr>
+            <th className="text-left p-2 font-semibold text-portal-navy sticky left-0 bg-portal-surface min-w-[220px]">Permission</th>
+            {roles.map((r) => (
+              <th key={r} className="p-2 font-semibold text-portal-navy text-center min-w-[90px]">{r.replace(/^(Floow|Client) /, "")}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-portal-border">
+          {PERMISSIONS.map((perm) => (
+            <tr key={perm}>
+              <td className="p-2 font-mono text-portal-navy sticky left-0 bg-portal-panel">{perm}</td>
+              {roles.map((r) => (
+                <td key={r} className="p-2 text-center">
+                  {roleAllows(r, perm) ? (
+                    <Check aria-label="Allowed" className="w-4 h-4 inline text-portal-navy" />
+                  ) : (
+                    <Minus aria-label="Not allowed" className="w-4 h-4 inline text-portal-muted/50" />
+                  )}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+);
 
 type Topic = { id: string; title: string; intro: string; items: [string, string][] };
 
@@ -84,6 +122,13 @@ const PortalDocumentationPage = () => (
                 </div>
               ))}
             </dl>
+            {t.id === "roles" && (
+              <>
+                <p className="text-sm text-portal-muted mt-4">A tick means the role has that permission. Permissions ending in /read let a role view an area; /write, /create, /delete and similar let it make changes.</p>
+                <RoleMatrix title="Floow staff roles" roles={FLOOW_PREVIEW_ROLES} />
+                <RoleMatrix title="Client staff roles" roles={CLIENT_PREVIEW_ROLES} />
+              </>
+            )}
           </section>
         ))}
       </div>
