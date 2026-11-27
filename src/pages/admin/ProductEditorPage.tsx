@@ -629,22 +629,23 @@ const ProductEditorPage = () => {
           <div className="text-sm text-destructive">{error}</div>
         )}
 
-        <div className="flex gap-3">
+        <div className="flex flex-col-reverse gap-3 border-t border-portal-border pt-6 sm:flex-row sm:justify-end">
           <Button
             variant="outline"
+            className="h-11 min-w-[140px] border-portal-border text-portal-navy hover:bg-portal-surface"
             onClick={() => navigate("/admin/products")}
           >
             Cancel
           </Button>
           {canWrite && <Button
-            className="flex-1"
+            className="h-11 min-w-[180px] bg-portal-navy text-portal-navy-foreground font-semibold shadow-sm hover:bg-portal-navy/90"
             onClick={() => {
               setError(null);
               save.mutate(form);
             }}
             disabled={save.isPending}
           >
-            {isNew ? "Create product" : "Save product"}
+            {save.isPending ? "Saving…" : isNew ? "Create product" : "Save product"}
           </Button>}
         </div>
       </div>
