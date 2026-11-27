@@ -172,7 +172,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
     "flex items-center gap-3 px-6 py-3 text-sm font-medium border-l-2 border-transparent text-portal-muted cursor-default";
 
   return (
-    <div className={`${isNotificationsPage ? "flex h-dvh flex-col overflow-hidden" : "min-h-screen"} bg-portal-surface text-portal-text`}>
+    <div className={`flex h-dvh flex-col overflow-hidden bg-portal-surface text-portal-text`}>
       {/* Top bar */}
       <header className="flex min-h-16 shrink-0 flex-wrap items-center justify-between gap-2 border-b border-portal-border bg-portal-panel px-3 py-2 sm:px-6 lg:h-16 lg:py-0">
         <div className="flex min-w-0 items-center gap-3 sm:gap-6">
@@ -233,7 +233,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
         </div>
       </header>
 
-      <div className={`flex ${isNotificationsPage ? "min-h-0 flex-1 overflow-hidden" : ""}`}>
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         {/* Sidebar: fixed drawer below laptop width, narrower column on laptops. */}
         {!hideSidebar && navigationOpen && <button
           type="button"
@@ -242,7 +242,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
           onClick={() => setNavigationOpen(false)}
         />}
         {!hideSidebar && (
-        <aside className={`${navigationOpen ? "fixed inset-y-0 left-0 z-50 block w-64 shadow-xl" : "hidden"} shrink-0 overflow-y-auto border-r border-portal-border bg-portal-sidebar py-4 lg:static lg:z-auto lg:block lg:w-56 lg:shadow-none xl:w-64 ${isNotificationsPage ? "lg:min-h-0" : "lg:min-h-[calc(100dvh-4rem)]"}`}>
+        <aside className={`${navigationOpen ? "fixed inset-y-0 left-0 z-50 block w-64 shadow-xl" : "hidden"} shrink-0 overflow-y-auto border-r border-portal-border bg-portal-sidebar py-4 lg:static lg:z-auto lg:block lg:w-56 lg:shadow-none xl:w-64 lg:min-h-0`}>
           <div className="mb-2 flex justify-end px-4 lg:hidden">
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setNavigationOpen(false)} aria-label="Close navigation">
               <X className="h-5 w-5" />
@@ -491,7 +491,7 @@ const AdminLayout = ({ title, crumbs = [], actions, children, hideSidebar = fals
         )}
 
         {/* Main */}
-        <main className={`flex flex-1 flex-col min-w-0 ${isNotificationsPage ? "min-h-0 overflow-hidden" : isUserSearchPage ? "min-h-[calc(100vh-4rem)]" : "min-h-[calc(100dvh-4rem)]"}`}>
+        <main className={`flex flex-1 flex-col min-w-0 min-h-0 ${isNotificationsPage ? "overflow-hidden" : "overflow-y-auto"}`}>
           <div className={`${isInsightsPage || isUserSearchPage ? "bg-portal-panel-header" : "shrink-0 bg-portal-panel"} border-b border-portal-border px-4 py-5 sm:px-6 sm:py-6 xl:px-8 xl:pb-8`}>
             {crumbs.length > 0 && (
               <div className="mb-3 flex flex-wrap items-center text-sm leading-6 text-portal-muted">

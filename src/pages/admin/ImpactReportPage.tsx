@@ -48,7 +48,7 @@ export default function ImpactReportPage() {
   const [extra, setExtra] = useState<"policy" | SampleJourney | null>(null);
   const [saved, setSaved] = useState(false);
   useEffect(() => { setStatus(impact?.archived ? "ARCHIVED" : "NEW"); setSaved(false); }, [impactId, selectedCustomer?.id, impact?.archived]);
-  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  useEffect(() => { document.querySelector("main")?.scrollTo(0, 0); }, [pathname]);
 
   if (!impact) return <AdminLayout title="Impact not found"><Button asChild><Link to="/admin/insurer/impacts"><ArrowLeft />Impacts detected</Link></Button></AdminLayout>;
   const date = new Date(impact.date);
